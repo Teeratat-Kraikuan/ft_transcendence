@@ -1,0 +1,38 @@
+{% extends 'components/base.html' %}
+
+{% block content %}
+<div>
+	<h1> Home </h1>
+	{% if user.is_authenticated %}
+		<h2>Welcome {{user.username}}</h2>
+	{% endif %}
+
+
+	<ul class="all-user">
+		{% for user in allusers %}
+		{% if not user.is_superuser %}
+		{% if user not in request.user.friends.all and user != request.user %}
+		<h1>{{user}} <a href="users/send_friend_request/{{user.id}}/">send friend request</a></h1>
+		{% endif %}
+		{% endif %}
+		{% endfor %}
+	</ul>
+
+	{% for friend_request in all_friend_requests %}
+	<h1>{{ friend_request.from_user }}
+		<a href="/users/accept_friend_request/{{ friend_request.id }}/">accept friend request</a>
+	</h1>
+	{% endfor %}
+
+	{% if messages %}
+	<ul class="messages">
+		{% for message in messages %}
+		<script>
+			alert('{{ message }}')
+		</script>
+		{% endfor %}
+	</ul>
+	{% endif %}
+
+</div>
+{% endblock %}

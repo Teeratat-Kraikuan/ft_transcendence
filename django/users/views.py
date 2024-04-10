@@ -1,0 +1,104 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User, auth
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseBadRequest
+from .models import CustomUser, FriendRequest
+from dotenv import load_dotenv
+import os
+import requests
+
+load_dotenv()
+
+# Create your views here.
+def profile(request, username):
+	context = {}
+	try:
+		uid = CustomUser.objects.get(username=username)
+		context["username"] = uid.username
+		context["description"] = uid.description
+	except:
+		messages.error(request, 'user not found')
+		return redirect('home')
+	return render(request, 'accounts/profile.html', context)
+
+@login_required
+def send_friend_request(request, userID):
+	from_user = request.user
+	to_user = CustomUser.objects.get(id=userID)
+	friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
+	if created:
+		return HttpResponse('friend request sent')
+	else:
+		return HttpResponse('friend request was already sent')
+	
+@login_required
+def accept_friend_request(request, requestID):
+	friend_request = FriendRequest.objects.get(id=requestID)
+	if friend_request.to_user == request.user:
+		friend_request.to_user.add_friend(friend_request.from_user)
+		friend_request.from_user.add_friend(friend_request.to_user)
+		friend_request.delete()
+		return HttpResponse('friend request accepted')
+	else:
+		return HttpResponse('friend request not accepted')
+	
+def callback(request):
+	authroization_code = request.GET.get('code')
+	if authroization_code is None:
+		return HttpResponseBadRequest("Bad Request: Missing 'code' parameter")
+	
+	o42 = Oauth42()
+	token = o42.get_token(authroization_code)
+	if token == None:
+		messages.warning(request, "Couldn't exchange code for access token.")
+		return redirect('login')
+	
+	user_data = o42.get_user_data(token)
+	if user_data == None:
+		messages.warning(request, "Error: unable to login")
+		return redirect('login')
+	username_42 = user_data.get('login')
+	email_42 = user_data.get('email')
+
+	if username_42 in str(CustomUser.objects.all()):
+		known_user = CustomUser.objects.get(username=username_42)
+		if known_user.is_student == True:
+			auth.login(request, known_user)
+			known_user.is_active = True
+		else:
+			messages.warning(request, "This username was created without 42intra.")
+	else:
+		newUser = CustomUser.objects.create(username=username_42, email=email_42)
+		newUser.is_student = True
+		newUser.save()
+		auth.login(request, newUser)
+
+	return redirect('home')
+
+class Oauth42:
+	def get_token(self, code):
+		url = 'https://api.intra.42.fr/oauth/token'
+		data = {
+            'grant_type': 'authorization_code',
+            'client_id': os.getenv('CLIENT_ID'),
+            'client_secret': os.getenv('CLIENT_SECRET'),
+            'code': code,
+            'redirect_uri': 'http://localhost:8000/users/callback'
+        }
+		response = requests.post(url, data=data)
+		if response.status_code == 200:
+			token_data = response.json()
+			return token_data.get('access_token')
+		else:
+			return None
+
+	def get_user_data(self, access_token):
+		headers = {'Authorization' : f'Bearer {access_token}'}
+		response = requests.get('https://api.intra.42.fr/v2/me', headers=headers)
+
+		if response.status_code == 200:
+			user_data = response.json()
+			return user_data
+		else:
+			return None
