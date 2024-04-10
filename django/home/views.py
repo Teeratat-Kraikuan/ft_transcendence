@@ -32,6 +32,7 @@ def login(request):
 
 			if user is not None:
 				auth.login(request, user)
+				user.active = True
 				return redirect('home')
 			else:
 				messages.error(request, 'Invalid login details', extra_tags='sign-in')
@@ -59,5 +60,7 @@ def login(request):
 	return render(request, "login.html", context)
 
 def logout(request):
+	request.user.active = False
+	request.user.save()
 	auth.logout(request)
 	return redirect('home')

@@ -65,12 +65,14 @@ def callback(request):
 		known_user = CustomUser.objects.get(username=username_42)
 		if known_user.is_student == True:
 			auth.login(request, known_user)
-			known_user.is_active = True
+			known_user.active = True
+			known_user.save()
 		else:
 			messages.warning(request, "This username was created without 42intra.")
 	else:
 		newUser = CustomUser.objects.create(username=username_42, email=email_42)
 		newUser.is_student = True
+		newUser.active = True
 		newUser.save()
 		auth.login(request, newUser)
 
