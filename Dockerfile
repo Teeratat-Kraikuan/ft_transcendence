@@ -9,6 +9,9 @@ RUN pip install django \
 				psycopg2 \
 				python-dotenv \
 				requests \
+				daphne \
+				channels \
+				channels_postgres \
 				Pillow
 
 COPY ./django /home/django/ft_transcendence

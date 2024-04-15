@@ -33,6 +33,7 @@ def login(request):
 			if user is not None:
 				auth.login(request, user)
 				user.active = True
+				user.save()
 				return redirect('home')
 			else:
 				messages.error(request, 'Invalid login details', extra_tags='sign-in')

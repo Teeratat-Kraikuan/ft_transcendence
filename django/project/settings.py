@@ -33,15 +33,36 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'channels',
+	'channels_postgres',
 	'home',
 	'users',
+	'game',
+	'chatapp',
 ]
+
+ASGI_APPLICATION = 'project.asgi.application'
+
+CHANNEL_LAYERS = {
+	'default': {
+		'BACKEND': 'channels_postgres.core.PostgresChannelLayer',
+		'CONFIG': {
+			'ENGINE': 'django.db.backends.postgresql',
+			'NAME': environ.get('POSTGRES_DB'),
+			'USER': environ.get('POSTGRES_USER'),
+			'PASSWORD': environ.get('POSTGRES_PASSWORD'),
+			'HOST': 'postgres',
+			'PORT': 5432,
+		}
+	},
+}
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -60,7 +81,9 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+			BASE_DIR / 'templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,13 +104,13 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': environ.get('POSTGRES_DB'),
+		'ENGINE': 'django.db.backends.postgresql',
+		'NAME': environ.get('POSTGRES_DB'),
 		'USER': environ.get('POSTGRES_USER'),
 		'PASSWORD': environ.get('POSTGRES_PASSWORD'),
 		'HOST': 'postgres',
 		'PORT': 5432,
-    }
+	}
 }
 
 

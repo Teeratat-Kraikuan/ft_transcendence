@@ -24,13 +24,19 @@ def profile(request, username):
 
 @login_required
 def send_friend_request(request, userID):
-	from_user = request.user
-	to_user = CustomUser.objects.get(id=userID)
+	try:
+		from_user = request.user
+		to_user = CustomUser.objects.get(id=userID)
+	except:
+		messages.error(request, 'userId not found')
+		return redirect('home')
 	friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
 	if created:
-		return HttpResponse('friend request sent')
+		messages.success(request, 'friend request sent')
+		return redirect('home')
 	else:
-		return HttpResponse('friend request was already sent')
+		messages.error(request, 'friend request was already sent')
+		return redirect('home')
 	
 @login_required
 def accept_friend_request(request, requestID):

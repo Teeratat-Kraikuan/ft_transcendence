@@ -1,20 +1,20 @@
-{% extends 'components/base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div>
 	<h1> Home </h1>
 	{% if user.is_authenticated %}
 		<h2>Welcome {{ user.username }}</h2>
-		<h2>{{ user.active }}</h2>
 	{% endif %}
 
+	<hr>
 
-
+	<h1>Add friends</h1>
 	<ul class="all-user">
 		{% for user in allusers %}
 		{% if not user.is_superuser %}
-		{% if user not in request.user.friends.all and user != request.user %}
-		<h1>{{user}} <a href="users/send_friend_request/{{user.id}}/">send friend request</a></h1>
+		{% if user not in request.user.friends.all and request.user != user %}
+		<h1>{{ user }} <a href="users/send_friend_request/{{user.id}}/">send friend request</a></h1>
 		{% endif %}
 		{% endif %}
 		{% endfor %}
@@ -25,6 +25,28 @@
 		<a href="/users/accept_friend_request/{{ friend_request.id }}/">accept friend request</a>
 	</h1>
 	{% endfor %}
+
+	<hr>
+
+	<h1>Friends</h1>
+	<h3>Online User</h3>
+	<ul>
+	{% for friend in request.user.friends.all %}
+	{% if friend.active %}
+		<li>{{ friend.username }}</li>
+	{% endif %}
+	{% endfor %}
+	</ul>
+	<h3>Offline User</h3>
+	<ul>
+	{% for friend in request.user.friends.all %}
+	{% if not friend.active %}
+		<li>{{ friend.username }}</li>
+	{% endif %}
+	{% endfor %}
+	</ul>
+
+	<hr>
 
 	{% if messages %}
 	<ul class="messages">

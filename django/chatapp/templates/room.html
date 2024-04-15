@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block site_title %}{{ room.slug }}{% endblock %}
+
+{% block script %}
+<script>
+	const chatSocket = new WebSocket('ws:://' + window.location.host + '/ws/chat/');
+
+	chatSocket.onmessage = function(e) {
+		const data = JSON.parse(e.data);
+		const message = data['message'];
+		// Handle incoming message
+	};
+
+	chatSocket.onclose = function(e) {
+		console.error('Chat socket closed unexpectly');
+	};
+
+	// Send message to server
+	function sendMessage(message) {
+		chatSocket.send(JSON.stringify({
+			'message' : message
+		}));
+	};
+</script>
+{% endblock %}
+
+{% block content %}
+<div>
+	<h1> Welcome to {{ room.name }}</h1>
+</div>
+<div>
+      <br />
+      <input type="text" id="id_message_send_input" />
+      <button type="submit" id="id_message_send_button">Send Message</button>
+      <br />
+      <br />
+	  {% for message in messages %}
+	  <p>{{ message.user.username }}: {{ message.content }} <small>---{{ message.create_on }}</small></p>
+	  {% endfor %}
+</div>
+<script>
+	const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+	chatSocket.onopen = function (e) {
+		console.log("The connection was setup successfully !");
+	};
+	chatSocket.onclose = function (e) {
+		console.log("Something unexpected happened !");
+	};
+	document.querySelector("#id_message_send_input").focus();
+	document.querySelector("#id_message_send_input").onkeyup = function (e) {
+		if (e.keyCode == 13) {
+			document.querySelector("#id_message_send_button").click();
+		}
+	};
+	document.querySelector("#id_message_send_button").onclick = function (e) {
+		var messageInput = document.querySelector(
+			"#id_message_send_input"
+		).value;
+		chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}"}));
+	};
+	chatSocket.onmessage = function (e) {
+		const data = JSON.parse(e.data);
+		var div = document.createElement("div");
+		div.innerHTML = data.username + " : " + data.message;
+		document.querySelector("#id_message_send_input").value = "";
+		document.querySelector("#id_chat_item_container").appendChild(div);
+	};
+</script>
+{% endblock %}

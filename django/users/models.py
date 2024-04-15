@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
 	loses = models.IntegerField(default=0)
 	draws = models.IntegerField(default=0)
 	is_student = models.BooleanField(default=False)
-	friends = models.ManyToManyField('CustomUser', blank=True)
+	friends = models.ManyToManyField('self', blank=True)
 	active = models.BooleanField(default=False)
 
 	def __str__(self):
