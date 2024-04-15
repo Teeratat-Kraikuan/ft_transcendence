@@ -14,13 +14,15 @@ load_dotenv()
 def profile(request, username):
 	context = {}
 	try:
-		uid = CustomUser.objects.get(username=username)
-		context["username"] = uid.username
-		context["description"] = uid.description
+		profile = CustomUser.objects.get(username=username)
+		context["profile"] = profile
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')
-	return render(request, 'accounts/profile.html', context)
+	return render(request, 'profile.html', context)
+
+def friend(request):
+    return render(request, 'friend.html')
 
 @login_required
 def send_friend_request(request, userID):

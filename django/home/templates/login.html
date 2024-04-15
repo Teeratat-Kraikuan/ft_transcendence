@@ -1,60 +1,57 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
 
-	<h1> Login </h1>
-	<form action="" method="POST">
-	{% csrf_token %}
-		<label for="uname"><b>Username</b></label>
-		<br/>
-		<input type="text" placeholder="Enter Username" name="username" required>
-		<br/>
-		<label for="psw"><b>Password</b></label>
-		<br/>
-		<input type="password" placeholder="Enter Password" name="password" required>
-		<br/>
-		<button type="submit" name="submit" value="sign-in">Sign in</button>
-	</form>
-	<a href="{{ authorize_uri }}">
-		<span>login with </span>
-		<img src="{% static 'icons/42_Logo.png' %}" alt="42 school logo" width="20" height="20">
-	</a>
-	{% for message in messages %}
-		{% if message.tags == 'warning' %}
-			<p style="color:red">{{message}}</p>
-		{% endif %}
-		{% if "sign-in" in message.tags %}
-			<p style="color:red">{{message}}</p>
-		{% endif %}
-	{% endfor %}
 
-	<hr/>
-	
-	<h1> Register </h1>
-	<form action="" method="POST">
-	{% csrf_token %}
-		<label for="username"><b>Username</b></label>
-		<br />
-		<input type="text" placeholder="Enter Username" name="username" required>
-		<br />
-		<label for="email"><b>Email</b></label>
-		<br />
-		<input type="email" placeholder="Enter Email" name="email" required>
-		<br />
-		<label for="password"><b>Password</b></label>
-		<br />
-		<input type="password" placeholder="Enter Password" name="password" required>
-		<br />
-		<label for="password"><b>Repeat Password</b></label>
-		<br />
-		<input type="password" placeholder="Enter Password" name="repeat_password" required>
-		<br />
-		<button type="submit" name="submit" value="sign-up">Sign up</button>
-	</form>
-	{% for message in messages %}
-		{% if "sign-up" in message.tags %}
-			<p style="color:red">{{message}}</p>
-		{% endif %}
-	{% endfor %}
+<div class="justify-content-center" style="text-align: center;"> 
+	<div class="column justify-content-center" style="text-align: center; margin-top: 16vh;">
+		<img src="{% static 'WELCOME TO.png' %}" style="width: 140px; height: 14;"><br>
+		<img src="{% static '42GAME.png' %}" style="width: 70px; height: 52; padding-top: 10px;">
+	</div>
+	<div class="wrapper justify-content-center mt-3">
+		<div class="column content-solid mx-2">
+			<div class="card-topic">Login</div>
+			<form action="" method="POST">
+			{% csrf_token %}
+				<input type="text" placeholder="Enter Username" name="username" required>
+				<input type="password" placeholder="Enter Password" name="password" required>
+				<button type="submit" name="submit" value="sign-in" class="btn btn-light" style="width: 80%; font-size: 0.8rem;">Sign in</button>
+			</form>
+				<div style="text-align: center; color: #ffffff;" class="my-3"> Or </div>
+				<a href="{{ authorize_uri }}">
+					<button type="button" class="btn btn-light mb-2" style="width: 80%; font-size: 0.8rem;">
+						<img src="{% static '42Logo.png' %}" style="width: 20px;">
+						Continue with 42
+					</button>
+				</a>
+				<!-- <button type="button" class="btn btn-light mb-2" style="width: 80%; font-size: 0.8rem;">
+					<img src="{% static 'Google.png' %}" style="width: 20px;">
+					Continue with Google
+				</button> -->
+				{% for message in messages %}
+					{% if "sign-in" in message.tags %}
+						<p style="color:red">{{message}}</p>
+					{% endif %}
+				{% endfor %}
+		</div>
+		<div class="column content-solid mx-2">
+			<div class="card-topic">Register</div>
+			<form action="" method="POST">
+				{% csrf_token %}
+				<input type="text" placeholder="Enter Username" name="username" required>
+				<input type="email" placeholder="Enter Email" name="email" required>
+				<input type="password" placeholder="Create password" name="password" required>
+				<input type="password" placeholder="Confirm password" name="repeat_password" required>
+				<button type="submit" name="submit" value="sign-up" class="btn btn-light" style="width: 80%; font-size: 0.8rem;">Sign up</button>
+			</form>
+			{% for message in messages %}
+				{% if "sign-up" in message.tags %}
+					<p style="color:red">{{message}}</p>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+
 {% endblock %}

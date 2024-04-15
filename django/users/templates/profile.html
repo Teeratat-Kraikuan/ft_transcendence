@@ -6,9 +6,10 @@
 	<div class="content-mid-logo">
 		<div class="d-flex justify-content-center">
 			<img class="mlogo" style="margin-top: 25px;"  src="{% static '42GAME.png' %}">
+			<h1>{{ profile.username }}</h1>
 		</div>
 		<a href="{% url 'game' %}">
-			<button type="button" class="btn btn-light mt-5" style="width: 100%;">PLAY</button>
+			<button type="button" class="btn btn-light mt-5" style="width: 100%;">Friend</button>
 		</a>
 	</div>
 </div>

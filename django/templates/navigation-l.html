@@ -1,0 +1,45 @@
+{% load static %}
+
+<li class="nav-item nav-btn rounded mx-auto {% if request.path == '/profile' %}active{% endif %}">
+    <a class="nav-link nav-btn rounded" href="#">
+        <img style="max-width: 40px; border-radius: 100%;"  src="{% static 'profile_pic.png' %}">
+        <br><span>{{ user.username }}</span>
+    </a>
+</li>
+<li class="nav-item nav-btn rounded mx-auto {% if request.path == '/game' %}active{% endif %}">
+    <a class="nav-link nav-btn rounded" href="{% url 'game' %}">
+        <i class="bi bi-joystick" style="font-size: 1.2rem;"></i>
+        <br><span>Game</span>
+    </a>
+</li>
+<li class="nav-item nav-btn rounded mx-auto {% if request.path == '/tournament' %}active{% endif %}">
+    <a class="nav-link nav-btn rounded" href="{% url 'tournament' %}">
+        <i class="bi bi-trophy-fill" style="font-size: 1.2rem;"></i>
+        <br><span>Tournament</span>
+    </a>
+</li>
+<li class="nav-item nav-btn rounded mx-auto {% if request.path == '/chat' %}active{% endif %}">
+    <a class="nav-link nav-btn rounded" href="#">
+        <i class="bi bi-chat-left-fill" style="font-size: 1.2rem;"></i>
+        <br><span>Chat</span>
+    </a>
+</li>
+<li class="nav-item nav-btn rounded mx-auto {% if request.path == '/friend' %}active{% endif %}">
+    <a class="nav-link nav-btn rounded" href="{% url 'friend' %}">
+        <i class="bi bi-people-fill" style="font-size: 1.2rem;"></i>
+        <br><span>Friend</span>
+    </a>
+</li>
+
+<li class="nav-item nav-btn rounded mx-auto mt-auto {% if request.path == '/setting' %}active{% endif %}">
+    <a class="nav-link nav-btn rounded" href="{% url 'setting' %}">
+        <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
+        <br><span>Setting</span>
+    </a>
+</li>
+<li class="nav-item nav-btn rounded mx-auto {% if request.path == '/login' %}active{% endif %}">
+    <a class="nav-link nav-btn rounded" href="{% url 'logout' %}">
+        <i class="bi bi-box-arrow-left" style="font-size: 1.2rem;"></i>
+        <br><span>Logout</span>
+    </a>
+</li>

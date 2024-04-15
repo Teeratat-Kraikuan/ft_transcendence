@@ -65,3 +65,8 @@ def logout(request):
 	request.user.save()
 	auth.logout(request)
 	return redirect('home')
+
+def setting(request):
+    return render(request, 'setting.html')
+
+

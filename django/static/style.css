@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:wght@400;500;600;700&display=swap');
+
+*{
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-image: url("../static/Background.png");
+    background-size: auto;
+    background-position-x: center;
+    background-origin: content-box;
+}
+
+.wrapper{
+    display: flex;
+    position: relative;
+}
+
+.wrapper .sidebar{
+    position: fixed;
+    width: 100px;
+    height: 100%;
+    background-color:rgb(35, 35, 35);
+    /* background-color:rgb(30, 30, 30); */
+    text-align: center;
+}
+.wrapper .sidebar span{
+    padding: 0%;
+    font-size: 12px;
+}
+
+.wrapper .main-content{
+    width: 100%;
+    margin-left: 100px;
+    align-items: center;
+}
+
+.content-mid-logo{
+    width: 230px;
+    height: 340px;
+    margin-top: 27vh;
+    border: 20px;
+}
+
+.content-solid{
+    width: 275px;
+    padding-top: 12px;
+    padding-bottom: 40px;
+    background-color: #8b8b8b;
+    border-radius:12px;
+    border: 1px solid #b3b3b3;
+    box-shadow: 0 5px 10px #e6e6e663;
+}
+
+.slogo{
+    width: 56px;
+    height: 42px;
+}
+
+.mlogo{
+    max-width: 160px;
+    height: 120px;
+}
+
+.rounded{
+    border-radius: 10px;
+}
+
+.nav-btn {
+    font-size: small;
+    color: #7c7c7c;
+    width: 74px;
+    height: 74px;
+}
+.nav-btn a:hover{
+    color: #ffffff;
+    background-color: #434343;
+    border: 1px solid #b3b3b3;
+    box-shadow: 0 5px 10px #e6e6e663;
+}
+
+.nav-btn.active{
+    color: #ffffff;
+    background-color: #434343;
+    border: 1px solid #b3b3b3;
+    box-shadow: 0 5px 10px #e6e6e663;
+}
+
+form input{
+    width: 80%;
+    padding: 6px;
+    background:  #4d4d4d;
+    color: #ffffff;
+    border: none;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    box-shadow: inset 0 3px 3px #3535355a;
+    height: 35px;
+}
+
+::placeholder{
+    color: #7c7c7c
+}
+
+.card-main{
+    z-index: 2;
+}
+
+.card-topic{
+    margin-top: 15px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.card-content{
+    color: #ffffff;
+}
+
+.card-side {
+    position: absolute;
+    opacity: 0;
+    transition: transform 300ms ease-in-out;
+}
+
+.card-side.active {
+    position: relative;
+    opacity: 1;
+    transition: transform 300ms ease-in-out;
+}
+
+.card-x-btn{
+    width: 80%;
+    font-size: 1rem;
+}
+
+.card-m-btn{
+    width: 50%;
+    font-size: 1rem;
+}
