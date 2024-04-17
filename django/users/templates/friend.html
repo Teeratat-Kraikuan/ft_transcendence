@@ -2,16 +2,22 @@
 {% load static %}
 {% block content %}
 
-<div class="d-flex justify-content-center">
-	<div class="content-mid-logo">
-		<div class="d-flex justify-content-center">
-			<img class="mlogo" style="margin-top: 25px;"  src="{% static '42GAME.png' %}">
-		</div>
-		<a href="{% url 'game' %}">
-			<button type="button" class="btn btn-light mt-5" style="width: 100%;">Friend</button>
-		</a>
-	</div>
-</div>
+<h1>Add friends</h1>
+	<ul class="all-user">
+		{% for user in allusers %}
+		{% if not user.is_superuser %}
+		{% if user not in request.user.friends.all and request.user != user %}
+		<h1>{{ user }} <a href="send_friend_request/{{user.id}}/">send friend request</a></h1>
+		{% endif %}
+		{% endif %}
+		{% endfor %}
+	</ul>
+
+	{% for friend_request in all_friend_requests %}
+	<h1>{{ friend_request.from_user }}
+		<a href="accept_friend_request/{{ friend_request.id }}/">accept friend request</a>
+	</h1>
+	{% endfor %}
 
 
 {% endblock %}

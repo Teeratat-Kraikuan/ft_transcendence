@@ -61,6 +61,8 @@ def login(request):
 	return render(request, "login.html", context)
 
 def logout(request):
+	if not request.user.is_authenticated:
+		return redirect('home')
 	request.user.active = False
 	request.user.save()
 	auth.logout(request)

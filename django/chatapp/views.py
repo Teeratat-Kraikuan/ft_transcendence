@@ -14,6 +14,8 @@ def room(request, slug):
 	context = {}
 	room = Room.objects.get(slug=slug)
 	messages = Message.objects.filter(room=room)
+	rooms = Room.objects.all()
+	context['rooms'] = rooms
 	context['room'] = room
 	context['messages'] = messages
 	return render(request, "room.html", context)

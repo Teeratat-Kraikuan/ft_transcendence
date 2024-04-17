@@ -6,7 +6,7 @@ from .models import Room, Message
 
 class ChatConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
-		self.room_name = self.scope['url_route']['kwargs']['room_slug']
+		self.room_name = self.scope['url_route']['kwargs']['roomSlug']
 		self.roomGroupName = 'chat_%s' % self.room_name
 		
 		await self.channel_layer.group_add(
@@ -38,10 +38,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
-	async def send(self, text_data):
+	async def sendMessage(self, event):
 		message = event["message"]
 		username = event["username"]
-		await self.send(text_data=json.dumps({"message": message, "username": username}))
+		await self.send(text_data = json.dumps({"message": message, "username": username}))
 
 	@sync_to_async
 	def save_message(self, message, username, room_name):

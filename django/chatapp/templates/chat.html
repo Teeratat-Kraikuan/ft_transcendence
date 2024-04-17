@@ -2,64 +2,32 @@
 
 {% block site_title %}Chat Page{% endblock %}
 
-{% block script %}
-<script>
-	const chatSocket = new WebSocket('ws:://' + window.location.host + '/ws/chat/');
-
-	chatSocket.onmessage = function(e) {
-		const data = JSON.parse(e.data);
-		const message = data['message'];
-		// Handle incoming message
-	};
-
-	chatSocket.onclose = function(e) {
-		console.error('Chat socket closed unexpectly');
-	};
-
-	// Send message to server
-	function sendMessage(message) {
-		chatSocket.send(JSON.stringify({
-			'message' : message
-		}));
-	};
-</script>
+{% block style %}
+<style>
+	body {
+		color: white;
+	}
+</style>
 {% endblock %}
 
 {% block content %}
 <div>
-	<h1> This is Chat Page </h1>
+	<h1> Chatroom list </h1>
 </div>
 <div>
-      {% for room in rooms %}
-	  <a href="{{room.slug}}">{{ room.name }}</a>
-	  {% endfor %}
+	{% if rooms %}
+		{% for room in rooms %}
+			{% if room.user1 == request.user or room.user2 == request.user %}
+				<a href="{{room.slug}}">
+					{% if room.user1 == request.user %}
+						{{ room.user2 }}
+					{% else %}
+						{{ room.user1 }}
+					{% endif %}
+				</a>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
 </div>
-<script>
-	const chatSocket = new WebSocket("ws://" + window.location.host + "/");
-	chatSocket.onopen = function (e) {
-		console.log("The connection was setup successfully !");
-	};
-	chatSocket.onclose = function (e) {
-		console.log("Something unexpected happened !");
-	};
-	document.querySelector("#id_message_send_input").focus();
-	document.querySelector("#id_message_send_input").onkeyup = function (e) {
-		if (e.keyCode == 13) {
-			document.querySelector("#id_message_send_button").click();
-		}
-	};
-	document.querySelector("#id_message_send_button").onclick = function (e) {
-		var messageInput = document.querySelector(
-			"#id_message_send_input"
-		).value;
-		chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}"}));
-	};
-	chatSocket.onmessage = function (e) {
-		const data = JSON.parse(e.data);
-		var div = document.createElement("div");
-		div.innerHTML = data.username + " : " + data.message;
-		document.querySelector("#id_message_send_input").value = "";
-		document.querySelector("#id_chat_item_container").appendChild(div);
-	};
-</script>
+{% block room-content %}{% endblock %}
 {% endblock %}

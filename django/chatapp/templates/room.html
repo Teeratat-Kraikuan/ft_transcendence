@@ -2,45 +2,60 @@
 
 {% block site_title %}{{ room.slug }}{% endblock %}
 
-{% block script %}
-<script>
-	const chatSocket = new WebSocket('ws:://' + window.location.host + '/ws/chat/');
-
-	chatSocket.onmessage = function(e) {
-		const data = JSON.parse(e.data);
-		const message = data['message'];
-		// Handle incoming message
-	};
-
-	chatSocket.onclose = function(e) {
-		console.error('Chat socket closed unexpectly');
-	};
-
-	// Send message to server
-	function sendMessage(message) {
-		chatSocket.send(JSON.stringify({
-			'message' : message
-		}));
-	};
-</script>
+{% block style %}
+<style>
+	body {
+		color: white;
+	}
+	.own-message {
+		background-color: #343435;
+		text-align: right;
+	}
+	.other-message {
+		background-color: #6601FE;
+		text-align: left;
+	}
+</style>
 {% endblock %}
 
 {% block content %}
 <div>
-	<h1> Welcome to {{ room.name }}</h1>
+	<h1> Chatroom list </h1>
 </div>
 <div>
-      <br />
-      <input type="text" id="id_message_send_input" />
-      <button type="submit" id="id_message_send_button">Send Message</button>
-      <br />
-      <br />
-	  {% for message in messages %}
-	  <p>{{ message.user.username }}: {{ message.content }} <small>---{{ message.create_on }}</small></p>
-	  {% endfor %}
+	{% if rooms %}
+	{% for room in rooms %}
+		{% if room.user1 == request.user or room.user2 == request.user %}
+			<a href="../{{room.slug}}">
+				{% if room.user1 == request.user %}
+					{{ room.user2 }}
+				{% else %}
+					{{ room.user1 }}
+				{% endif %}
+			</a>
+		{% endif %}
+	{% endfor %}
+{% endif %}
 </div>
+<div class="id_chat_item_container" id="id_chat_item_container" style="font-size: 20px">
+	{% for message in messages %}
+	<div class="{% if message.user.username == request.user.username %}own-message{% else %}other-message{% endif %}">
+		{{ message.content }}
+	</div>
+	{% comment %} <p>{{ message.user.username }}: {{ message.content }} <small>---{{ message.create_on }}</small></p> {% endcomment %}
+	{% endfor %}
+</div>
+<br />
+<input type="text" id="id_message_send_input" />
+<button type="submit" id="id_message_send_button">Send Message</button>
+{% endblock %}
+
+{% block body-script %}
 <script>
-	const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+	const roomSlug = "{{ room.slug }}";
+	const roomName = "{{ room.name }}";
+	const username = "{{ request.user.username }}"
+	const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/chat/" + roomSlug + "/");
 	chatSocket.onopen = function (e) {
 		console.log("The connection was setup successfully !");
 	};
@@ -57,12 +72,20 @@
 		var messageInput = document.querySelector(
 			"#id_message_send_input"
 		).value;
-		chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}"}));
+		console.log("here");
+		chatSocket.send(JSON.stringify({ message: messageInput, username: "{{request.user.username}}", room_name: roomName}));
+		document.querySelector("#id_message_send_input").value = "";
 	};
 	chatSocket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
 		var div = document.createElement("div");
-		div.innerHTML = data.username + " : " + data.message;
+		div.innerHTML = data.message;
+
+		if (data.username === username) {
+			div.className = "own-message";
+		} else {
+			div.className = "other-message";
+		}
 		document.querySelector("#id_message_send_input").value = "";
 		document.querySelector("#id_chat_item_container").appendChild(div);
 	};

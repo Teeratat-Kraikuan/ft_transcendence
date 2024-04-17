@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest
 from .models import CustomUser, FriendRequest
+from chatapp.models import Room
 from dotenv import load_dotenv
 import os
 import requests
@@ -22,7 +23,11 @@ def profile(request, username):
 	return render(request, 'profile.html', context)
 
 def friend(request):
-    return render(request, 'friend.html')
+	context = {}
+	if request.user.is_authenticated:
+		context['allusers'] = CustomUser.objects.all()
+		context['all_friend_requests'] = FriendRequest.objects.filter(to_user=request.user)
+		return render(request, 'friend.html', context)
 
 @login_required
 def send_friend_request(request, userID):
@@ -46,6 +51,7 @@ def accept_friend_request(request, requestID):
 	if friend_request.to_user == request.user:
 		friend_request.to_user.add_friend(friend_request.from_user)
 		friend_request.from_user.add_friend(friend_request.to_user)
+		Room.create_room(friend_request.from_user, friend_request.to_user)
 		friend_request.delete()
 		return HttpResponse('friend request accepted')
 	else:
