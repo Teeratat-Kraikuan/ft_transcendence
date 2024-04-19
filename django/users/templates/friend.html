@@ -2,16 +2,58 @@
 {% load static %}
 {% block content %}
 
-<div class="d-flex justify-content-center">
-	<div class="content-mid-logo">
-		<div class="d-flex justify-content-center">
-			<img class="mlogo" style="margin-top: 25px;"  src="{% static '42GAME.png' %}">
-		</div>
-		<a href="{% url 'game' %}">
-			<button type="button" class="btn btn-light mt-5" style="width: 100%;">Friend</button>
+<div class="d-flex pt-3">
+	<!-- main -->
+	<div class="my-2" style="width: 100%; color: white; margin-left: 2rem; margin-right: 2rem; padding-top: 12px;">
+		<!-- search -->
+		<form action="#">
+			<input type="text" placeholder="search" style="width: 300px;">
+			<button class="btn btn-outline-light" type="submit" style="border-radius: 15px;"><i class="bi bi-search"></i></button>
+		</form>
+
+		<!-- friends -->
+
+		<!-- friend request -->
+		{% for friend_request in all_friend_requests %}
+		<span>{{ friend_request.from_user }}
+		<a href="accept_friend_request/{{ friend_request.id }}/">accept</a>
+		</span>
+		{% endfor %}
+
+		<!-- all user -->
+		<br>
+		{% for user in allusers %}
+		{% if not user.is_superuser %}
+		{% if user not in request.user.friends.all and user != request.user %}
+				<span>{{user}} <a href="send_friend_request/{{user.id}}/">add friend</a></span>
+		{% endif %}
+		{% endif %}
+		{% endfor %}
+	</div>
+	<!-- user -->
+	<div class="content-friend my-2 px-4 py-4" style="width: 250px; height: 90vh; color: white; margin-right: 2rem">
+		<div class="profile-main-text text-center">Friends</div>
+		<div class="profile-label-text mt-3">ONLINE - {{ online }}</div>
+		<ul>
+		{% for friend in request.user.friends.all %}
+		{% if friend.active %}
+		<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;"> 
+			<li>{{ friend.username }}</li>
 		</a>
+		{% endif %}
+		{% endfor %}
+		</ul>
+		<div class="profile-label-text">OFFLINE - {{ offline }}</div>
+		<ul>
+		{% for friend in request.user.friends.all %}
+		{% if not friend.active %}
+		<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;"> 
+			<li>{{ friend.username }}</li>
+		</a>
+		{% endif %}
+		{% endfor %}
+		</ul>
 	</div>
 </div>
-
 
 {% endblock %}

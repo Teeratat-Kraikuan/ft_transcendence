@@ -13,6 +13,8 @@ load_dotenv()
 # Create your views here.
 def profile(request, username):
 	context = {}
+	context['online'] = len(request.user.friends.filter(active=True))
+	context['offline'] = len(request.user.friends.filter(active=False))
 	try:
 		profile = CustomUser.objects.get(username=username)
 		context["profile"] = profile
@@ -22,7 +24,12 @@ def profile(request, username):
 	return render(request, 'profile.html', context)
 
 def friend(request):
-    return render(request, 'friend.html')
+	context = {}
+	context['allusers'] = CustomUser.objects.all()
+	context['all_friend_requests'] = FriendRequest.objects.filter(to_user=request.user)
+	context['online'] = len(request.user.friends.filter(active=True))
+	context['offline'] = len(request.user.friends.filter(active=False))
+	return render(request, 'friend.html', context)
 
 @login_required
 def send_friend_request(request, userID):

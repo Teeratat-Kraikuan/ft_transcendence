@@ -5,8 +5,8 @@
 }
 
 body {
-    background-image: url("../static/Background.png");
-    background-size: auto;
+    background-image: radial-gradient(#1a1a1a 5%,#131313 95%);
+    background-size: 100vh 100vw;
     background-position-x: center;
     background-origin: content-box;
 }
@@ -52,6 +52,41 @@ body {
     box-shadow: 0 5px 10px #e6e6e663;
 }
 
+.profile-solid{
+    background-color: #353535;
+    border: 1px solid #b3b3b3;
+    box-shadow: 0 3px 5px #e6e6e663;
+}
+
+.profile-main-text{
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: lighter;
+}
+
+.profile-content-text{
+    color: #ffffff;
+    font-size: 0.8rem;
+}
+
+.profile-label-text{
+    color: #808080;
+    font-size: 0.7rem;
+}
+
+.content-friend{
+    padding-top: 12px;
+    padding-bottom: 40px;
+    background-color: #414141;
+    border-radius:12px;
+    border: 1px solid #b3b3b3;
+    box-shadow: 0 5px 10px #e6e6e663;
+}
+
+.card-match{
+    background-color: #505050;
+}
+
 .slogo{
     width: 56px;
     height: 42px;
@@ -71,12 +106,11 @@ body {
     color: #7c7c7c;
     width: 74px;
     height: 74px;
+    border-radius: 10px;
 }
 .nav-btn a:hover{
     color: #ffffff;
-    background-color: #434343;
     border: 1px solid #b3b3b3;
-    box-shadow: 0 5px 10px #e6e6e663;
 }
 
 .nav-btn.active{
