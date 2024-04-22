@@ -1,91 +1,79 @@
 {% extends 'base.html' %}
-{% load static %}
+
+{% block site_title %}pong game{% endblock %}
+
+{% block style %}
+<style>
+	body {
+		color: white;
+	}
+	.own-message {
+		background-color: #343435;
+		text-align: right;
+	}
+	.other-message {
+		background-color: #6601FE;
+		text-align: left;
+	}
+</style>
+{% endblock %}
+
 {% block content %}
-
-
-<div class="justify-content-center" style="text-align: center;"> 
-	<div class="wrapper justify-content-center" style="margin-top: 25vh;">
-
-		<!-- Main game -->
-		<div class="column content-solid card-main  mx-2">
-			<img style="margin-top: 25px; width: 168px;"  src="{% static 'pongpong.png' %}">
-			<div class="column mb-2 mt-5">
-				<button id="singlePButton" type="button" class="btn btn-light" style="width: 39%; font-size: 1rem;">1P</button>
-				<button id="multiPButton" type="button" class="btn btn-light" style="width: 39%; font-size: 1rem;">2P</button>
-			</div>
-			<a style="text-decoration: none; color: black;" href="{% url 'tournament' %}">
-				<button type="button" class="btn btn-light card-x-btn mb-4">
-					Tournament
-				</button>
-			</a>
-			<button id="settingButton" type="button" class="btn btn-light card-x-btn my-2">
-				<i class="bi bi-gear-fill" style="width: 14px;"></i>
-				Setting
-			</button>
-		</div>
-		<!-- Setting game -->
-		<div class="column content-solid card-side mx-2" id="settingCard">
-			<div class="card-topic">Game Setting</div>
-			<div class="column mb-2 mt-4">
-				<div class="justify-content-between">
-					<div class="card-content">Perspective</div>
-					<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-						<input type="radio" class="btn-check" name="btnpsp" id="btnpsp1" autocomplete="off" checked>
-						<label class="btn btn-light" for="btnpsp1">2D</label>
-					  
-						<input type="radio" class="btn-check" name="btnpsp" id="btnpsp2" autocomplete="off">
-						<label class="btn btn-light" for="btnpsp2">3D</label>
-					</div>
-				</div>
-			</div>
-			<div class="card-content mt-3">Theme</div>
-			<div class="btn-group-vertical" role="group" aria-label="Basic radio toggle button group">
-				<input type="radio" class="btn-check" name="btntheme" id="btntheme1" autocomplete="off" checked>
-				<label class="btn btn-light" for="btntheme1">Theme 1</label>
-			  
-				<input type="radio" class="btn-check" name="btntheme" id="btntheme2" autocomplete="off">
-				<label class="btn btn-light" for="btntheme2">Theme 2</label>
-			  
-				<input type="radio" class="btn-check" name="btntheme" id="btntheme3" autocomplete="off">
-				<label class="btn btn-light" for="btntheme3">Theme 3</label>
-			  </div>
-		</div>
-
-		<!-- 1Player -->
-		<div class="column content-solid card-side mx-2" id="singlePCard">
-			<div class="card-topic">SINGLE PLAYER</div>
-			<button type="button" class="btn btn-light card-m-btn my-2 mt-5">Easy</button>
-			<button type="button" class="btn btn-light card-m-btn my-2">Medium</button>
-			<button type="button" class="btn btn-light card-m-btn my-2">Hard</button>
-		</div>
-		<!-- 2Player -->
-		<div class="column content-solid card-side mx-2" id="multiPCard">
-			<div class="card-topic">MULTI PLAYER</div>
-			<button type="button" class="btn btn-light card-m-btn my-2 mt-3" style="width: 60%;">Local</button>
-			<div style="color: #ffffff;" class="my-2"> Or </div>
-			<span style="font-size: 0.8rem; color: #ffffff; line-height: 0.7; font-family: monospace;">Enjoy with<br>your friend!</span>
-			<form action="#" class="mt-4">
-			<input type="text" placeholder="name" style="width: 60%; text-align: center;">
-			</form>
-			<button type="button" class="btn btn-light card-x-btn mb-4" style="width: 60%;">
-				Invite
-			</button>
-		</div>
-	</div>
+<div id="gameStatus">
+	<h1>{{ room_code }}</h1>
+	<p>{{ username }}<small style="font-size: small">(you)</small> Score: <span id="userScore">0</span></p>
+	<p><span id="opponentName">opponent</span> Score: <span id="opponentScore">0</span></p>
+	<button onclick="increaseScore()">Click</button>
 </div>
+{% endblock %}
 
+{% block body-script %}
 <script>
-	window.onload = function() {
-		document.getElementById('settingButton').addEventListener('click', function() {
-			document.getElementById('settingCard').classList.toggle('active');
-		});
-		document.getElementById('singlePButton').addEventListener('click', function() {
-			document.getElementById('singlePCard').classList.toggle('active');
-		});
-		document.getElementById('multiPButton').addEventListener('click', function() {
-			document.getElementById('multiPCard').classList.toggle('active');
-		});
-	};
-</script>
+	let userScore = parseInt(document.getElementById("userScore").textContent);
+	let opponentScore = parseInt(document.getElementById("opponentScore").textContent);
+	const roomCode = "{{ room_code }}";
+	const username = "{{ username }}";
+	const playerNo = "player1";
+	const pongSocket = new WebSocket("ws://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
 
+	pongSocket.onopen = function (e) {
+		console.log("The connection was setup successfully !");
+		// Send message requesting username of other player
+		pongSocket.send(JSON.stringify({ score: 0, start_point: true }));
+	};
+	pongSocket.onclose = function (e) {
+		console.log("Something unexpected happened !");
+	};
+	pongSocket.error = function (e) {
+		console.log("error !");
+	};
+	pongSocket.onmessage = function (e) {
+		const data = JSON.parse(e.data);
+		if (userScore < 10 && opponentScore < 10 && data.exit)
+			document.getElementById("gameStatus").innerHTML = "<h1>Your opponent LEAVE GAME!!</h1>";
+		else if (!data.exit && data.username != username) {
+			document.getElementById("opponentName").textContent = data.username;
+			document.getElementById("opponentScore").innerHTML = data.score;
+			opponentScore = data.score;
+			if (data.start_point)
+				pongSocket.send(JSON.stringify({ score: 0, start_point: false }));
+		}
+		checkWinLose();
+	};
+	
+	function increaseScore() {
+		userScore++;
+		document.getElementById("userScore").innerHTML = userScore;
+		pongSocket.send(JSON.stringify({ score: userScore, start_point: false }));
+	}
+	function checkWinLose() {
+		const gameStatus = document.getElementById("gameStatus");
+		if (userScore >= 10) {
+			gameStatus.innerHTML = "<h1>You Win!</h1>"
+		} else if (opponentScore >= 10) {
+			gameStatus.innerHTML = "<h1>You Lose!</h1>"
+		}
+	}
+
+</script>
 {% endblock %}

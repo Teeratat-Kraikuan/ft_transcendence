@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import auth
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from users.models import CustomUser, FriendRequest
 from .models import *
 
@@ -60,9 +61,8 @@ def login(request):
 				return redirect('login')
 	return render(request, "login.html", context)
 
+@login_required
 def logout(request):
-	if not request.user.is_authenticated:
-		return redirect('home')
 	request.user.active = False
 	request.user.save()
 	auth.logout(request)

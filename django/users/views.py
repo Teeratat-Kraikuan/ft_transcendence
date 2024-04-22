@@ -53,9 +53,7 @@ def accept_friend_request(request, requestID):
 		friend_request.from_user.add_friend(friend_request.to_user)
 		Room.create_room(friend_request.from_user, friend_request.to_user)
 		friend_request.delete()
-		return HttpResponse('friend request accepted')
-	else:
-		return HttpResponse('friend request not accepted')
+	return redirect('friend')
 	
 def callback(request):
 	authroization_code = request.GET.get('code')
