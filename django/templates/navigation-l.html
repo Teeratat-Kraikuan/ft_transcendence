@@ -20,7 +20,7 @@
     </a>
 </li>
 <li class="nav-item nav-btn mx-auto {% if request.path == '/chat' %}active{% endif %}">
-    <a class="nav-link nav-btn" href="#">
+    <a class="nav-link nav-btn" href="{% url 'chat' %}">
         <i class="bi bi-chat-left-fill" style="font-size: 1.2rem;"></i>
         <br><span>Chat</span>
     </a>
