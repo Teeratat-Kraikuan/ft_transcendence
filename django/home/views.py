@@ -56,6 +56,8 @@ def login(request):
 					user = CustomUser.objects.create(username=username, email=email, password=password)
 					user.set_password(password)
 					user.save()
+					messages.success(request, 'Your signup successful', extra_tags='sign-up')
+					return redirect('login')
 			else:
 				messages.error(request, 'Password Not Matching', extra_tags='sign-up')
 				return redirect('login')

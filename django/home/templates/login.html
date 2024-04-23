@@ -46,7 +46,11 @@
 			</form>
 			{% for message in messages %}
 				{% if "sign-up" in message.tags %}
-					<p style="color:red">{{message}}</p>
+					{% if "success" in message.tags %}
+						<p style="color:green">{{message}}</p>
+					{% elif "error" in message.tags %}
+						<p style="color:red">{{message}}</p>
+					{% endif %}
 				{% endif %}
 			{% endfor %}
 		</div>

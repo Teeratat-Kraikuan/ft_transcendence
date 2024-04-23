@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import PongGame
@@ -44,6 +45,7 @@ def pong(request):
 					return redirect('game')
 	return render(request, "pong.html", context)
 
+@login_required
 def tournament(request):
 	if not request.user.is_authenticated:
 		return redirect('login')

@@ -15,39 +15,174 @@
 		background-color: #6601FE;
 		text-align: left;
 	}
+	a {
+		text-decoration: none;
+	}
 </style>
 {% endblock %}
 
 {% block content %}
-<div>
-	<h1> Chatroom list </h1>
-</div>
-<div>
-	{% if rooms %}
-	{% for room in rooms %}
-		{% if room.user1 == request.user or room.user2 == request.user %}
-			<a href="../{{room.slug}}">
+
+<div class="container pt-3">
+
+	<div class="row">
+		<!-- friend chat -->
+		<div class="col content-friend px-4 py-4 mx-1 mt-2" style="height: 90vh;">
+			<div class="profile-main-text text-center mb-3">Chat</div>
+			<!-- friend chat -->
+			<div class="chat-h-body h-75">
+				<ui class="chat-contacts">
+					{% if rooms %}
+					{% for loop_room in rooms %}
+						{% if loop_room.user1 == request.user and loop_room.user2.active %}
+							<a href="../{{ loop_room.slug }}">
+								<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
+									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+										<div class="chat-image">
+											<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+											<span class="online_icon"></span>
+										</div>
+										<div class="px-2">
+											<span>{{loop_room.user2.username}}</span><br>
+											<span class="profile-label-text">last text</span>
+										</div>
+										<div class="px-2 align-items-end ms-auto">
+											<p>00:00</p>
+										</div>
+									</div>
+								</li>
+							</a>
+						{% elif loop_room.user2 == request.user and loop_room.user1.active %}
+							<a href="../{{ loop_room.slug }}">
+								<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
+									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+										<div class="chat-image">
+											<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+											<span class="online_icon"></span>
+										</div>
+										<div class="px-2">
+											<span>{{loop_room.user1.username}}</span><br>
+											<span class="profile-label-text">last text</span>
+										</div>
+										<div class="px-2 align-items-end ms-auto">
+											<p>00:00</p>
+										</div>
+									</div>
+								</li>
+							</a>
+						{% endif %}
+					{% endfor %}
+					{% for loop_room in rooms %}
+							{% if loop_room.user1 == request.user and not loop_room.user2.active %}
+								<a href="../{{ loop_room.slug }}">
+									<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
+										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+											<div class="chat-image">
+												<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+												<span class="online_icon offline"></span>
+											</div>
+											<div class="px-2">
+												<span>{{loop_room.user2.username}}</span><br>
+												<span class="profile-label-text">last text</span>
+											</div>
+											<div class="px-2 align-items-end ms-auto">
+												<p>00:00</p>
+											</div>
+										</div>
+									</li>
+								</a>	
+							{% elif loop_room.user2 == request.user and not loop_room.user1.active %}
+								<a href="../{{ loop_room.slug }}">
+									<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
+										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+											<div class="chat-image">
+												<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+												<span class="online_icon offline"></span>
+											</div>
+											<div class="px-2">
+												<span>{{loop_room.user1.username}}</span><br>
+												<span class="profile-label-text">last text</span>
+											</div>
+											<div class="px-2 align-items-end ms-auto">
+												<p>00:00</p>
+											</div>
+										</div>
+									</li>
+								</a>
+							{% endif %}
+					{% endfor %}
+					{% endif %}
+				</ui>
+			</div>
+		</div>
+
+		<!-- main -->
+		<div class="col-md-9 content-friend px-4 py-4 mx-1 mt-2 pb-5">
+			<!-- chat header -->
+			<div class="d-flex">
 				{% if room.user1 == request.user %}
-					{{ room.user2 }}
-				{% else %}
-					{{ room.user1 }}
+					<div class="profile-main-text me-auto"> {{ room.user2.username }} </div>
+				{% elif room.user2 == request.user %}
+					<div class="profile-main-text me-auto"> {{ room.user1.username }} </div>
 				{% endif %}
-			</a>
-		{% endif %}
-	{% endfor %}
-{% endif %}
-</div>
-<div class="id_chat_item_container" id="id_chat_item_container" style="font-size: 20px">
-	{% for message in messages %}
-	<div class="{% if message.user.username == request.user.username %}own-message{% else %}other-message{% endif %}">
-		{{ message.content }}
+				<button class="btn btn-light btn-sm me-2" style=" font-size: 0.7rem;">
+					<i class="bi bi-joystick"></i> invite
+				</button>
+				<button class="btn btn-light btn-sm me-2" style=" font-size: 0.7rem;">
+					<i class="bi bi-person-fill"></i> profile
+				</button>
+			</div>
+
+			<!-- message -->
+			<div class="p-4 chat-h-body" style="color: #ececec; height: 95%;" id="id_chat_item_container">
+
+				{% for message in messages %}
+					<!-- friend -->
+					{% if message.user.username != request.user.username %}
+						<div class="d-flex justify-content-start mb-4">
+							<div class="chat-image">
+								<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+							</div>
+							<div class="d-flex flex-column ps-2">
+								<span>
+									{{ message.content }}
+								</span>
+								<span class="profile-label-text">
+									{{ message.create_on|date:"N d, H:i" }}
+								</span>
+							</div>
+						</div>
+					<!-- user -->
+					{% else %}
+						<div class="d-flex justify-content-end mb-4">
+							<div class="d-flex flex-column pe-2">
+								<span>
+									{{ message.content }}
+								</span>
+								<span class="profile-label-text">
+									{{ message.create_on|date:"N d, H:i" }}
+								</span>
+							</div>
+							<div class="chat-image">
+								<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+							</div>
+						</div>
+					{% endif %}
+				{% endfor %}
+				
+			</div>
+
+			<!-- text box -->
+			<div>
+				<input type="text" placeholder="Type your message" style="width: 90%; background-color: #c4c4c4;" id="id_message_send_input">
+				<button class="btn btn-dark rounded" id="id_message_send_button">Send</button>
+			</div>
+
+		</div>
+
 	</div>
-	{% comment %} <p>{{ message.user.username }}: {{ message.content }} <small>---{{ message.create_on }}</small></p> {% endcomment %}
-	{% endfor %}
+
 </div>
-<br />
-<input type="text" id="id_message_send_input" />
-<button type="submit" id="id_message_send_button">Send Message</button>
 {% endblock %}
 
 {% block body-script %}
@@ -72,21 +207,46 @@
 		var messageInput = document.querySelector(
 			"#id_message_send_input"
 		).value;
+		if (document.querySelector("#id_message_send_input").value == "")
+			return;
 		chatSocket.send(JSON.stringify({ message: messageInput, username: "{{request.user.username}}", room_name: roomName}));
 		document.querySelector("#id_message_send_input").value = "";
 	};
 	chatSocket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
-		var div = document.createElement("div");
-		div.innerHTML = data.message;
 
+		var div_head = document.createElement("div");
+		
+		var img = document.createElement("img");
+		var div_image = document.createElement("div");
+		div_image.className = "chat-image";
+		img.setAttribute("src", "https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg");
+		img.className = "rounded-circle user_img";
+		div_image.appendChild(img);
+		
+		var div = document.createElement("div");
+		var span_text = document.createElement("span");
+		span_text.appendChild(document.createTextNode(data.message));
+		var span_img = document.createElement("span");
+		span_img.className = "profile-label-text";
+		span_img.appendChild(document.createTextNode(data.time));
+		div.appendChild(span_text);
+		div.appendChild(span_img);
+		
 		if (data.username === username) {
-			div.className = "own-message";
+			div_head.className = "d-flex justify-content-end mb-4";
+			div.className = "d-flex flex-column pe-2";
+			div_head.appendChild(div);
+			div_head.appendChild(div_image);
 		} else {
-			div.className = "other-message";
+			div_head.className = "d-flex justify-content-start mb-4";
+			div.className = "d-flex flex-column ps-2";
+			div_head.appendChild(div_image);
+			div_head.appendChild(div);
 		}
+
 		document.querySelector("#id_message_send_input").value = "";
-		document.querySelector("#id_chat_item_container").appendChild(div);
+		document.querySelector("#id_chat_item_container").appendChild(div_head);
 	};
 </script>
 {% endblock %}

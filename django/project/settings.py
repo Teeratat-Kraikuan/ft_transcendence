@@ -162,3 +162,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # Directory where uploaded media is
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login'
+
+USE_TZ = False
+TIME_ZONE = "Asia/Bangkok"

@@ -2,22 +2,96 @@
 {% load static %}
 {% block content %}
 
-<h1>Add friends</h1>
-	<ul class="all-user">
-		{% for user in allusers %}
-		{% if not user.is_superuser %}
-		{% if user not in request.user.friends.all and request.user != user %}
-		<h1>{{ user }} <a href="send_friend_request/{{user.id}}/">send friend request</a></h1>
-		{% endif %}
-		{% endif %}
-		{% endfor %}
-	</ul>
+<div class="container pt-3">
 
-	{% for friend_request in all_friend_requests %}
-	<h1>{{ friend_request.from_user }}
-		<a href="accept_friend_request/{{ friend_request.id }}/">accept friend request</a>
-	</h1>
-	{% endfor %}
+	<div class="row">
+		<!-- main content -->
+		<div class="col-md-9 px-4 py-4 mx-1 mt-2">
+			<!-- search -->
+			<div class="row pb-2">
+				<div class="col-md-4">
+					<form action="#">
+						<input type="text" placeholder="search" style="width: 80%; background-color: #c4c4c4;">
+						<button class="btn btn-outline-light" type="submit" style="border-radius: 15px;"><i class="bi bi-search"></i></button>
+					</form>
+				</div>
+			</div>
+			<div class="row">
+				<p class="mx-2" style="color: #ffffff; ">All Users</p>
 
+				<!-- friend request -->
+				{% for friend_request in all_friend_requests %}
+				<div class="col-xl-2 col-md-3 col-sm-3 mt-1 mx-2">
+					<div class="card" style="background-color: black; height: 180px; width: 140px;">
+						<img class="card-img image-bg-card " src="{% static '/wallpaper2.png' %}" alt="Card image">
+						<div class="card-img-overlay text-center pt-4">
+							<a href="{{ friend_request.from_user }}" style="text-decoration: none;"> 
+								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{% static 'profile_pic.png' %}">
+									<div class="profile-main-text mt-1">{{ friend_request.from_user }}</div>
+									<p style="color: #fff; font-size: 0.7rem;">full name</p>
+							</a>
+							<a a href="accept_friend_request/{{ friend_request.id }}/" class="btn btn-primary btn-sm mt-1" style="font-size: 0.7rem; box-shadow: 0 2px 5px 2px #00000042;">
+								<i class="bi bi-person-add"></i>
+								Accept
+							</a>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+				
+				<!-- all user -->
+				{% for user in allusers %}
+				{% if not user.is_superuser %}
+				{% if user not in request.user.friends.all and user != request.user %}
+				<div class="col-xl-2 col-md-3 col-sm-3 mt-1 mx-2">
+					<div class="card" style="background-color: black; height: 180px; width: 140px;">
+						<img class="card-img image-bg-card " src="{% static '/wallpaper2.png' %}" alt="Card image">
+						<div class="card-img-overlay text-center pt-4">
+							<a href="{{user}}" style="text-decoration: none;"> 
+								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{% static 'profile_pic.png' %}">
+								<div class="profile-main-text mt-1">{{user}}</div>
+								<p style="color: #fff; font-size: 0.7rem;">full name</p>
+							</a>
+							<a a href="send_friend_request/{{user.id}}/" class="btn btn-light btn-sm mt-1" style="font-size: 0.7rem; box-shadow: 0 2px 5px #00000042;">
+								<i class="bi bi-person-add"></i>
+								Add Friend
+							</a>
+						</div>
+					</div>
+				</div>
+				{% endif %}
+				{% endif %}
+				{% endfor %}
+
+			</div>
+		</div>
+
+		<!-- side friends -->
+		<div class="col content-friend mt-2 px-4 py-4" style="width: 250px; height: 90vh; color: white; margin-right: 2rem">
+			<div class="profile-main-text text-center">Friends</div>
+			<div class="profile-label-text mt-3">ONLINE - {{ online }}</div>
+			<ul>
+			{% for friend in request.user.friends.all %}
+			{% if friend.active %}
+			<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;"> 
+				<li>{{ friend.username }}</li>
+			</a>
+			{% endif %}
+			{% endfor %}
+			</ul>
+			<div class="profile-label-text">OFFLINE - {{ offline }}</div>
+			<ul>
+			{% for friend in request.user.friends.all %}
+			{% if not friend.active %}
+			<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;"> 
+				<li>{{ friend.username }}</li>
+			</a>
+			{% endif %}
+			{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+</div>
 
 {% endblock %}

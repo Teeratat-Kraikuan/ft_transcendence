@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .models import Room, Message
 
@@ -6,8 +7,8 @@ from .models import Room, Message
 @login_required
 def chat(request):
 	context = {}
-	rooms = Room.objects.all()
-	context['rooms'] = rooms
+	myChatRooms = Room.objects.filter(Q(user1=request.user) | Q(user2=request.user))
+	context['rooms'] = myChatRooms
 	return render(request, "chat.html", context)
 
 @login_required

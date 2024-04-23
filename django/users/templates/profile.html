@@ -2,17 +2,224 @@
 {% load static %}
 {% block content %}
 
-<div class="d-flex justify-content-center">
-	<div class="content-mid-logo">
-		<div class="d-flex justify-content-center">
-			<img class="mlogo" style="margin-top: 25px;"  src="{% static '42GAME.png' %}">
-			<h1>{{ profile.username }}</h1>
-		</div>
-		<a href="{% url 'game' %}">
-			<button type="button" class="btn btn-light mt-5" style="width: 100%;">Friend</button>
-		</a>
+<div class="container">
+	<div class="row justify-content-center">
+		<!-- all -->
+		<div class="col-md-10">
+			<div class="row justify-content-center mb-4">
+
+			<!-- bg -->
+			<div class="text-center" style="background-image: url('{% static '/wallpaper2.png' %}'); height: 200px;"></div>
+			<!-- top -->
+				<div class="row profile-solid rounded-bottom py-3">
+					<!-- profile pic -->
+					<div class="col-md-3 mt-1 text-center">
+						<img class="rounded-circle" style="max-width: 125px; margin-top: -60px; border: 5px solid #353535;"  src="{% static 'profile_pic.png' %}">
+					</div>
+					<!-- profile name -->
+					<div class="col-md-2 mt-1">
+						<div class="profile-main-text">
+							{{ profile.username }}<span class="profile-content-text">, Full name</span>
+						</div>
+						<div class="profile-label-text">Bio details</div>
+					</div>
+					<div class="col-md-2 mt-1">
+						<div class="profile-label-text">email</div>
+						<div class="profile-content-text">Email@Email</div>						
+					</div>
+					<div class="col-md-2 mt-1">
+						<div class="profile-label-text">intra</div>
+						<div class="profile-content-text">intra</div>						
+					</div>
+
+					<!-- Button -->
+					{% url 'profile' username=user.username as user_url %}
+					{% if request.path == user_url %}										
+					<div class="col-md-3" style="text-align: right;">
+						<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+							<i class="bi bi-pencil-fill"></i>
+							edit
+						</button>
+					</div>
+					{% else %}
+					<div class="col-md-3" style="text-align: right;">
+						<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+							<i class="bi bi-joystick"></i>
+							invite
+						</button>
+						<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+							<i class="bi bi-chat-left-fill"></i>
+							chat
+						</button>
+						<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+							<i class="bi bi-person-slash"></i>
+							unfriend
+						</button>
+					</div>
+					{% endif %}
+
+				</div>
+			</div>
+
+			<!-- 3 col -->
+			<div class="row">
+				<!-- match history -->
+				<div class="col-md-4 p-3 profile-solid rounded mt-4">
+					<div class="profile-main-text mb-4">Match History</div>
+					<div class="text-center">
+						<!-- match card -->
+						<div class="card-match rounded p-1 mb-2">
+							<div class="row">
+								<div class="col-sm-4 text-start">
+									<div class="profile-content-text">00-00-00</div>
+									<div class="profile-label-text">Game Type</div>
+								</div>
+								<div class="col-sm-8">
+									<div class="d-flex justify-content-around profile-content-text">
+										<p>name1</p>
+										<p class="win">0 - 0</p>
+										<p>name2</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-match rounded p-1 mb-2">
+							<div class="row">
+								<div class="col-sm-4 text-start">
+									<div class="profile-content-text">00-00-00</div>
+									<div class="profile-label-text">Game Type</div>
+								</div>
+								<div class="col-sm-8">
+									<div class="d-flex justify-content-around profile-content-text">
+										<p>name1</p>
+										<p class="loss">0 - 0</p>
+										<p>name2</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<!-- record -->
+				<div class="col-md-5 p-3 profile-solid rounded mt-4 mx-auto">
+					<div class="profile-main-text mb-4">Record</div>
+					<!-- content -->
+					<div class="row mb-4">
+						<div class="col-sm-6" id="bsb-chart-7"></div>
+						<div class="col-sm-6 my-2 profile-content-text" >
+							<div class="profile-main-text my-2" style="font-size: 0.9rem;">Win percentage 25%</div>
+							Gmaeplayed 4<br>
+							Win 1<br>
+							Draws 1<br>
+							Losses 2
+						</div>
+					</div>
+					<!-- progress bar -->
+					<div class="row mb-2">
+						<div class="col-6 profile-label-text text-start">Goals Conceded 0</div>
+						<div class="col-6 profile-label-text text-end">Goals Scored 0</div>
+					</div>
+					<div class="progress" style="border: 2px solid #b3b3b3;">
+						<div class="progress-bar bg-light" role="progressbar" style="width: 75%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+						<div class="progress-bar bg-dark" role="progressbar" style="width: 25%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
+					<div class="text-center profile-content-text my-3">Difference -5</div>
+
+				</div>
+
+				<!-- friends -->
+				<div class="col-md-2 p-3 profile-solid rounded mt-4">
+					<div class="profile-main-text mb-4">Friends</div>
+					<div class="profile-label-text">ONLINE - {{ online }}</div>
+					<ul>
+						{% for friend in request.user.friends.all %}
+						{% if friend.active %}
+						<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none;"> 
+							<li>{{ friend.username }}</li>
+						</a>
+						{% endif %}
+						{% endfor %}
+						</ul>
+						<div class="profile-label-text">OFFLINE - {{ offline }}</div>
+						<ul>
+						{% for friend in request.user.friends.all %}
+						{% if not friend.active %}
+						<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none;"> 
+							<li>{{ friend.username }}</li>
+						</a>
+						{% endif %}
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>		
 	</div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+	!function(){
+		var t={
+			21:function(){
+				!function(){
+					const t={
+						init(){
+							const t={
+								series:[25,25,50],
+								labels:["Win","Draws","Losses"],
+								chart:{
+									type:"donut",sparkline:{
+										enabled:!0
+									}
+								},
+								colors:[
+									"#cccccc",
+									"#555555",
+									"#111111"
+									// "var(--bs-info)",
+									// "var(--bs-warning)",
+									// "var(--bs-danger)"
+								],
+								plotOptions: {
+									pie: {
+										donut: {
+											size: "80"
+										}
+									}
+								},
+								tooltip:{y:{formatter(t){return t+"%"}}}
+							};
+							new ApexCharts(document.querySelector("#bsb-chart-7"),t).render()
+						}
+					};
+					function e(){t.init()}"loading"===document.readyState?document.addEventListener("DOMContentLoaded",e):e(),window.addEventListener("load",(function(){}),!1)
+				}()
+			}
+		},e={};
+		function n(r){
+			var o=e[r];if(void 0!==o)return o.exports;var a=e[r]={exports:{}};return t[r](a,a.exports,n),a.exports
+		}n.n=function(t){
+			var e=t&&t.__esModule?function(){
+				return t.default
+			}:function(){
+				return t
+			};
+			return n.d(e,{a:e}),e
+		},n.d=function(t,e){
+			for(var r in e)n.o(e,r)&&!n.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})
+		},n.o=function(t,e){
+			return Object.prototype.hasOwnProperty.call(t,e)
+		},function(){
+			"use strict";n(21)
+		}()
+	}();
+</script>
+
+<script>
+	var progress = document.getElementById("myProgress");
+	var progressValue = 0.8; // progress
+	progress.style.width = progressValue * 100 + "%";
+</script>
 
 {% endblock %}

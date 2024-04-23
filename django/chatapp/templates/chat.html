@@ -7,27 +7,112 @@
 	body {
 		color: white;
 	}
+	a {
+		text-decoration: none;
+	}
 </style>
 {% endblock %}
 
 {% block content %}
-<div>
-	<h1> Chatroom list </h1>
-</div>
-<div>
-	{% if rooms %}
-		{% for room in rooms %}
-			{% if room.user1 == request.user or room.user2 == request.user %}
-				<a href="{{room.slug}}">
-					{% if room.user1 == request.user %}
-						{{ room.user2 }}
-					{% else %}
-						{{ room.user1 }}
+
+<div class="container pt-3">
+
+	<div class="row">
+		<!-- friend chat -->
+		<div class="col content-friend px-4 py-4 mx-1 mt-2" style="height: 90vh;">
+			<div class="profile-main-text text-center mb-3">Chat</div>
+			<!-- friend chat -->
+			<div class="chat-h-body h-75">
+				<ui class="chat-contacts">
+					{% if rooms %}
+					{% for room in rooms %}
+						{% if room.user1 == request.user and room.user2.active %}
+							<a href="{{ room.slug }}">
+								<li class="chat-box">
+									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+										<div class="chat-image">
+											<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+											<span class="online_icon"></span>
+										</div>
+										<div class="px-2">
+											<span>{{room.user2.username}}</span><br>
+											<span class="profile-label-text">last text</span>
+										</div>
+										<div class="px-2 align-items-end ms-auto">
+											<p>00:00</p>
+										</div>
+									</div>
+								</li>
+							</a>
+						{% elif room.user2 == request.user and room.user1.active %}
+							<a href="{{ room.slug }}">
+								<li class="chat-box">
+									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+										<div class="chat-image">
+											<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+											<span class="online_icon"></span>
+										</div>
+										<div class="px-2">
+											<span>{{room.user1.username}}</span><br>
+											<span class="profile-label-text">last text</span>
+										</div>
+										<div class="px-2 align-items-end ms-auto">
+											<p>00:00</p>
+										</div>
+									</div>
+								</li>
+							</a>
+						{% endif %}
+					{% endfor %}
+					{% for room in rooms %}
+							{% if room.user1 == request.user and not room.user2.active %}
+								<a href="{{ room.slug }}">
+									<li class="chat-box">
+										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+											<div class="chat-image">
+												<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+												<span class="online_icon offline"></span>
+											</div>
+											<div class="px-2">
+												<span>{{room.user2.username}}</span><br>
+												<span class="profile-label-text">last text</span>
+											</div>
+											<div class="px-2 align-items-end ms-auto">
+												<p>00:00</p>
+											</div>
+										</div>
+									</li>
+								</a>	
+							{% elif room.user2 == request.user and not room.user1.active %}
+								<a href="{{ room.slug }}">
+									<li class="chat-box">
+										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+											<div class="chat-image">
+												<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+												<span class="online_icon offline"></span>
+											</div>
+											<div class="px-2">
+												<span>{{room.user1.username}}</span><br>
+												<span class="profile-label-text">last text</span>
+											</div>
+											<div class="px-2 align-items-end ms-auto">
+												<p>00:00</p>
+											</div>
+										</div>
+									</li>
+								</a>
+							{% endif %}
+					{% endfor %}
 					{% endif %}
-				</a>
-			{% endif %}
-		{% endfor %}
-	{% endif %}
+				</ui>
+			</div>
+		</div>
+
+		<!-- main -->
+		<div class="col-md-9 content-friend px-4 py-4 mx-1 mt-2 pb-5"></div>
+
+	</div>
+
 </div>
-{% block room-content %}{% endblock %}
+
 {% endblock %}
