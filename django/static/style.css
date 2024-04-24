@@ -152,7 +152,7 @@ body {
     box-shadow: 0 5px 10px #e6e6e663;
 }
 
-form input{
+.input-box{
     width: 80%;
     padding: 6px;
     background:  #4d4d4d;
@@ -184,7 +184,7 @@ form input{
 .chat-h-body{
     padding:  0.75rem 0 !important;
     overflow-y: auto;
-    white-space: nowrap;
+    /* white-space: nowrap; */
 }
 
 .chat-contacts{
