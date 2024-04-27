@@ -30,7 +30,7 @@
 <div class="container">
 	<div class="row justify-content-center">
 		<!-- all -->
-		<div class="col-md-10">
+		<div class="col-md-11">
 			<div class="row justify-content-center mb-4">
 
 			<!-- bg -->
@@ -93,7 +93,7 @@
 				<!-- match history -->
 				<div class="col-md-4 p-3 profile-solid rounded mt-4">
 					<div class="profile-main-text mb-4">Match History</div>
-					<div class="text-center">
+					<div class="text-center px-2" style="overflow-y: auto">
 						<!-- match card -->
 						<div class="card-match rounded p-1 mb-2">
 							<div class="row">
@@ -158,46 +158,48 @@
 				<!-- friends -->
 				<div class="col-md-2 p-3 profile-solid rounded mt-4">
 					<div class="profile-main-text mb-4">Friends</div>
-					<div class="profile-label-text">ONLINE - {{ online }}</div>
-					<ul class="chat-contacts">
-						{% for friend in request.user.friends.all %}
-						{% if friend.active %}
-						<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
-							<li style="margin-bottom: 0px;">
-								<div class="d-flex align-items-center profile-content-text py-1">
-									<div class="chat-image">
-										<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
-										<span class="online_icon"></span>
-									</div>
-									<div class="px-2">
-										{{ friend.username }}
-									</div>
-								</div>
-							</li>
-						</a>
-						{% endif %}
-						{% endfor %}
-						</ul>
-						<div class="profile-label-text">OFFLINE - {{ offline }}</div>
+					<div style="overflow-y: auto">
+						<div class="profile-label-text">ONLINE - {{ online }}</div>
 						<ul class="chat-contacts">
-						{% for friend in request.user.friends.all %}
-						{% if not friend.active %}
-						<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
-							<li style="margin-bottom: 0px;">
-								<div class="d-flex align-items-center profile-content-text py-1">
-									<div class="chat-image">
-										<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
-										<span class="online_icon offline"></span>
+							{% for friend in request.user.friends.all %}
+							{% if friend.active %}
+							<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+								<li style="margin-bottom: 0px;">
+									<div class="d-flex align-items-center profile-content-text py-1">
+										<div class="chat-image">
+											<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+											<span class="online_icon"></span>
+										</div>
+										<div class="px-2">
+											{{ friend.username }}
+										</div>
 									</div>
-									<div class="px-2">
-										{{ friend.username }}
+								</li>
+							</a>
+							{% endif %}
+							{% endfor %}
+							</ul>
+							<div class="profile-label-text">OFFLINE - {{ offline }}</div>
+							<ul class="chat-contacts">
+							{% for friend in request.user.friends.all %}
+							{% if not friend.active %}
+							<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+								<li style="margin-bottom: 0px;">
+									<div class="d-flex align-items-center profile-content-text py-1">
+										<div class="chat-image">
+											<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+											<span class="online_icon offline"></span>
+										</div>
+										<div class="px-2">
+											{{ friend.username }}
+										</div>
 									</div>
-								</div>
-							</li>
-						</a>
-						{% endif %}
-						{% endfor %}
+								</li>
+							</a>
+							{% endif %}
+							{% endfor %}
 						</ul>
+					</div>
 				</div>
 			</div>
 		</div>		
