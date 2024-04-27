@@ -2,6 +2,31 @@
 {% load static %}
 {% block content %}
 
+<div class="justify-content-center edit-menu" id="popUp">
+	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
+		<div class="d-flex row content-solid card-main mx-2" style="width:  30%;">
+			<div class="card-topic">Edit</div>
+			<form action="#" class="mt-2 px-5">
+				<textarea type="text" placeholder="bio"></textarea>	
+
+				<div class=" mt-4 px-5">
+					<label for="formProfilePic" class="form-label">Profile picture</label>
+					<input class="form-control form-control-sm text-center" id="formProfilePic" type="file">
+	
+					<label for="formBgPic" class="form-label pt-3">Background picture</label>
+					<input class="form-control form-control-sm text-center" id="formBgPic" type="file">
+				</div>
+			</form>
+			<a href="javascript:void(0);" onclick="doneEdit();">
+				<button type="button" class="btn btn-light mt-5" style="width: 35%; font-size: 1rem;">
+					Done
+				</button>
+			</a>
+		</div>
+		
+	</div>
+</div>
+
 <div class="container">
 	<div class="row justify-content-center">
 		<!-- all -->
@@ -36,10 +61,12 @@
 					{% url 'profile' username=user.username as user_url %}
 					{% if request.path == user_url %}										
 					<div class="col-md-3" style="text-align: right;">
-						<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
-							<i class="bi bi-pencil-fill"></i>
-							edit
-						</button>
+						<a href="javascript:void(0);" onclick="showEdit();">
+							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+								<i class="bi bi-pencil-fill"></i>
+								edit
+							</button>
+						</a>
 					</div>
 					{% else %}
 					<div class="col-md-3" style="text-align: right;">
@@ -132,25 +159,45 @@
 				<div class="col-md-2 p-3 profile-solid rounded mt-4">
 					<div class="profile-main-text mb-4">Friends</div>
 					<div class="profile-label-text">ONLINE - {{ online }}</div>
-					<ul>
+					<ul class="chat-contacts">
 						{% for friend in request.user.friends.all %}
 						{% if friend.active %}
-						<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none;"> 
-							<li>{{ friend.username }}</li>
+						<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+							<li style="margin-bottom: 0px;">
+								<div class="d-flex align-items-center profile-content-text py-1">
+									<div class="chat-image">
+										<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+										<span class="online_icon"></span>
+									</div>
+									<div class="px-2">
+										{{ friend.username }}
+									</div>
+								</div>
+							</li>
 						</a>
 						{% endif %}
 						{% endfor %}
 						</ul>
 						<div class="profile-label-text">OFFLINE - {{ offline }}</div>
-						<ul>
+						<ul class="chat-contacts">
 						{% for friend in request.user.friends.all %}
 						{% if not friend.active %}
-						<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none;"> 
-							<li>{{ friend.username }}</li>
+						<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+							<li style="margin-bottom: 0px;">
+								<div class="d-flex align-items-center profile-content-text py-1">
+									<div class="chat-image">
+										<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+										<span class="online_icon offline"></span>
+									</div>
+									<div class="px-2">
+										{{ friend.username }}
+									</div>
+								</div>
+							</li>
 						</a>
 						{% endif %}
 						{% endfor %}
-					</ul>
+						</ul>
 				</div>
 			</div>
 		</div>		
@@ -220,6 +267,15 @@
 	var progress = document.getElementById("myProgress");
 	var progressValue = 0.8; // progress
 	progress.style.width = progressValue * 100 + "%";
+</script>
+
+<script>
+	function showEdit() {
+		document.getElementById("popUp").style.display = 'block';
+	}
+	function doneEdit() {
+		document.getElementById("popUp").style.display = 'none';
+	}
 </script>
 
 {% endblock %}

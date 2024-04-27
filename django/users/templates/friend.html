@@ -70,21 +70,41 @@
 		<div class="col content-friend mt-2 px-4 py-4" style="width: 250px; height: 90vh; color: white; margin-right: 2rem">
 			<div class="profile-main-text text-center">Friends</div>
 			<div class="profile-label-text mt-3">ONLINE - {{ online }}</div>
-			<ul>
+			<ul class="chat-contacts">
 			{% for friend in request.user.friends.all %}
 			{% if friend.active %}
-			<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;"> 
-				<li>{{ friend.username }}</li>
+			<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+				<li style="margin-bottom: 0px;">
+					<div class="d-flex align-items-center profile-content-text py-1">
+						<div class="chat-image">
+							<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+							<span class="online_icon"></span>
+						</div>
+						<div class="px-2">
+							{{ friend.username }}
+						</div>
+					</div>
+				</li>
 			</a>
 			{% endif %}
 			{% endfor %}
 			</ul>
 			<div class="profile-label-text">OFFLINE - {{ offline }}</div>
-			<ul>
+			<ul class="chat-contacts">
 			{% for friend in request.user.friends.all %}
 			{% if not friend.active %}
-			<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;"> 
-				<li>{{ friend.username }}</li>
+			<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+				<li style="margin-bottom: 0px;">
+					<div class="d-flex align-items-center profile-content-text py-1">
+						<div class="chat-image">
+							<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+							<span class="online_icon offline"></span>
+						</div>
+						<div class="px-2">
+							{{ friend.username }}
+						</div>
+					</div>
+				</li>
 			</a>
 			{% endif %}
 			{% endfor %}

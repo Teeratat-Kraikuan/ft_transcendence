@@ -44,15 +44,17 @@
 				<input class="input-box" type="password" placeholder="Confirm password" name="repeat_password" required>
 				<button type="submit" name="submit" value="sign-up" class="btn btn-light" style="width: 80%; font-size: 0.8rem;">Sign up</button>
 			</form>
-			{% for message in messages %}
-				{% if "sign-up" in message.tags %}
-					{% if "success" in message.tags %}
-						<p style="color:green">{{message}}</p>
-					{% elif "error" in message.tags %}
-						<p style="color:red">{{message}}</p>
+			<div class="text-center">
+				{% for message in messages %}
+					{% if "sign-up" in message.tags %}
+						{% if "success" in message.tags %}
+							<p class="profile-content-text pt-2" style="color:white">! {{message}} !</p>
+						{% elif "error" in message.tags %}
+							<p class="profile-content-text pt-2" style="color:white">! {{message}} !</p>
+						{% endif %}
 					{% endif %}
-				{% endif %}
-			{% endfor %}
+				{% endfor %}
+			</div>
 		</div>
 	</div>
 </div>
