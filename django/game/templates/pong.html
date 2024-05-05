@@ -20,10 +20,48 @@
 
 {% block content %}
 <div id="gameStatus">
-	<h1>{{ room_code }}</h1>
-	<p>{{ username }}<small style="font-size: small">(you)</small> Score: <span id="userScore">0</span></p>
-	<p><span id="opponentName">opponent</span> Score: <span id="opponentScore">0</span></p>
-	<button onclick="increaseScore()">Click</button>
+
+	<!-- Room Code -->
+	<div class="wrapper justify-content-center">
+		<div class="content-solid rounded mt-4 px-2 py-2 wrapper justify-content-center" style="width: 60vw;">
+			<div>
+				<small> Game Pin :</small>
+				<h1 class="display-2 fw-bolder">{{ room_code }}</h1>
+			</div>
+		</div>
+	</div>
+	<!-- Waiting -->
+	<div class="wrapper justify-content-center row" style="text-align: center;">
+		<div style="width: 30vw;">
+			<div class="wrapper justify-content-between" style="margin-top: 25vh; margin-bottom: 10vh;">
+				<h2 class="wrapper">
+					<div class="chat-image mx-2">
+						<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+					</div>
+					{{ username }}
+				</h2>
+				<h1 class="fw-bolder">VS</h1>
+				<h2 class="wrapper">
+					<div class="chat-image mx-2">
+						<img src="https://static.displate.com/280x392/displate/2023-02-24/fcd5dd8ccf8d7a90a8040f55dc916125_7aae96bbc41922030f842aee835b0f5a.jpg" class="rounded-circle user_img">
+					</div>
+					<h2 id="opponentName">???</h2>
+				</h2>
+			</div>
+			<p class="mt-2">Waiting . . .</p>
+			<a style="text-decoration: none; color: black;" href="#">
+				<button type="button" class="btn btn-light card-x-btn mb-4">
+					cancel
+				</button>
+			</a>
+		</div>
+	</div>
+
+
+		<!-- <h1>{{ room_code }}</h1>
+		<p>{{ username }}<small style="font-size: small">(you)</small> Score: <span id="userScore">0</span></p>
+		<p><span id="opponentName">opponent</span> Score: <span id="opponentScore">0</span></p>
+		<button onclick="increaseScore()">Click</button> -->
 </div>
 {% endblock %}
 
