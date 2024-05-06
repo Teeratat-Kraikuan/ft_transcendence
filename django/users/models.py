@@ -12,7 +12,7 @@ class CustomUser(AbstractUser):
 	draws = models.IntegerField(default=0)
 	is_student = models.BooleanField(default=False)
 	friends = models.ManyToManyField('self', blank=True)
-	active = models.BooleanField(default=False)
+	active = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.username

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from .models import Room, Message
 
 # Create your views here.
@@ -8,7 +9,10 @@ from .models import Room, Message
 def chat(request):
 	context = {}
 	myChatRooms = Room.objects.filter(Q(user1=request.user) | Q(user2=request.user))
+	friends = request.user.friends.all()
 	context['rooms'] = myChatRooms
+	context['friends'] = friends
+	print(type(friends))
 	return render(request, "chat.html", context)
 
 @login_required
