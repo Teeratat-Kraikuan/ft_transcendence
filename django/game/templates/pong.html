@@ -23,13 +23,13 @@
 <div class="justify-content-center popup-menu" id="popUp">
 	<div class="wrapper justify-content-center" style="margin-top: 30vh; margin-left: 100px;">
 		<div class="d-flex row content-solid card-main mx-2 pt-5" style="width:  30%;">
-			<h1>YOU WIN!!</h1>
+			<h1 id="popUpStatus"></h1>
 			<div class="wrapper justify-content-center">
-				<h4 id="userScore">0</h4>
+				<h4 id="userScorePopUp">0</h4>
 				<h4> : </h4>
-				<h4 id="opponentScore">0</h4>
+				<h4 id="opponentScorePopUp">0</h4>
 			</div>
-			<a href="javascript:void(0);" onclick="donePopUp();">
+			<a href="/game" onclick="donePopUp();">
 				<button type="button" class="btn btn-light mt-3" style="width: 35%; font-size: 1rem;">
 					Done
 				</button>
@@ -66,7 +66,7 @@
 						<div class="chat-image mx-2">
 							<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
 						</div>
-						<div id="opponentName">???</div>
+						<div>???</div>
 					</h2>
 				</div>
 				<p class="mt-2">Waiting . . .</p>
@@ -93,7 +93,7 @@
 				<div class="wrapper align-items-center">
 					<h3>{{ username }}</h3>
 					<h2 class="fw-bolde mx-3">VS</h2>
-					<h3><div id="opponentName">???</div></h3>
+					<h3 id="opponentNameTop">???</h3>
 				</div>
 	
 			</div>
@@ -127,7 +127,7 @@
 				<div class="user-image">
 					<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
 				</div>
-				<h4><div id="opponentName">???</div></h4>
+				<h4 id="opponentName">???</h4>
 				<h1 class="mt-5" id="opponentScore">0</h1>
 			</div>
 		</div>
@@ -162,10 +162,14 @@
 	pongSocket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
 		if (userScore < 10 && opponentScore < 10 && data.exit)
-			document.getElementById("gameStatus").innerHTML = "<h1>Your opponent LEAVE GAME!!</h1>";
+			opponentLeave();
 		else if (!data.exit && data.username != username) {
-			document.getElementById("opponentName").textContent = data.username;
+			document.getElementById("opponentNameTop").innerHTML = data.username;
+			document.getElementById("opponentName").innerHTML = data.username;
+			document.getElementById("opponentScorePopUp").innerHTML = data.score;
 			document.getElementById("opponentScore").innerHTML = data.score;
+			document.getElementById("waiting-content").style.display = 'none';
+			document.getElementById("game-content").style.display = 'block';
 			opponentScore = data.score;
 			changeScale();
 			if (data.start_point)
@@ -183,23 +187,28 @@
 	function increaseScore() {
 		userScore++;
 		document.getElementById("userScore").innerHTML = userScore;
+		document.getElementById("userScorePopUp").innerHTML = userScore;
 		changeScale();
 		pongSocket.send(JSON.stringify({ score: userScore, start_point: false }));
 	}
 	function checkWinLose() {
 		const gameStatus = document.getElementById("gameStatus");
 		if (userScore >= 10) {
-			showPopUp()
-			// gameStatus.innerHTML = "<h1>You Win!</h1>"
+			showPopUp("YOU WIN!!")
 		} else if (opponentScore >= 10) {
-			// gameStatus.innerHTML = "<h1>You Lose!</h1>"
+			showPopUp("YOU LOSE!!")
 		}
 	}
-	function showPopUp() {
+	function showPopUp(str) {
 		document.getElementById("popUp").style.display = 'block';
+		document.getElementById("popUpStatus").innerHTML = str;
 	}
 	function donePopUp() {
 		document.getElementById("popUp").style.display = 'none';
+	}
+	function opponentLeave() {
+		document.getElementById("gameStatus").innerHTML = "<h1>Your opponent LEAVE GAME!!</h1>";
+		document.getElementById("gameStatus").style = 'text-align: center; margin-top: 40vh;';
 	}
 
 </script>
