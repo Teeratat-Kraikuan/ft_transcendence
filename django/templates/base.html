@@ -36,6 +36,10 @@
 			{% block content %}{% endblock %}
 		</div>
 	</div>
+	{% if request.user.is_authenticated %}
+		<script src="{% static 'js/online_status.js' %}"></script>
+	{% endif %}
 	{% block body-script %}{% endblock %}
 </body>
+
 </html>
