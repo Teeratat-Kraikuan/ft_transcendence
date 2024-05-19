@@ -14,10 +14,10 @@ load_dotenv()
 # Create your views here.
 def profile(request, username):
 	context = {}
-	context['online'] = len(request.user.friends.filter(active=True))
-	context['offline'] = len(request.user.friends.filter(active=False))
 	try:
 		profile = CustomUser.objects.get(username=username)
+		context['online'] = len(profile.friends.filter(active=True))
+		context['offline'] = len(profile.friends.filter(active=False))
 		context["profile"] = profile
 	except:
 		messages.error(request, 'user not found')

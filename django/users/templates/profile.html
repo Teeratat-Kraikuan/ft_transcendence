@@ -161,9 +161,9 @@
 					<div style="overflow-y: auto">
 						<div class="profile-label-text">ONLINE - {{ online }}</div>
 						<ul class="chat-contacts">
-							{% for friend in request.user.friends.all %}
+							{% for friend in profile.friends.all %}
 							{% if friend.active %}
-							<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+							<a href="../{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
@@ -181,9 +181,9 @@
 							</ul>
 							<div class="profile-label-text">OFFLINE - {{ offline }}</div>
 							<ul class="chat-contacts">
-							{% for friend in request.user.friends.all %}
+							{% for friend in profile.friends.all %}
 							{% if not friend.active %}
-							<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+							<a href="../{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
