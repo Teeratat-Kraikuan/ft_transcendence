@@ -25,6 +25,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "score": 0,
 				"start_point": False,
 				"exit": True,
+				"moving": "no",
+				"ball": False,
+				"ballX": 0,
+				"ballY": 0,
             }
         )
 		await self.channel_layer.group_discard(
@@ -36,6 +40,13 @@ class PongConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		score = text_data_json["score"]
 		start_point = text_data_json["start_point"]
+		moving = text_data_json["moving"]
+		ball = text_data_json["ball"]
+		ballX = 0
+		ballY = 0
+		if (ball):
+			ballX = text_data_json["ballX"]
+			ballY = text_data_json["ballY"]
 
 		await self.channel_layer.group_send(
             self.roomGroupName, {
@@ -44,6 +55,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "score": score,
 				"start_point": start_point,
 				"exit": False,
+				"moving": moving,
+				"ball": ball,
+				"ballX": ballX,
+				"ballY": ballY,
             }
         )
 
@@ -51,8 +66,17 @@ class PongConsumer(AsyncWebsocketConsumer):
 		username = event['username']
 		score = event['score']
 		start_point = event['start_point']
+		moving = event['moving']
 		is_exit = True if event['exit'] else False
-		await self.send(text_data = json.dumps({"username": username, "score": score, "start_point": start_point, "exit": is_exit}))
+		ball = event['ball']
+		ballX = event['ballX']
+		ballY = event['ballY']
+		await self.send(text_data = json.dumps({"username": username,
+										  		"score": score,
+												"start_point": start_point,
+												"exit": is_exit,
+												"moving": moving,
+												"ball": ball, "ballX": ballX, "ballY": ballY}))
 
 	@sync_to_async
 	def delete_room(self):

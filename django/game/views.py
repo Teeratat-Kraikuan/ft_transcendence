@@ -27,6 +27,7 @@ def pong(request):
 				while not created:
 					room_code = str(random.randint(111111,999999))
 					pong_room, created = PongGame.objects.get_or_create(room_code=room_code, player1=username)
+				context['playerNo'] = 1
 				context['room_code'] = room_code
 				return render(request, "pong.html", context)
 			elif request.POST.get('type') == 'join':
@@ -38,6 +39,7 @@ def pong(request):
 						return redirect('game')
 					pong_room.player2 = username
 					pong_room.save()
+					context['playerNo'] = 2
 					context['room_code'] = room_code
 					return render(request, "pong.html", context)
 				except:
