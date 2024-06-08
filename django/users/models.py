@@ -4,8 +4,8 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class CustomUser(AbstractUser):
 	username = models.CharField(max_length=150, unique=True)
-	profile_image = models.ImageField(default='profile-pic.png', upload_to='profile_pics')
-	banner_image = models.ImageField(default='Background.png', upload_to='banner_pics')
+	profile_image = models.ImageField(default='default_profile_image.png', upload_to='profile_pics')
+	banner_image = models.ImageField(default='default_banner_image.png', upload_to='banner_pics')
 	description = models.TextField('Description', max_length=600, default="I am the winner")
 	wins = models.IntegerField(default=0)
 	loses = models.IntegerField(default=0)

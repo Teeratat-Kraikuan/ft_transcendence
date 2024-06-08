@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div id="gameStatus" style="z-index: 2; color: white;">
+
+	
+	<!-- Head -->
+
+	<div class="wrapper justify-content-center">
+		<div class="content-solid rounded mt-4 p-3 wrapper justify-content-center" style="width: 60vw;">
+			<div class="display-2 fw-bolder">{{ num_players }}P</div>
+			<div class="p-2">
+				<div class="fw-bolder" style="font-size: 2.2rem; margin-bottom: -0.8rem;">Tournament</div>
+				<small> Round Robin </small>
+			</div>
+		</div>
+	</div>
+
+	<!-- Body -->
+
+	<div class="wrapper justify-content-center row" style="text-align: center;">
+
+		<div class="row justify-content-center" style="margin-bottom: 10vh;">
+			{% if num_players ==  '4' %}
+				<div style="height: 20vh;"></div>
+			{% else %}
+			<div style="height: 10vh;"></div>
+			{% endif %}
+			<div class="row" style="width: 60vw;">
+				<!-- user -->
+				<div class="col-3 mt-5 wrapper justify-content-center">
+					<div class="chat-image mx-2">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					</div>
+					<h2>{{ username }}</h2>
+				</div>
+
+				<!-- dummy -->
+
+				<!-- for player in players -->
+				<div class="col-3 mt-5 wrapper justify-content-center">
+					<div class="chat-image mx-2">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					</div>
+					<h2 id="opponentName">???</h2>
+				</div>
+				
+				<div class="col-3 mt-5 wrapper justify-content-center">
+					<div class="chat-image mx-2">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					</div>
+					<h2 id="opponentName">???</h2>
+				</div>
+				
+				<div class="col-3 mt-5 wrapper justify-content-center">
+					<div class="chat-image mx-2">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					</div>
+					<h2 id="opponentName">???</h2>
+				</div>
+
+				<!-- <div class="col-3 mt-5 wrapper justify-content-center">
+					<div class="chat-image mx-2">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					</div>
+					<h2 id="opponentName">???</h2>
+				</div>
+				
+				<div class="col-3 mt-5 wrapper justify-content-center">
+					<div class="chat-image mx-2">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					</div>
+					<h2 id="opponentName">???</h2>
+				</div>
+				
+				<div class="col-3 mt-5 wrapper justify-content-center">
+					<div class="chat-image mx-2">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					</div>
+					<h2 id="opponentName">???</h2>
+				</div>
+				
+				<div class="col-3 mt-5 wrapper justify-content-center">
+					<div class="chat-image mx-2">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					</div>
+					<h2 id="opponentName">???</h2>
+				</div> -->
+
+			</div>
+		</div>
+	
+	
+		<div id="waiting-start" style="width: 30vw; display: block;">
+			<p class="mt-2">Waiting . . .</p>
+			<a style="text-decoration: none; color: black;" href="/game/tournament">
+				<button type="button" class="btn btn-light card-x-btn mb-4">
+					cancel
+				</button>
+			</a>
+		</div>
+
+	</div>
+
+</div>
+{% endblock %}
+
+{% block body-script %}
+<script>
+	let userScore = parseInt(document.getElementById("userScore").textContent);
+	let opponentScore = parseInt(document.getElementById("opponentScore").textContent);
+	const roomCode = "{{ num_players }}";
+	const username = "{{ username }}";
+	const playerNo = "player1";
+	const pongSocket = new WebSocket("ws://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
+
+	pongSocket.onopen = function (e) {
+		console.log("The connection was setup successfully !");
+		// Send message requesting username of other player
+		pongSocket.send(JSON.stringify({ score: 0, start_point: true }));
+	};
+	pongSocket.onclose = function (e) {
+		console.log("Something unexpected happened !");
+	};
+	pongSocket.error = function (e) {
+		console.log("error !");
+	};
+	pongSocket.onmessage = function (e) {
+		const data = JSON.parse(e.data);
+		if (userScore < 10 && opponentScore < 10 && data.exit)
+			opponentLeave();
+		else if (!data.exit && data.username != username) {
+			document.getElementById("opponentNameTop").innerHTML = data.username;
+			document.getElementById("opponentName").innerHTML = data.username;
+			document.getElementById("opponentScorePopUp").innerHTML = data.score;
+			document.getElementById("opponentScore").innerHTML = data.score;
+			document.getElementById("waiting-content").style.display = 'none';
+			document.getElementById("game-content").style.display = 'block';
+			opponentScore = data.score;
+			changeScale();
+			if (data.start_point)
+				pongSocket.send(JSON.stringify({ score: 0, start_point: false }));
+		}
+		checkWinLose();
+	};
+	
+	function changeScale() {
+		document.getElementById("opponentScale").style.width = opponentScore * 5 + "%";
+		document.getElementById("userScale").style.width = userScore * 5 + "%";
+		document.getElementById("blankScale").style.width = (20 - userScore - opponentScore) * 5 + "%";
+	}
+	function increaseScore() {
+		userScore++;
+		document.getElementById("userScore").innerHTML = userScore;
+		document.getElementById("userScorePopUp").innerHTML = userScore;
+		changeScale();
+		pongSocket.send(JSON.stringify({ score: userScore, start_point: false }));
+	}
+	function checkWinLose() {
+		const gameStatus = document.getElementById("gameStatus");
+		if (userScore >= 10) {
+			showPopUp("YOU WIN!!")
+		} else if (opponentScore >= 10) {
+			showPopUp("YOU LOSE!!")
+		}
+	}
+	function showPopUp(str) {
+		document.getElementById("popUp").style.display = 'block';
+		document.getElementById("popUpStatus").innerHTML = str;
+	}
+	function donePopUp() {
+		document.getElementById("popUp").style.display = 'none';
+	}
+	function opponentLeave() {
+		document.getElementById("gameStatus").innerHTML = "<h1>Your opponent LEAVE GAME!!</h1>";
+		document.getElementById("gameStatus").style = 'text-align: center; margin-top: 40vh;';
+	}
+
+</script>
+
+{% endblock %}s

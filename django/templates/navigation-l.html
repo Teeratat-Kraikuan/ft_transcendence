@@ -3,7 +3,7 @@
 {% url 'profile' username=user.username as user_url %}
 <li class="nav-item nav-btn mx-auto {% if request.path == user_url %}active{% endif %}">
     <a class="nav-link nav-btn" href="{% url 'profile' username=user.username %}">
-        <img style="max-width: 40px; border-radius: 100%;"  src="{% static 'profile_pic.png' %}">
+        <img style="max-width: 40px; border-radius: 100%;"  src="{% static user.profile_image %}">
         <br><span>{{ user.username }}</span>
     </a>
 </li>

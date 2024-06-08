@@ -51,5 +51,37 @@ def tournament(request):
 		return redirect('login')
 	return render(request, 'tournament.html')
 
+@login_required
+def tournament_waiting(request): # Waiting room
+	if not request.user.is_authenticated:
+		return redirect('login')
+	if request.method != 'POST':
+		return render(request, 'tournament.html')
+	context = {}
+	context['num_players'] = request.POST.get('num_players')
+	context['username'] = request.POST.get('aka') or request.user.username
+	return render(request, 'tournament_waiting.html', context) 
+	# return render(request, 'tournament_waiting.html', context) # original
+
+@login_required
+def tournament_pong(request): # Pong Game
+	if not request.user.is_authenticated:
+		return redirect('login')
+	return render(request, 'tournament_pong.html')
+
+@login_required
+def tournament_game(request): # Waiting in game
+	if not request.user.is_authenticated:
+		return redirect('login')
+	return render(request, 'tournament_pong.html')
+
 def queue(request):
 	pass
+
+def round_robin_concurrent(num_players):
+  pairings = []
+  for i in range(num_players):
+    partner = (i + num_players // 2) % num_players
+    pairings.append([i, partner])
+
+  return pairings
