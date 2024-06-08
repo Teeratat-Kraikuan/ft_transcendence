@@ -29,6 +29,7 @@ def profile(request, username):
 @login_required
 def friend(request):
 	context = {}
+	# all_friend_requests = FriendRequest.objects.filter(to_user=request.user)
 	from_user_ids = FriendRequest.objects.filter(to_user=request.user).values_list('from_user_id', flat=True)
 	allusers = CustomUser.objects.all().exclude(id__in=from_user_ids)
 	all_friend_requests = CustomUser.objects.all().filter(id__in=from_user_ids)
