@@ -108,10 +108,7 @@ class Oauth42:
             'code': code,
             'redirect_uri': 'http://localhost:8000/users/callback'
         }
-		print(os.getenv('CLIENT_ID'))
-		print(os.getenv('CLIENT_SECRET'))
 		response = requests.post(url, data=data)
-		print(response.status_code)
 		if response.status_code == 200:
 			token_data = response.json()
 			return token_data.get('access_token')

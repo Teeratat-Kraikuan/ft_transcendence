@@ -5,14 +5,8 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update -y && apt-get upgrade -y
 
 RUN pip install --upgrade pip
-RUN pip install django \
-				psycopg2 \
-				python-dotenv \
-				requests \
-				daphne \
-				channels \
-				channels_postgres \
-				Pillow
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
 COPY ./django /home/django/ft_transcendence
 
@@ -22,4 +16,4 @@ COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
-CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
+# CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]

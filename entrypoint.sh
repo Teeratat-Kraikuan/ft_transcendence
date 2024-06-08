@@ -9,7 +9,11 @@ if [ -d "/home/django/ft_transcendence" ]
 then
 	python /home/django/ft_transcendence/manage.py makemigrations
 	python /home/django/ft_transcendence/manage.py migrate
-	python /home/django/ft_transcendence/manage.py runserver 0.0.0.0:8000
+	python manage.py collectstatic
+	# python /home/django/ft_transcendence/manage.py runserver 0.0.0.0:8000
+	# python /home/django/ft_transcendence/manage.py runserver_plus --cert-file /home/django/ft_transcendence/https/cert.pem --key-file /home/django/ft_transcendence/https/key.pem 0.0.0.0:8000
+	# daphne -b 0.0.0.0 -p 8000 project.asgi:application
+	daphne -e ssl:8000:privateKey=/home/django/ft_transcendence/https/key.pem:certKey=/home/django/ft_transcendence/https/cert.pem project.asgi:application
 fi
 
 exec "$@"

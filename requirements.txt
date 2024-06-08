@@ -1,0 +1,12 @@
+django
+psycopg2
+python-dotenv
+requests
+daphne
+channels
+channels_postgres
+Pillow
+werkzeug
+django-extensions
+pyOpenSSL
+whitenoise

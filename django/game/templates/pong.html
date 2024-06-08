@@ -153,7 +153,7 @@
 	const roomCode = "{{ room_code }}";
 	const username = "{{ username }}";
 	const playerNo = "{{ playerNo }}";
-	const pongSocket = new WebSocket("ws://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
+	const pongSocket = new WebSocket("wss://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
 
 	pongSocket.onopen = function (e) {
 		if (playerNo == 1) {
