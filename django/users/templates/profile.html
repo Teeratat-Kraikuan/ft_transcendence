@@ -34,28 +34,28 @@
 			<div class="row justify-content-center mb-4">
 
 			<!-- bg -->
-			<div class="text-center" style="background-image: url('{% static banner_image %}'); background-size: cover; height: 200px;"></div>
+			<div class="text-center" style="background-image: url('{% static profile.banner_image %}'); background-size: cover; height: 200px;"></div>
 			<!-- top -->
 				<div class="row profile-solid rounded-bottom py-3">
 					<!-- profile pic -->
 					<div class="col-md-3 mt-1 text-center">
-						<img class="rounded-circle" style="max-width: 125px; margin-top: -60px; border: 5px solid #353535;"  src='{% static profile_image %}'>
+						<img class="rounded-circle" style="max-width: 125px; margin-top: -60px; border: 5px solid #353535;"  src='{% static profile.profile_image %}'>
 					</div>
 					<!-- profile name -->
-					<div class="col-md-2 mt-1">
+					<div class="col-md-6 mt-1">
 						<div class="profile-main-text">
 							{{ profile.username }}
 						</div>
-						<div class="profile-label-text">Bio details</div>
+						<div class="profile-label-text">{{profile.description}}</div>
 					</div>
-					<div class="col-md-2 mt-1">
+					<!-- <div class="col-md-2 mt-1">
 						<div class="profile-label-text">email</div>
 						<div class="profile-content-text">Email@Email</div>						
 					</div>
 					<div class="col-md-2 mt-1">
 						<div class="profile-label-text">intra</div>
 						<div class="profile-content-text">intra</div>						
-					</div>
+					</div> -->
 
 					<!-- Button -->
 					{% url 'profile' username=user.username as user_url %}
@@ -161,13 +161,13 @@
 					<div style="overflow-y: auto">
 						<div class="profile-label-text">ONLINE - {{ online }}</div>
 						<ul class="chat-contacts">
-							{% for friend in request.user.friends.all %}
+							{% for friend in profile.friends.all %}
 							{% if friend.active %}
 							<a href="../{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
-											<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+											<img src="{% static friend.profile_image %}" class="rounded-circle user_img">
 											<span class="online_icon"></span>
 										</div>
 										<div class="px-2">
@@ -181,13 +181,13 @@
 							</ul>
 							<div class="profile-label-text">OFFLINE - {{ offline }}</div>
 							<ul class="chat-contacts">
-							{% for friend in request.user.friends.all %}
+							{% for friend in profile.friends.all %}
 							{% if not friend.active %}
 							<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
-											<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+											<img src="{% static friend.profile_image %}" class="rounded-circle user_img">
 											<span class="online_icon offline"></span>
 										</div>
 										<div class="px-2">

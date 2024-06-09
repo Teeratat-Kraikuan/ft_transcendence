@@ -2,12 +2,12 @@
 {% load static %}
 {% block content %}
 
-<div id="gameStatus" style="z-index: 2; color: white;">
+<div style="z-index: 2; color: white;">
 
-	
+
 	<!-- Head -->
 
-	<div class="wrapper justify-content-center">
+	<div id="header" class="wrapper justify-content-center" style="display:flex;">
 		<div class="content-solid rounded mt-4 p-3 wrapper justify-content-center" style="width: 60vw;">
 			<div class="display-2 fw-bolder">{{ num_players }}P</div>
 			<div class="p-2">
@@ -19,164 +19,201 @@
 
 	<!-- Body -->
 
-	<div class="wrapper justify-content-center row" style="text-align: center;">
+	<div class="wrapper justify-content-center" style="text-align: center;">
+		<div class="row justify-content-center">
+			<!-- all player -->
+			<div id="all-player-h" class="row justify-content-center" style="margin-bottom: 10vh; height: 40vh;">
+				<div id="flex-box" style="height: 5vh;"></div>
+				<div id="all-player-w" class="row" style="width: 60vw;">
 
-		<div class="row justify-content-center" style="margin-bottom: 10vh;">
-			{% if num_players ==  '4' %}
-				<div style="height: 20vh;"></div>
-			{% else %}
-			<div style="height: 10vh;"></div>
-			{% endif %}
-			<div class="row" style="width: 60vw;">
-				<!-- user -->
-				<div class="col-3 mt-5 wrapper justify-content-center">
-					<div class="chat-image mx-2">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					<!-- user -->
+					<div class="col-3 wrapper justify-content-center">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							class="rounded-circle player-image mx-2">
+						<h4>{{ username }}</h4>
 					</div>
-					<h2>{{ username }}</h2>
-				</div>
 
-				<!-- dummy -->
+					<!-- dummy -->
 
-				<!-- for player in players -->
-				<div class="col-3 mt-5 wrapper justify-content-center">
-					<div class="chat-image mx-2">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					<!-- for player in players -->
+					<div class="col-3 wrapper justify-content-center">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							class="rounded-circle player-image mx-2">
+						<h4 id="player">???</h4>
 					</div>
-					<h2 id="opponentName">???</h2>
-				</div>
-				
-				<div class="col-3 mt-5 wrapper justify-content-center">
-					<div class="chat-image mx-2">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
-					</div>
-					<h2 id="opponentName">???</h2>
-				</div>
-				
-				<div class="col-3 mt-5 wrapper justify-content-center">
-					<div class="chat-image mx-2">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
-					</div>
-					<h2 id="opponentName">???</h2>
-				</div>
 
-				<!-- <div class="col-3 mt-5 wrapper justify-content-center">
-					<div class="chat-image mx-2">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					<div class="col-3 wrapper justify-content-center">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							class="rounded-circle player-image mx-2">
+						<h4 id="player">???</h4>
 					</div>
-					<h2 id="opponentName">???</h2>
-				</div>
-				
-				<div class="col-3 mt-5 wrapper justify-content-center">
-					<div class="chat-image mx-2">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
-					</div>
-					<h2 id="opponentName">???</h2>
-				</div>
-				
-				<div class="col-3 mt-5 wrapper justify-content-center">
-					<div class="chat-image mx-2">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
-					</div>
-					<h2 id="opponentName">???</h2>
-				</div>
-				
-				<div class="col-3 mt-5 wrapper justify-content-center">
-					<div class="chat-image mx-2">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
-					</div>
-					<h2 id="opponentName">???</h2>
-				</div> -->
 
+					<div class="col-3 wrapper justify-content-center">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							class="rounded-circle player-image mx-2">
+						<h4 id="player">???</h4>
+					</div>
+
+					<!-- another row -->
+
+					{% if num_players == 8 %}
+					<div class="col-3 wrapper justify-content-center">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							class="rounded-circle player-image mx-2">
+						<h4 id="player">???</h4>
+					</div>
+
+					<div class="col-3 wrapper justify-content-center">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							class="rounded-circle player-image mx-2">
+						<h4 id="player">???</h4>
+					</div>
+
+					<div class="col-3 wrapper justify-content-center">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							class="rounded-circle player-image mx-2">
+						<h4 id="player">???</h4>
+					</div>
+
+					<div class="col-3 wrapper justify-content-center">
+						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							class="rounded-circle player-image mx-2">
+						<h4 id="player">???</h4>
+					</div>
+					{% endif %}
+
+				</div>
 			</div>
-		</div>
-	
-	
-		<div id="waiting-start" style="width: 30vw; display: block;">
-			<p class="mt-2">Waiting . . .</p>
-			<a style="text-decoration: none; color: black;" href="/game/tournament">
+
+			<!-- cancel btn -->
+			<div id="waiting-start" style="width: 30vw; display: block;">
+				<p class="mt-2">Waiting . . .</p>
+				<!-- <a style="text-decoration: none; color: black;" href="/game/tournament">
 				<button type="button" class="btn btn-light card-x-btn mb-4">
 					cancel
 				</button>
-			</a>
-		</div>
+			</a> -->
+				<a style="text-decoration: none; color: black;" href="javascript:void(0);" onclick="doneWaiting()">
+					<button type="button" class="btn btn-light card-x-btn mb-4">
+						cancel
+					</button>
+				</a>
+			</div>
 
+		</div>
 	</div>
+
+	<!-- board and match -->
+	<div id="board-match" class="justify-content-center px-5 mb-5" style="display:none; height: 60vh;">
+		<div class="row" style="width: 60vw;">
+			<div class="col-8 text-center">
+				<div class="p-1 score-board">
+					<table class="table table-striped mt-2">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Name</th>
+								<th scope="col">Play</th>
+								<th scope="col">Win</th>
+								<th scope="col">Draw</th>
+								<th scope="col">Lose</th>
+								<th scope="col">+/-</th>
+								<th scope="col">Points</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for i in range_num_players %}
+							<tr>
+								<th scope="row">{{i}}</th>
+								<td>{ username }</td>
+								<td>0</td> <!-- play -->
+								<td>0</td> <!-- win -->
+								<td>0</td> <!-- draw -->
+								<td>0</td> <!-- lose -->
+								<td>0</td> <!-- + - -->
+								<td>0</td> <!-- point -->
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- card -->
+			<div class="col-4  text-center">
+				<div class="row justify-content-center">
+					<div class="column content-solid card-main  mx-2" style="width: 20vw; background-color: #212529;">
+						<h2 class="my-3" style="text-shadow: 0 5px 10px #ffffffb4;">Round x</h2>
+						<div class="mt-5">
+							<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+								class="rounded-circle user_img mx-2">
+							<h4 id="player">???</h4>
+							<div id="opponentReadyText" style="display: none;">
+								I'm Ready
+								<i class="bi bi-emoji-grin-fill"></i>
+							</div>
+							<div id="opponentNotReadyText" style="display: block;">
+								Wait a minute
+								<i class="bi bi-emoji-smile-upside-down-fill"></i>
+								. . .
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row justify-content-center mt-3">
+					<div class="column content-solid card-main py-4 mx-2" style="width: 20vw; background-color: #212529;">
+						Are you Ready ?
+						<button id="readyButton" type="button" class="btn btn-outline-light card-x-btn my-2" onclick="ready()" >
+							Ready
+						</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 </div>
 {% endblock %}
 
 {% block body-script %}
 <script>
-	let userScore = parseInt(document.getElementById("userScore").textContent);
-	let opponentScore = parseInt(document.getElementById("opponentScore").textContent);
-	const roomCode = "{{ num_players }}";
-	const username = "{{ username }}";
-	const playerNo = "player1";
-	const pongSocket = new WebSocket("ws://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
+	var mode = "{{num_players}}";
 
-	pongSocket.onopen = function (e) {
-		console.log("The connection was setup successfully !");
-		// Send message requesting username of other player
-		pongSocket.send(JSON.stringify({ score: 0, start_point: true }));
-	};
-	pongSocket.onclose = function (e) {
-		console.log("Something unexpected happened !");
-	};
-	pongSocket.error = function (e) {
-		console.log("error !");
-	};
-	pongSocket.onmessage = function (e) {
-		const data = JSON.parse(e.data);
-		if (userScore < 10 && opponentScore < 10 && data.exit)
-			opponentLeave();
-		else if (!data.exit && data.username != username) {
-			document.getElementById("opponentNameTop").innerHTML = data.username;
-			document.getElementById("opponentName").innerHTML = data.username;
-			document.getElementById("opponentScorePopUp").innerHTML = data.score;
-			document.getElementById("opponentScore").innerHTML = data.score;
-			document.getElementById("waiting-content").style.display = 'none';
-			document.getElementById("game-content").style.display = 'block';
-			opponentScore = data.score;
-			changeScale();
-			if (data.start_point)
-				pongSocket.send(JSON.stringify({ score: 0, start_point: false }));
-		}
-		checkWinLose();
-	};
-	
-	function changeScale() {
-		document.getElementById("opponentScale").style.width = opponentScore * 5 + "%";
-		document.getElementById("userScale").style.width = userScore * 5 + "%";
-		document.getElementById("blankScale").style.width = (20 - userScore - opponentScore) * 5 + "%";
-	}
-	function increaseScore() {
-		userScore++;
-		document.getElementById("userScore").innerHTML = userScore;
-		document.getElementById("userScorePopUp").innerHTML = userScore;
-		changeScale();
-		pongSocket.send(JSON.stringify({ score: userScore, start_point: false }));
-	}
-	function checkWinLose() {
-		const gameStatus = document.getElementById("gameStatus");
-		if (userScore >= 10) {
-			showPopUp("YOU WIN!!")
-		} else if (opponentScore >= 10) {
-			showPopUp("YOU LOSE!!")
+	window.onload = function () {
+		if (mode == 4) {
+			document.getElementById("flex-box").style.height = '20vh';
+		} else if (mode == 8) {
+			document.getElementById("flex-box").style.height = '10vh';
 		}
 	}
-	function showPopUp(str) {
-		document.getElementById("popUp").style.display = 'block';
-		document.getElementById("popUpStatus").innerHTML = str;
+	function doneWaiting() {
+		document.getElementById("flex-box").style.height = '0';
+		document.getElementById("waiting-start").style.display = 'none';
+		document.getElementById("board-match").style.display = 'grid';
+		document.getElementById("all-player-w").style.width = '60vw';
+		document.getElementById("all-player-h").classList.add("mt-2", "p-3", "wrapper");
+		document.getElementById("all-player-h").style.backgroundColor = '';
+		document.getElementById("all-player-h").style.height = '15vh';
+		document.getElementById("all-player-h").style.marginBottom = '';
 	}
-	function donePopUp() {
-		document.getElementById("popUp").style.display = 'none';
-	}
-	function opponentLeave() {
-		document.getElementById("gameStatus").innerHTML = "<h1>Your opponent LEAVE GAME!!</h1>";
-		document.getElementById("gameStatus").style = 'text-align: center; margin-top: 40vh;';
+	function ready() {
+		document.getElementById("readyButton").classList.toggle('btn-light');
+		document.getElementById("readyButton").classList.toggle('btn-outline-light');
 	}
 
+	function opponentReady() {
+	}
 </script>
 
 {% endblock %}s
+<!-- 
+
+	PLAYER
+		id = player
+		status -> normal, playing, ready
+
+
+ -->

@@ -19,8 +19,6 @@ def profile(request, username):
 	try:
 		profile = CustomUser.objects.get(username=username)
 		context["profile"] = profile
-		context['profile_image'] = request.user.profile_image
-		context['banner_image'] = request.user.banner_image
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')
@@ -29,10 +27,9 @@ def profile(request, username):
 @login_required
 def friend(request):
 	context = {}
-	# all_friend_requests = FriendRequest.objects.filter(to_user=request.user)
-	from_user_ids = FriendRequest.objects.filter(to_user=request.user).values_list('from_user_id', flat=True)
+	all_friend_requests = FriendRequest.objects.filter(to_user=request.user)
+	from_user_ids = all_friend_requests.values_list('from_user_id', flat=True)
 	allusers = CustomUser.objects.all().exclude(id__in=from_user_ids)
-	all_friend_requests = CustomUser.objects.all().filter(id__in=from_user_ids)
 	context['online'] = len(request.user.friends.filter(active=True))
 	context['offline'] = len(request.user.friends.filter(active=False))
 	context['all_friend_requests'] = all_friend_requests

@@ -9,8 +9,11 @@ def game(request):
 	return render(request, "game.html")
 
 def pong(request):
+	context = {}
 	username = request.user.username if request.user.is_authenticated else 'guest'
-	context = {'username':username}
+	context['default_image'] = 'default_profile_image.png'
+	context['username'] = username
+	context['profile_image'] = request.user.profile_image if request.user.is_authenticated else 'default_profile_image.png'
 	if request.method == "POST":
 		if request.POST.get('mode') == 'singleplayer':
 			# print('singleplayer', request.POST.get('difficulty'))
@@ -58,7 +61,9 @@ def tournament_waiting(request): # Waiting room
 	if request.method != 'POST':
 		return render(request, 'tournament.html')
 	context = {}
-	context['num_players'] = request.POST.get('num_players')
+	num_players = int(request.POST.get('num_players'))
+	context['num_players'] = num_players
+	context['range_num_players'] = range(num_players)
 	context['username'] = request.POST.get('aka') or request.user.username
 	return render(request, 'tournament_waiting.html', context) 
 	# return render(request, 'tournament_waiting.html', context) # original

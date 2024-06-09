@@ -284,3 +284,15 @@ form textarea{
 .game-panel{
     background-color: black;
 }
+
+.player-image{
+    height: 30px;
+    width: 30px;
+    border:1.5px solid #f5f6fa;
+}
+
+.score-board{
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px #e6e6e663;
+}
