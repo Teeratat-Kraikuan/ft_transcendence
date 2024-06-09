@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block site_title %}Chat Page{% endblock %}
-
+{% load static %}
 {% block style %}
 <style>
 	body {
@@ -31,7 +31,7 @@
 								<li class="chat-box">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image">
-											<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+											<img src="{% static room.user2.profile_image %}" class="rounded-circle user_img">
 											<span class="online_icon"></span>
 										</div>
 										<div class="px-2">
@@ -49,7 +49,7 @@
 								<li class="chat-box">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image">
-											<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+											<img src="{% static room.user1.profile_image %}" class="rounded-circle user_img">
 											<span class="online_icon"></span>
 										</div>
 										<div class="px-2">
@@ -70,7 +70,7 @@
 									<li class="chat-box">
 										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 											<div class="chat-image">
-												<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+												<img src="{% static room.user2.profile_image %}" class="rounded-circle user_img">
 												<span class="online_icon offline"></span>
 											</div>
 											<div class="px-2">
@@ -88,7 +88,7 @@
 									<li class="chat-box">
 										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 											<div class="chat-image">
-												<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+												<img src="{% static room.user1.profile_image %}" class="rounded-circle user_img">
 												<span class="online_icon offline"></span>
 											</div>
 											<div class="px-2">

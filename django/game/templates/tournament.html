@@ -4,7 +4,7 @@
 
 
 <div class="justify-content-center" style="text-align: center;"> 
-	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
+	<div class="wrapper justify-content-center" style="margin-top: 18vh;">
 
 		<!-- board -->
 		<div class="column content-solid card-side mx-2" id="scoreCard">
@@ -14,12 +14,22 @@
 		<div class="column content-solid card-main  mx-2">
 			<img style="margin-top: 25px; width: 168px;"  src="{% static 'pongpong.png' %}">
 			<br><span style="font-family:monospace; font-size:larger;">Tournament!!</span>
-			<form action="#" class="mt-4">
-				<input class="input-box" type="text" placeholder="Name" style="height: 42px; text-align: center;">
+			<form class="mt-4" method="post" action="{% url 'tournament_waiting' %}">
+				<input class="input-box" name="aka" type="text" placeholder="Name" style="height: 42px; text-align: center;">
+				{% csrf_token %}
+				<div class="column mb-3">
+					<div class="justify-content-between">
+						<input type="radio" class="btn-check" name="num_players" id="btn-np-1" value="4" autocomplete="off" checked>
+						<label class="btn btn-outline-dark" for="btn-np-1" style="width: 38%">4</label>
+						<input type="radio" class="btn-check" name="num_players" id="btn-np-2" value="8" autocomplete="off">
+						<label class="btn btn-outline-dark" for="btn-np-2" style="width: 38%">8</label>
+						<div class="mt-1" style="font-size: small;">Number of Player</div>
+					</div>
+				</div>
+				<button type="submit" class="btn btn-dark card-x-btn mb-4">
+					Join
+				</button>
 			</form>
-			<button type="button" class="btn btn-light card-x-btn mb-4">
-				Join
-			</button>
 			<button id="scoreButton" type="button" class="btn btn-light card-x-btn my-2">
 				Score board
 			</button>

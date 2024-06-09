@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block site_title %}pong game{% endblock %}
 
 {% load static %}
@@ -63,14 +63,14 @@
 				<div class="wrapper justify-content-between" style="margin-top: 25vh; margin-bottom: 10vh;">
 					<h2 class="wrapper">
 						<div class="chat-image mx-2">
-							<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+							<img src="{% static profile_image %}" class="rounded-circle user_img">
 						</div>
 						{{ username }}
 					</h2>
 					<h1 class="fw-bolder">VS</h1>
 					<h2 class="wrapper">
 						<div class="chat-image mx-2">
-							<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+							<img src="{% static default_image %}" class="rounded-circle user_img">
 						</div>
 						<div>???</div>
 					</h2>
