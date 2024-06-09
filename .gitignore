@@ -84,3 +84,6 @@ staticfiles
 # python
 __pycache__/
 *.pyc
+
+profile_pics
+banner_pics
