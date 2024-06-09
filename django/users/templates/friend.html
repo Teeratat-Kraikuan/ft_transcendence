@@ -23,10 +23,10 @@
 				{% for friend_request in all_friend_requests %}
 				<div class="col-xl-2 col-md-3 col-sm-3 mt-1 mx-2">
 					<div class="card mb-2" style="background-color: black; height: 180px; width: 140px; box-shadow: 0 2px 5px black;">
-						<img class="card-img image-bg-card " src="{% static friend_request.from_user.banner_image %}" alt="Card image">
+						<img class="card-img image-bg-card " src="{{ friend_request.from_user.banner_image.url }}" alt="Card image">
 						<div class="card-img-overlay text-center pt-4">
 							<a href="{{ friend_request.from_user }}" style="text-decoration: none;"> 
-								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{% static friend_request.from_user.profile_image %}">
+								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{{ friend_request.from_user.profile_image.url }}">
 									<div class="profile-main-text mt-1">{{ friend_request.username }}</div>
 							</a>
 							<a a href="accept_friend_request/{{ friend_request.id }}/" class="btn btn-primary btn-sm mt-4" style="font-size: 0.7rem; box-shadow: 0 2px 5px 2px #00000042;">
@@ -44,10 +44,10 @@
 				{% if user not in request.user.friends.all and user != request.user %}
 				<div class="col-xl-2 col-md-3 col-sm-3 mt-1 mx-2">
 					<div class="card mb-2" style="background-color: black; height: 180px; width: 140px; box-shadow: 0 2px 5px black;">
-						<img class="card-img image-bg-card " src="{% static user.banner_image %}" alt="Card image">
+						<img class="card-img image-bg-card " src="{{ user.banner_image.url }}" alt="Card image">
 						<div class="card-img-overlay text-center pt-4">
 							<a href="{{user}}" style="text-decoration: none;"> 
-								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{% static user.profile_image %}">
+								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{{ user.profile_image.url }}">
 								<div class="profile-main-text mt-1">{{user}}</div>
 							</a>
 							<a a href="send_friend_request/{{user.id}}/" class="btn btn-light btn-sm mt-4" style="font-size: 0.7rem; box-shadow: 0 2px 5px #00000042;">
@@ -75,7 +75,7 @@
 				<li style="margin-bottom: 0px;">
 					<div class="d-flex align-items-center profile-content-text py-1">
 						<div class="chat-image">
-							<img src="{% static friend.profile_image %}" class="rounded-circle user_img">
+							<img src="{{ friend.profile_image.url }}" class="rounded-circle user_img">
 							<span class="online_icon"></span>
 						</div>
 						<div class="px-2">
@@ -95,7 +95,7 @@
 				<li style="margin-bottom: 0px;">
 					<div class="d-flex align-items-center profile-content-text py-1">
 						<div class="chat-image">
-							<img src="{% static friend.profile_image %}" class="rounded-circle user_img">
+							<img src="{{ friend.profile_image.url }}" class="rounded-circle user_img">
 							<span class="online_icon offline"></span>
 						</div>
 						<div class="px-2">

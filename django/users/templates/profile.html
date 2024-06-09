@@ -34,12 +34,12 @@
 			<div class="row justify-content-center mb-4">
 
 			<!-- bg -->
-			<div class="text-center" style="background-image: url('{% static profile.banner_image %}'); background-size: cover; height: 200px;"></div>
+			<div class="text-center" style="background-image: url('{{ profile.banner_image.url}}'); background-size: cover; height: 200px;"></div>
 			<!-- top -->
 				<div class="row profile-solid rounded-bottom py-3">
 					<!-- profile pic -->
 					<div class="col-md-3 mt-1 text-center">
-						<img class="rounded-circle" style="max-width: 125px; margin-top: -60px; border: 5px solid #353535;"  src='{% static profile.profile_image %}'>
+						<img class="rounded-circle" style="max-width: 125px; margin-top: -60px; border: 5px solid #353535;"  src='{{ profile.profile_image.url}}'>
 					</div>
 					<!-- profile name -->
 					<div class="col-md-6 mt-1">
@@ -167,7 +167,7 @@
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
-											<img src="{% static friend.profile_image %}" class="rounded-circle user_img">
+											<img src="{{ friend.profile_image.url}}" class="rounded-circle user_img">
 											<span class="online_icon"></span>
 										</div>
 										<div class="px-2">
@@ -187,7 +187,7 @@
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
-											<img src="{% static friend.profile_image %}" class="rounded-circle user_img">
+											<img src="{{ friend.profile_image.url}}" class="rounded-circle user_img">
 											<span class="online_icon offline"></span>
 										</div>
 										<div class="px-2">

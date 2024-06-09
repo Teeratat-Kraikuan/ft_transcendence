@@ -31,7 +31,7 @@
 								<li class="chat-box">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image">
-											<img src="{% static room.user2.profile_image %}" class="rounded-circle user_img">
+											<img src="{{ room.user2.profile_image.url }}" class="rounded-circle user_img">
 											<span class="online_icon"></span>
 										</div>
 										<div class="px-2">
@@ -49,7 +49,7 @@
 								<li class="chat-box">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image">
-											<img src="{% static room.user1.profile_image %}" class="rounded-circle user_img">
+											<img src="{{ room.user1.profile_image.url }}" class="rounded-circle user_img">
 											<span class="online_icon"></span>
 										</div>
 										<div class="px-2">
@@ -70,7 +70,7 @@
 									<li class="chat-box">
 										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 											<div class="chat-image">
-												<img src="{% static room.user2.profile_image %}" class="rounded-circle user_img">
+												<img src="{{ room.user2.profile_image.url }}" class="rounded-circle user_img">
 												<span class="online_icon offline"></span>
 											</div>
 											<div class="px-2">
@@ -88,7 +88,7 @@
 									<li class="chat-box">
 										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 											<div class="chat-image">
-												<img src="{% static room.user1.profile_image %}" class="rounded-circle user_img">
+												<img src="{{ room.user1.profile_image.url }}" class="rounded-circle user_img">
 												<span class="online_icon offline"></span>
 											</div>
 											<div class="px-2">
