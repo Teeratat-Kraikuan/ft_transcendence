@@ -36,7 +36,9 @@ services:
     restart: unless-stopped
   django:
     container_name: django
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     env_file:
@@ -47,4 +49,17 @@ services:
       - trans-networks
     depends_on:
       - postgres
+    restart: unless-stopped
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - trans-networks
+    depends_on:
+      - django
     restart: unless-stopped
