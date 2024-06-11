@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from users.models import CustomUser, FriendRequest
 from .models import *
+import re
 
 authorize_uri = "https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6d5edcad7b55ae9cff9a4cdc5d1b9e70c11fcbf7fa394e2c403c1d86f60d6625&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fusers%2Fcallback&response_type=code"
 
@@ -52,6 +53,12 @@ def login(request):
 				elif CustomUser.objects.filter(username=username).exists():
 					messages.error(request, 'Username Taken', extra_tags='sign-up')
 					return redirect('login')
+				elif not validPass(password):
+					messages.error(request, "Password must have at least 8 charters, 1 uppercase, 1 lowercase and 1 digit", extra_tags="sign-up")
+					return redirect('login')
+				elif not validEmail(email):
+					messages.error(request, "Invalid Email", extra_tags='sign-up')
+					return redirect('login')
 				else:
 					user = CustomUser.objects.create(username=username, email=email, password=password)
 					user.set_password(password)
@@ -62,6 +69,24 @@ def login(request):
 				messages.error(request, 'Password Not Matching', extra_tags='sign-up')
 				return redirect('login')
 	return render(request, "login.html", context)
+
+def validEmail(email):
+	regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+	return True if re.fullmatch(regex, email) else False
+
+def validPass(password):
+	lower = [c for c in password if c.islower()]
+	upper = [c for c in password if c.isupper()]
+	digit = [c for c in password if c.isdigit()]
+	if len(password) < 8:
+		return False
+	elif len(lower) == 0:
+		return False
+	elif len(upper) == 0:
+		return False
+	elif len(digit) == 0:
+		return False
+	return True
 
 @login_required
 def logout(request):
