@@ -9,6 +9,3 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -subj "/C=TH/ST=Bangkok/L=Bangkok/O=42Bangkok/OU=Narwhals/CN=tkraikua"
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
-
-EXPOSE 80
-EXPOSE 443
