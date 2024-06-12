@@ -6,7 +6,6 @@ addEventListener("DOMContentLoaded", function() {
 });
 
 function updateApp(path) {
-	// showLoadingScreen();
 	fetch(path, { headers: { "X-Requested-With": "XMLHttpRequest" } })
 	 .then(response => response.text())
 	 .then(html => {
