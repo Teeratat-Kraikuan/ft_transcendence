@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 from users.models import CustomUser, FriendRequest
 from .models import *
 import re
@@ -26,6 +28,7 @@ def login(request):
 		'authorize_uri' : authorize_uri
 	}
 	if request.method == 'POST':
+		print("POST method sent.")
 		if request.POST.get('submit') == 'sign-in':
 			username = request.POST['username']
 			password = request.POST['password']
@@ -36,10 +39,11 @@ def login(request):
 				auth.login(request, user)
 				user.active = True
 				user.save()
-				return redirect('home')
+				html_content = render_to_string('home.html', {'user': user})
+				return JsonResponse({'success': True, 'html_content': html_content}, status=200)
 			else:
 				messages.error(request, 'Invalid login details', extra_tags='sign-in')
-				return redirect('login')
+				return JsonResponse({'success': False, 'error': 'Invalid login details'}, status=200)
 		elif request.POST.get('submit') == 'sign-up':
 			username = request.POST['username']
 			email = request.POST['email']
@@ -64,7 +68,7 @@ def login(request):
 					user.set_password(password)
 					user.save()
 					messages.success(request, 'Your signup successful', extra_tags='sign-up')
-					return redirect('login')
+					return redirect('home')
 			else:
 				messages.error(request, 'Password Not Matching', extra_tags='sign-up')
 				return redirect('login')

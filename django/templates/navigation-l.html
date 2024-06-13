@@ -8,38 +8,38 @@
     </a>
 </li>
 <li class="nav-item nav-btn mx-auto {% if request.path == '/game/' %}active{% endif %}">
-    <a class="nav-link nav-btn" onclick="swapApp({% url 'game' %})">
+    <a class="nav-link nav-btn" onclick="swapApp('/game/')">
         <i class="bi bi-joystick" style="font-size: 1.2rem;"></i>
         <br><span>Game</span>
     </a>
 </li>
 <li class="nav-item nav-btn mx-auto {% if request.path == '/game/tournament' %}active{% endif %}">
-    <a class="nav-link nav-btn" onclick="swapApp('/game/tournament')">
+    <a class="nav-link nav-btn" onclick="swapApp('/game/tournament/')">
         <i class="bi bi-trophy-fill" style="font-size: 1.2rem;"></i>
         <br><span>Tournament</span>
     </a>
 </li>
 <li class="nav-item nav-btn mx-auto {% if request.path != "/" and request.path|slice:":5" in '/chat' %}active{% endif %}">
-    <a class="nav-link nav-btn" onclick="swapApp({% url 'chat' %})">
+    <a class="nav-link nav-btn" onclick="swapApp('/chat/')">
         <i class="bi bi-chat-left-fill" style="font-size: 1.2rem;"></i>
         <br><span>Chat</span>
     </a>
 </li>
 <li class="nav-item nav-btn mx-auto {% if request.path == '/users/friend' %}active{% endif %}">
-    <a class="nav-link nav-btn" onclick="swapApp('/users/friend')">
+    <a class="nav-link nav-btn" onclick="swapApp('/users/friend/')">
         <i class="bi bi-people-fill" style="font-size: 1.2rem;"></i>
         <br><span>Friend</span>
     </a>
 </li>
 
 <li class="nav-item nav-btn mx-auto {% if request.path == '/setting' %}active{% endif %}">
-    <a class="nav-link nav-btn" onclick="swapApp({% url 'setting' %})">
+    <a class="nav-link nav-btn" onclick="swapApp('/setting/')">
         <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
         <br><span>Setting</span>
     </a>
 </li>
 <li class="nav-item nav-btn mx-auto {% if request.path == '/login' %}active{% endif %}">
-    <a class="nav-link nav-btn" onclick="swapApp({% url 'logout' %})">
+    <a class="nav-link nav-btn" onclick="swapApp('/logout/')">
         <i class="bi bi-box-arrow-left" style="font-size: 1.2rem;"></i>
         <br><span>Logout</span>
     </a>

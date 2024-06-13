@@ -115,13 +115,3 @@
 </div>
 
 {% endblock %}
-
-{% block body-script %}
-<script>
-	{% comment %} const friends = {{ friends }} {% endcomment %}
-	onlineSocket.onmessage = function (e) {
-		const data = JSON.parse(e.data);
-		console.log(data.username + " " + data.online);
-	};
-</script>
-{% endblock %}

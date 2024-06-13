@@ -5,13 +5,6 @@ from asgiref.sync import sync_to_async
 from .models import CustomUser
 
 class OnlineStatusConsumer(AsyncWebsocketConsumer):
-	def get_offline_user(self):
-		offline_friends = self.scope['user'].friends.filter(active=False)
-		return offline_friends
-	def get_online_user(self):
-		online_friends = self.scope['user'].friends.filter(active=True)
-		return online_friends
-	
 	async def connect(self):
 		my_username = self.scope['user'].username
 		self.roomGroupName = 'online_status'
@@ -22,7 +15,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		)
 
 		await self.update_user_incr(my_username)
-		online_friends = await database_sync_to_async(self.get_online_user)()
 		await self.channel_layer.group_send(
             self.roomGroupName, {
 				"type": "online_update",
