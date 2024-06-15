@@ -163,7 +163,7 @@
 						<ul class="chat-contacts">
 							{% for friend in profile.friends.all %}
 							{% if friend.active %}
-							<a href="../{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+							<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text" style="text-decoration: none; color: #fff;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
@@ -183,7 +183,7 @@
 							<ul class="chat-contacts">
 							{% for friend in profile.friends.all %}
 							{% if not friend.active %}
-							<a href="../{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+							<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text" style="text-decoration: none; color: #fff;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">

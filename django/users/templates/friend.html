@@ -25,11 +25,11 @@
 					<div class="card mb-2" style="background-color: black; height: 180px; width: 140px; box-shadow: 0 2px 5px black;">
 						<img class="card-img image-bg-card " src="{{ friend_request.from_user.banner_image.url }}" alt="Card image">
 						<div class="card-img-overlay text-center pt-4">
-							<a href="{{ friend_request.from_user }}" style="text-decoration: none;"> 
+							<a onclick="swapApp('/users/{{ friend_request.from_user }}')" style="text-decoration: none;"> 
 								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{{ friend_request.from_user.profile_image.url }}">
 									<div class="profile-main-text mt-1">{{ friend_request.from_user.username }}</div>
 							</a>
-							<a a href="accept_friend_request/{{ friend_request.id }}/" class="btn btn-primary btn-sm mt-4" style="font-size: 0.7rem; box-shadow: 0 2px 5px 2px #00000042;">
+							<a a onclick="swapApp('/users/accept_friend_request/{{ friend_request.id }}/')" class="btn btn-primary btn-sm mt-4" style="font-size: 0.7rem; box-shadow: 0 2px 5px 2px #00000042;">
 								<i class="bi bi-person-add"></i>
 								Accept
 							</a>
@@ -46,11 +46,11 @@
 					<div class="card mb-2" style="background-color: black; height: 180px; width: 140px; box-shadow: 0 2px 5px black;">
 						<img class="card-img image-bg-card " src="{{ user.banner_image.url }}" alt="Card image">
 						<div class="card-img-overlay text-center pt-4">
-							<a href="{{user}}" style="text-decoration: none;"> 
+							<a onclick="swapApp('/sers/{{user}}')" style="text-decoration: none;"> 
 								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{{ user.profile_image.url }}">
 								<div class="profile-main-text mt-1">{{user}}</div>
 							</a>
-							<a a href="send_friend_request/{{user.id}}/" class="btn btn-light btn-sm mt-4" style="font-size: 0.7rem; box-shadow: 0 2px 5px #00000042;">
+							<a onclick="swapApp('/users/send_friend_request/{{user.id}}/')" class="btn btn-light btn-sm mt-4" style="font-size: 0.7rem; box-shadow: 0 2px 5px #00000042;">
 								<i class="bi bi-person-add"></i>
 								Add Friend
 							</a>
@@ -71,7 +71,7 @@
 			<ul class="chat-contacts">
 			{% for friend in request.user.friends.all %}
 			{% if friend.active %}
-			<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+			<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text" style="text-decoration: none; color: #fff;">
 				<li style="margin-bottom: 0px;">
 					<div class="d-flex align-items-center profile-content-text py-1">
 						<div class="chat-image">
@@ -91,7 +91,7 @@
 			<ul class="chat-contacts">
 			{% for friend in request.user.friends.all %}
 			{% if not friend.active %}
-			<a href="{{ friend.username }}" class="profile-content-text" style="text-decoration: none; color: #fff;">
+			<a onclick="swapApp('/users/{{ friend.username }}/')" class="profile-content-text" style="text-decoration: none; color: #fff;">
 				<li style="margin-bottom: 0px;">
 					<div class="d-flex align-items-center profile-content-text py-1">
 						<div class="chat-image">
