@@ -6,13 +6,12 @@
         <br><span>Game</span>
     </a>
 </li>
-<li class="nav-item nav-btn mx-auto">
+{% comment %} <li class="nav-item nav-btn mx-auto">
     <a class="nav-link nav-btn" onclick="swapApp('/login/')">
         <i class="bi bi-trophy-fill" style="font-size: 1.2rem;"></i>
         <br><span>Tournament</span>
     </a>
-</li>
-
+</li> {% endcomment %}
 <li class="nav-item nav-btn mx-auto {% if request.path == '/login/' %}active{% endif %}">
     <a class="nav-link nav-btn" onclick="swapApp('/login/')">
         <i class="bi bi-box-arrow-in-right" style="font-size: 1.2rem;"></i>
