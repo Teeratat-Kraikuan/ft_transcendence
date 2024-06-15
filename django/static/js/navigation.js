@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	if (document.body.dataset.userAuthenticated === 'true') {
 		connectWebSocket();
 	}
+	window.addEventListener('popstate', function(event) {
+		updateApp(window.location.pathname);
+	});
 });
 
 function updateApp(path) {
