@@ -8,14 +8,14 @@
 		<!-- main content -->
 		<div class="col-md-9 px-4 py-4 mx-1 mt-2">
 			<!-- search -->
-			<div class="row pb-2">
+			<!-- <div class="row pb-2">
 				<div class="col-md-4">
 					<form action="#">
 						<input class="input-box" type="text" placeholder="search" style="width: 80%; background-color: #c4c4c4;">
 						<button class="btn btn-outline-light" type="submit" style="border-radius: 15px;"><i class="bi bi-search"></i></button>
 					</form>
 				</div>
-			</div>
+			</div> -->
 			<div class="row">
 				<p class="mx-2" style="color: #ffffff; ">All Users</p>
 
@@ -26,7 +26,7 @@
 						<img class="card-img image-bg-card " src="{{ friend_request.from_user.banner_image.url }}" alt="Card image">
 						<div class="card-img-overlay text-center pt-4">
 							<a onclick="swapApp('/users/{{ friend_request.from_user }}')" style="text-decoration: none;"> 
-								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{{ friend_request.from_user.profile_image.url }}">
+								<img class="image-profile" style="width: 50px; height: 50px; box-shadow: 0 2px 5px 2px #00000042;"  src="{{ friend_request.from_user.profile_image.url }}">
 									<div class="profile-main-text mt-1">{{ friend_request.from_user.username }}</div>
 							</a>
 							<a a onclick="swapApp('/users/accept_friend_request/{{ friend_request.id }}/')" class="btn btn-primary btn-sm mt-4" style="font-size: 0.7rem; box-shadow: 0 2px 5px 2px #00000042;">
@@ -47,7 +47,7 @@
 						<img class="card-img image-bg-card " src="{{ user.banner_image.url }}" alt="Card image">
 						<div class="card-img-overlay text-center pt-4">
 							<a onclick="swapApp('/users/{{user}}')" style="text-decoration: none;"> 
-								<img style="max-width: 50px; border-radius: 100%; box-shadow: 0 2px 5px 2px #00000042;"  src="{{ user.profile_image.url }}">
+								<img class="image-profile" style="width: 50px; height: 50px; box-shadow: 0 2px 5px 2px #00000042;"  src="{{ user.profile_image.url }}">
 								<div class="profile-main-text mt-1">{{user}}</div>
 							</a>
 							<a onclick="swapApp('/users/send_friend_request/{{user.id}}/')" class="btn btn-light btn-sm mt-4" style="font-size: 0.7rem; box-shadow: 0 2px 5px #00000042;">

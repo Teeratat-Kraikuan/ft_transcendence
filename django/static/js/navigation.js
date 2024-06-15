@@ -32,6 +32,9 @@ function loadScripts(path) {
 		console.log("logout function");
 		onlineSocket.close();
 	}
+	else if (path.includes('/users') && !(path.includes('/friend'))) {
+		loadScript('/static/js/profile.js');
+	}
 	// Add other paths and their corresponding scripts if needed
 }
 
