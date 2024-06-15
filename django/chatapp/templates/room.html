@@ -26,7 +26,7 @@
 
 	<div class="row">
 		<!-- friend chat -->
-		<div class="col content-friend px-4 py-4 mx-1 mt-2" style="height: 90vh;">
+		<div class="col-md-3 col-lg-2 content-friend px-4 py-4 mx-1 mt-2" style="height: 90vh;">
 			<div class="profile-main-text text-center mb-3">Chat</div>
 			<!-- friend chat -->
 			<div class="chat-h-body h-75">
@@ -116,7 +116,7 @@
 		</div>
 
 		<!-- main -->
-		<div class="col-md-9 content-friend px-4 py-4 mx-1 mt-2 pb-5" style="height: 90vh;">
+		<div class="col-md-8 col-lg-9 content-friend px-4 py-4 mx-1 mt-2 pb-5" style="height: 90vh;">
 			<!-- chat header -->
 			<div class="d-flex">
 				{% if room.user1 == request.user %}
@@ -177,8 +177,8 @@
 			</div>
 
 			<!-- text box -->
-			<div>
-				<input class="input-box" type="text" placeholder="Type your message" style="width: 90%; background-color: #c4c4c4;" id="id_message_send_input">
+			<div class="text-center">
+				<input class="input-box" type="text" placeholder="Type your message" style=" background-color: #c4c4c4;" id="id_message_send_input">
 				<button class="btn btn-dark rounded" id="id_message_send_button">Send</button>
 			</div>
 
