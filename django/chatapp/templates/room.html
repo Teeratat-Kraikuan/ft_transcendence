@@ -34,7 +34,7 @@
 					{% if rooms %}
 					{% for loop_room in rooms %}
 						{% if loop_room.user1 == request.user and loop_room.user2.active %}
-							<a href="../{{ loop_room.slug }}">
+							<a onclick="swapApp('/chat/{{ loop_room.slug }}')">
 								<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image">
@@ -52,7 +52,7 @@
 								</li>
 							</a>
 						{% elif loop_room.user2 == request.user and loop_room.user1.active %}
-							<a href="../{{ loop_room.slug }}">
+							<a onclick="swapApp('/chat/{{ loop_room.slug }}')">
 								<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image">
@@ -73,7 +73,7 @@
 					{% endfor %}
 					{% for loop_room in rooms %}
 							{% if loop_room.user1 == request.user and not loop_room.user2.active %}
-								<a href="../{{ loop_room.slug }}">
+								<a onclick="swapApp('/chat/{{ loop_room.slug }}')">
 									<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
 										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 											<div class="chat-image">
@@ -91,7 +91,7 @@
 									</li>
 								</a>	
 							{% elif loop_room.user2 == request.user and not loop_room.user1.active %}
-								<a href="../{{ loop_room.slug }}">
+								<a onclick="swapApp('/chat/{{ loop_room.slug }}')">
 									<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
 										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 											<div class="chat-image">
@@ -127,7 +127,7 @@
 				<button class="btn btn-light btn-sm me-2" style=" font-size: 0.7rem;">
 					<i class="bi bi-joystick"></i> invite
 				</button>
-				<a href="../../users/{{ friend.username }}">
+				<a onclick="swapApp('/chat/{{ friend.username }}')">
 					<button class="btn btn-light btn-sm me-2" style=" font-size: 0.7rem;">
 						<i class="bi bi-person-fill"></i> profile
 					</button>

@@ -26,7 +26,7 @@
 					{% if rooms %}
 					{% for room in rooms %}
 						{% if room.user1 == request.user and room.user2.active %}
-							<a href="{{ room.slug }}">
+							<a onclick="swapApp('/chat/{{ room.slug }}')">
 								<li class="chat-box">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image">
@@ -44,7 +44,7 @@
 								</li>
 							</a>
 						{% elif room.user2 == request.user and room.user1.active %}
-							<a href="{{ room.slug }}">
+							<a onclick="swapApp('/chat/{{ room.slug }}')">
 								<li class="chat-box">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image">
@@ -65,7 +65,7 @@
 					{% endfor %}
 					{% for room in rooms %}
 							{% if room.user1 == request.user and not room.user2.active %}
-								<a href="{{ room.slug }}">
+							<a onclick="swapApp('/chat/{{ room.slug }}')">
 									<li class="chat-box">
 										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 											<div class="chat-image">
@@ -83,7 +83,7 @@
 									</li>
 								</a>	
 							{% elif room.user2 == request.user and not room.user1.active %}
-								<a href="{{ room.slug }}">
+							<a onclick="swapApp('/chat/{{ room.slug }}')">
 									<li class="chat-box">
 										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 											<div class="chat-image">
