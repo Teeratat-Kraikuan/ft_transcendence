@@ -21,7 +21,7 @@ body {
     width: 100px;
     height: 100%;
     background-color:rgb(35, 35, 35);
-    /* background-color:rgb(30, 30, 30); */
+    
     text-align: center;
 }
 .wrapper .sidebar span{
@@ -237,6 +237,7 @@ form textarea{
 .user_img{
     height: 40px;
     width: 40px;
+    object-fit: cover;
     border:1.5px solid #f5f6fa;
 }
 
@@ -289,10 +290,16 @@ form textarea{
     height: 30px;
     width: 30px;
     border:1.5px solid #f5f6fa;
+    object-fit: cover;
 }
 
 .score-board{
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 5px 10px #e6e6e663;
+}
+
+.image-profile {
+    border-radius: 100%;
+    object-fit: cover;
 }
