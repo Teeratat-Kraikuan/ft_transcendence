@@ -36,7 +36,7 @@
 		</div>
 		<div class="column content-solid mx-2">
 			<div class="card-topic">Register</div>
-			<form action="" method="POST">
+			<form id="registerForm" method="POST">
 				{% csrf_token %}
 				<input class="input-box" type="text" placeholder="Enter Username" name="username" required>
 				<input class="input-box" type="email" placeholder="Enter Email" name="email" required>
@@ -59,50 +59,4 @@
 	</div>
 </div>
 
-{% endblock %}
-
-{% block body-script %}
-<script>
-	document.getElementById('loginForm').addEventListener('submit', function(event) {
-		event.preventDefault();
-		makeLogin();
-	});
-	function makeLogin() {
-		console.log("hello from login");
-		const formData = new FormData(document.getElementById('loginForm'));
-		formData.append('submit', 'sign-in');
-		const username = formData.get('username');
-		const password = formData.get('password');
-		const submit = formData.get('submit');
-		console.log(`Username: ${username}, Password: ${password}, Submit: ${submit}`);
-
-		const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-		fetch('/login/', {
-			method: 'POST',
-			headers: {
-				'X-CSRFToken': csrftoken
-			},
-			body: formData
-		})
-		.then(response => response.text())
-		.then(html => {
-			const parser = new DOMParser();
-			const doc = parser.parseFromString(html, 'text/html');
-
-			document.body.innerHTML = html;
-
-			const scripts = doc.querySelectorAll('script');
-			scripts.forEach(script => {
-				const newScript = document.createElement('script');
-				if (script.src) {
-					newScript.src = script.src;
-				} else {
-					newScript.textContent = script.textContent;
-				}
-				document.body.appendChild(newScript);
-			});
-		})
-		.catch(error => console.log(error));
-	}
-</script>
 {% endblock %}

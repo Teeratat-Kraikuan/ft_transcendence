@@ -53,25 +53,25 @@ def login(request):
 			if password == repeat_password:
 				if CustomUser.objects.filter(email=email).exists():
 					messages.error(request, 'Email Taken', extra_tags='sign-up')
-					return redirect('login')
+					return JsonResponse({'success': False, 'error': 'Email Taken'}, status=200)
 				elif CustomUser.objects.filter(username=username).exists():
 					messages.error(request, 'Username Taken', extra_tags='sign-up')
-					return redirect('login')
+					return JsonResponse({'success': False, 'error': 'Username Taken'}, status=200)
 				elif not validPass(password):
 					messages.error(request, "Password must have at least 8 charters, 1 uppercase, 1 lowercase and 1 digit", extra_tags="sign-up")
-					return redirect('login')
+					return JsonResponse({'success': False, 'error': 'Password must have at least 8 charters, 1 uppercase, 1 lowercase and 1 digit'}, status=200)
 				elif not validEmail(email):
 					messages.error(request, "Invalid Email", extra_tags='sign-up')
-					return redirect('login')
+					return JsonResponse({'success': False, 'error': 'Invalid Email'}, status=200)
 				else:
 					user = CustomUser.objects.create(username=username, email=email, password=password)
 					user.set_password(password)
 					user.save()
 					messages.success(request, 'Your signup successful', extra_tags='sign-up')
-					return redirect('home')
+					return JsonResponse({'success': True, 'success': 'Your signup successful'}, status=200)
 			else:
 				messages.error(request, 'Password Not Matching', extra_tags='sign-up')
-				return redirect('login')
+				return JsonResponse({'success': False, 'error': 'Password Not Matching'}, status=200)
 	return render(request, "login.html", context)
 
 def validEmail(email):
