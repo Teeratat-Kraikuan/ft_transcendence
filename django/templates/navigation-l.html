@@ -3,7 +3,7 @@
 {% url 'profile' username=user.username as user_url %}
 <li class="nav-item nav-btn mx-auto {% if request.path == user_url %}active{% endif %}">
     <a class="nav-link nav-btn" onclick="swapApp('/users/{{request.user.username}}')">
-        <img style="max-width: 40px; border-radius: 100%;"  src="{{ user.profile_image.url }}">
+        <img class="image-profile" style="width: 40px; height: 40px;" src="{{ user.profile_image.url }}">
         <br><span>{{ user.username }}</span>
     </a>
 </li>
