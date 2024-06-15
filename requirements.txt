@@ -6,4 +6,3 @@ daphne
 channels
 channels_postgres
 Pillow
-whitenoise
