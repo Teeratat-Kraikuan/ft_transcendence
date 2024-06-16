@@ -25,6 +25,8 @@ function updateApp(path) {
 }
 
 function swapApp(path) {
+	if (path === window.location.pathname)
+		return;
 	console.log(path);
 	window.history.pushState({}, '', path);
 	updateApp(path);
@@ -39,6 +41,9 @@ function loadScripts(path) {
 	}
 	else if (path.includes('/chat') && path !== '/chat/') {
 		executeInlineScripts();
+	}
+	else if (path === '/game/') {
+		loadScript('/static/js/game.js');
 	}
 }
 

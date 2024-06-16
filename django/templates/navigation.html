@@ -1,6 +1,6 @@
 {% load static %}
 
-<li class="nav-item nav-btn mx-auto {% if request.path == '/game/' %}active{% endif %}">
+<li class="nav-item nav-btn mx-auto {% if '/game/' in request.path %}active{% endif %}">
     <a class="nav-link nav-btn" onclick="swapApp('/game/')">
         <i class="bi bi-joystick" style="font-size: 1.2rem;"></i>
         <br><span>Game</span>
@@ -12,7 +12,7 @@
         <br><span>Tournament</span>
     </a>
 </li> {% endcomment %}
-<li class="nav-item nav-btn mx-auto {% if request.path == '/login/' %}active{% endif %}">
+<li class="nav-item nav-btn mx-auto {% if '/login/' in request.path %}active{% endif %}">
     <a class="nav-link nav-btn" onclick="swapApp('/login/')">
         <i class="bi bi-box-arrow-in-right" style="font-size: 1.2rem;"></i>
         <br><span>Login</span>
