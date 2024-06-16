@@ -20,10 +20,10 @@
 		<div class="column content-solid card-main  mx-2">
 			<img style="margin-top: 25px; width: 168px;"  src="{% static 'pongpong.png' %}">
 			<div class="column mb-2 mt-5">
-				<button id="singlePButton" type="button" class="btn btn-light" style="width: 39%; font-size: 1rem;">1P</button>
+				<button id="singlePButton" type="button" class="btn btn-light" style="width: 39%; font-size: 1rem;" onclick="swapApp('/game/pong-ai')">1P</button>
 				<button id="multiPButton" type="button" class="btn btn-light" style="width: 39%; font-size: 1rem;">2P</button>
 			</div>
-			<a style="text-decoration: none; color: black;" href="{% url 'tournament' %}">
+			<a style="text-decoration: none; color: black;" onclick="swapApp('/game/tournament/')">
 				<button type="button" class="btn btn-light card-x-btn mb-4">
 					Tournament
 				</button>
@@ -61,7 +61,7 @@
 			  </div>
 		</div>
 
-		<!-- 1Player -->
+		{% comment %} <!-- 1Player -->
 		<div class="column content-solid card-side mx-2" id="singlePCard">
 			<form id="singlePlayerForm" method="post" action="{% url 'pong' %}">
 			{% csrf_token %}
@@ -71,7 +71,7 @@
 				<button type="submit" class="btn btn-light card-m-btn my-2" name="difficulty" value="medium">Medium</button>
 				<button type="submit" class="btn btn-light card-m-btn my-2" name="difficulty" value="hard">Hard</button>
 			</form>
-		</div>
+		</div> {% endcomment %}
 			<!-- 2Player -->
 		<div class="column content-solid card-side mx-2" id="multiPCard">
 			<form id="multiPlayerForm" method="post" action="{% url 'pong' %}">
@@ -90,32 +90,5 @@
 		</div>
 	</div>
 </div>
-
-<script>
-window.onload = function() {
-    var settingCard = document.getElementById('settingCard');
-    var singlePCard = document.getElementById('singlePCard');
-    var multiPCard = document.getElementById('multiPCard');
-	
-    document.getElementById('settingButton').addEventListener('click', function() {
-		singlePCard.classList.remove('active');
-		multiPCard.classList.remove('active');
-        settingCard.classList.toggle('active');
-    });
-	
-    document.getElementById('singlePButton').addEventListener('click', function() {
-		settingCard.classList.remove('active');
-		multiPCard.classList.remove('active');
-        singlePCard.classList.toggle('active');
-    });
-	
-    document.getElementById('multiPButton').addEventListener('click', function() {
-		settingCard.classList.remove('active');
-		singlePCard.classList.remove('active');
-        multiPCard.classList.toggle('active');
-    });
-};
-
-</script>
 
 {% endblock %}

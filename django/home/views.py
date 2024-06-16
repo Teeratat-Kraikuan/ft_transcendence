@@ -37,8 +37,6 @@ def login(request):
 
 			if user is not None:
 				auth.login(request, user)
-				user.active = True
-				user.save()
 				html_content = render_to_string('home.html', {'user': user})
 				return JsonResponse({'success': True, 'html_content': html_content}, status=200)
 			else:
@@ -94,8 +92,6 @@ def validPass(password):
 
 @login_required
 def logout(request):
-	request.user.active = False
-	request.user.save()
 	auth.logout(request)
 	return redirect('home')
 

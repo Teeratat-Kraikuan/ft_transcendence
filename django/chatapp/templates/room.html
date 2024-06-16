@@ -194,12 +194,15 @@
 	const roomSlug = "{{ room.slug }}";
 	const roomName = "{{ room.name }}";
 	const username = "{{ request.user.username }}"
-	const chatSocket = new WebSocket("wss://" + window.location.host + "/ws/chat/" + roomSlug + "/");
+	const my_img = "{{ request.user.profile_image.url }}"
+	const friend_img = "{{ friend.profile_image.url }}"
+
+	chatSocket = new WebSocket("wss://" + window.location.host + "/ws/chat/" + roomSlug + "/");
 	chatSocket.onopen = function (e) {
-		console.log("The connection was setup successfully !");
+		console.log("chat socket connect to " + roomSlug);
 	};
 	chatSocket.onclose = function (e) {
-		console.log("Something unexpected happened !");
+		console.log("chat socket disconnect from " + roomSlug);
 	};
 	document.querySelector("#id_message_send_input").focus();
 	document.querySelector("#id_message_send_input").onkeyup = function (e) {
@@ -224,7 +227,6 @@
 		var img = document.createElement("img");
 		var div_image = document.createElement("div");
 		div_image.className = "chat-image";
-		img.setAttribute("src", "{{ loop_room.user2.profile_image.url }}");
 		img.className = "rounded-circle user_img";
 		div_image.appendChild(img);
 		
@@ -238,11 +240,13 @@
 		div.appendChild(span_img);
 		
 		if (data.username === username) {
+			img.setAttribute("src", my_img);
 			div_head.className = "d-flex justify-content-end mb-4";
 			div.className = "d-flex flex-column pe-2";
 			div_head.appendChild(div);
 			div_head.appendChild(div_image);
 		} else {
+			img.setAttribute("src", friend_img);
 			div_head.className = "d-flex justify-content-start mb-4";
 			div.className = "d-flex flex-column ps-2";
 			div_head.appendChild(div_image);
