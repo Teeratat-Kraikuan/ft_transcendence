@@ -1,3 +1,5 @@
+let chatSocket;
+
 document.addEventListener('DOMContentLoaded', function() {
 	updateApp(window.location.pathname);
 	if (document.body.dataset.userAuthenticated === 'true') {
@@ -9,6 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function updateApp(path) {
+	if (chatSocket) {
+		chatSocket.close();
+	}
+
 	fetch(path, { headers: { "X-Requested-With": "XMLHttpRequest" } })
 	 .then(response => response.text())
 	 .then(html => {
@@ -29,10 +35,11 @@ function loadScripts(path) {
 		loadScript('/static/js/login.js');
 	}
 	else if (path.includes('/logout')) {
-		console.log("logout function");
 		onlineSocket.close();
 	}
-	// Add other paths and their corresponding scripts if needed
+	else if (path.includes('/chat') && path !== '/chat/') {
+		executeInlineScripts();
+	}
 }
 
 function loadScript(src) {
@@ -46,6 +53,20 @@ function loadScript(src) {
 	} else {
 		console.log(`${src} is already loaded.`);
 	}
+}
+
+function executeInlineScripts() {
+	// Extract and execute inline scripts from the HTML
+	const scripts = document.querySelectorAll("script");
+	scripts.forEach(script => {
+		if (script.innerHTML) {
+			try {
+				eval(script.innerHTML);
+			} catch (e) {
+				console.error("Error executing script: ", e);
+			}
+		}
+	});
 }
 
 window.swapApp = swapApp;
