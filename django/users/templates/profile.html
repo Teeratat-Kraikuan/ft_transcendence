@@ -29,24 +29,24 @@
 <div class="justify-content-center popup-menu" id="popUpFriend">
 	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
 		<div class="d-flex row content-solid card-main mx-2" style="width: 350px;">
-			<div class="card-topic">Friend</div>
+			<div class="card-topic">Blocked List</div>
 			<div class="chat-h-body px-4" style="height: 250px;">
 				<ul class="chat-contacts">
-					{% for friend in allFriend %}
+					{% for blocked_user in blockedUsers %}
 					<li class="chat-box active">
 						<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 							<div class="chat-image me-2">
-								<img src="{{ friend.profile_image.url }}" class="rounded-circle user_img">
+								<img src="{{ blocked_user.profile_image.url }}" class="rounded-circle user_img">
 							</div>
-							<span>{{friend.username}}</span>
+							<span>{{blocked_user.username}}</span>
 							<!-- if block -->
-							<button class="btn btn-outline-light btn-sm me-2 ms-auto" style=" font-size: 0.7rem;">
+							{% comment %} <button class="btn btn-outline-light btn-sm me-2 ms-auto" style=" font-size: 0.7rem;">
 								<i class="bi bi-ban"></i> Block
-							</button>
+							</button> {% endcomment %}
 							<!-- else -->
-							<!-- <button class="btn btn-light btn-sm me-2 ms-auto" style=" font-size: 0.7rem; color: red">
+							<button class="btn btn-light btn-sm me-2 ms-auto" style=" font-size: 0.7rem; color: red" onclick="unblock('{{blocked_user.username}}')" id="block_button">
 								<i class="bi bi-ban"></i> Unblock
-							</button> -->
+							</button>
 						</div>
 					</li>
 					{% endfor %}
@@ -108,7 +108,7 @@
 						<a onclick="showFriendManage();">
 							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
 								<i class="bi bi-person-gear"></i>
-								friend
+								blocked list
 							</button>
 						</a>
 					</div>

@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
 	draws = models.IntegerField(default=0)
 	is_student = models.BooleanField(default=False)
 	friends = models.ManyToManyField('self', blank=True)
+	blocked_user = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='blocked_by')
 	active = models.IntegerField(default=0)
 
 	def __str__(self):

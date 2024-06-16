@@ -69,7 +69,7 @@
 			<div class="profile-main-text text-center">Friends</div>
 			<div class="profile-label-text mt-3">ONLINE - {{ online }}</div>
 			<ul class="chat-contacts">
-			{% for friend in request.user.friends.all %}
+			{% for friend in allFriend %}
 			{% if friend.active %}
 			<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text" style="text-decoration: none; color: #fff;">
 				<li style="margin-bottom: 0px;">
@@ -89,7 +89,7 @@
 			</ul>
 			<div class="profile-label-text">OFFLINE - {{ offline }}</div>
 			<ul class="chat-contacts">
-			{% for friend in request.user.friends.all %}
+			{% for friend in allFriend %}
 			{% if not friend.active %}
 			<a onclick="swapApp('/users/{{ friend.username }}/')" class="profile-content-text" style="text-decoration: none; color: #fff;">
 				<li style="margin-bottom: 0px;">

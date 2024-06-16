@@ -8,11 +8,22 @@ from .models import Room, Message
 @login_required
 def chat(request):
 	context = {}
-	myChatRooms = Room.objects.filter(Q(user1=request.user) | Q(user2=request.user))
+	rooms = Room.objects.filter(Q(user1=request.user) | Q(user2=request.user))
+	selected_room = []
+	for loop_room in rooms:
+		if loop_room.user1 == request.user and loop_room.user2.active and not request.user.blocked_user.filter(username=loop_room.user2.username).exists():
+			selected_room += [loop_room]
+		elif loop_room.user2 == request.user and loop_room.user1.active and not request.user.blocked_user.filter(username=loop_room.user1.username).exists():
+			selected_room += [loop_room]
+	for loop_room in rooms:
+		if loop_room.user1 == request.user and not loop_room.user2.active and not request.user.blocked_user.filter(username=loop_room.user2.username).exists():
+			selected_room += [loop_room]
+		elif loop_room.user2 == request.user and not loop_room.user1.active and not request.user.blocked_user.filter(username=loop_room.user1.username).exists():
+			selected_room += [loop_room]
+	context['rooms'] = selected_room
 	friends = request.user.friends.all()
-	context['rooms'] = myChatRooms
+	context['rooms'] = selected_room
 	context['friends'] = friends
-	print(type(friends))
 	return render(request, "chat.html", context)
 
 @login_required
@@ -26,7 +37,18 @@ def room(request, slug):
 		return redirect('home')
 	messages = Message.objects.filter(room=room)
 	rooms = Room.objects.all()
-	context['rooms'] = rooms
+	selected_room = []
+	for loop_room in rooms:
+		if loop_room.user1 == request.user and loop_room.user2.active and not request.user.blocked_user.filter(username=loop_room.user2.username).exists():
+			selected_room += [loop_room]
+		elif loop_room.user2 == request.user and loop_room.user1.active and not request.user.blocked_user.filter(username=loop_room.user1.username).exists():
+			selected_room += [loop_room]
+	for loop_room in rooms:
+		if loop_room.user1 == request.user and not loop_room.user2.active and not request.user.blocked_user.filter(username=loop_room.user2.username).exists():
+			selected_room += [loop_room]
+		elif loop_room.user2 == request.user and not loop_room.user1.active and not request.user.blocked_user.filter(username=loop_room.user1.username).exists():
+			selected_room += [loop_room]
+	context['rooms'] = selected_room
 	context['room'] = room
 	context['messages'] = messages
 	context['friend'] = room.user2 if request.user == room.user1 else room.user1

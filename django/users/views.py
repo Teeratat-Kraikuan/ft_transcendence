@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from .models import CustomUser, FriendRequest
 from chatapp.models import Room
 from dotenv import load_dotenv
@@ -21,7 +21,9 @@ def profile(request, username):
 		context['offline'] = len(profile.friends.filter(active=False))
 		context['profile'] = profile
 		context['isFriend'] = True if profile.friends.filter(username=request.user).exists() else False
-		context['allFriend'] = profile.friends.all
+		context['blockedUsers'] = profile.blocked_user.all()
+		blockedUsers = [b for b in profile.blocked_user.all()]
+		context['allFriend'] = profile.friends.exclude(username__in=blockedUsers)
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')
@@ -37,6 +39,8 @@ def friend(request):
 	context['offline'] = len(request.user.friends.filter(active=False))
 	context['all_friend_requests'] = all_friend_requests
 	context['allusers'] = allusers
+	blockedUsers = [b for b in request.user.blocked_user.all()]
+	context['allFriend'] = request.user.friends.exclude(username__in=blockedUsers)
 	return render(request, 'friend.html', context)
 
 @login_required
@@ -64,6 +68,26 @@ def accept_friend_request(request, requestID):
 		Room.create_room(friend_request.from_user, friend_request.to_user)
 		friend_request.delete()
 	return redirect('friend')
+
+@login_required
+def block(request, username):
+	blockUser = CustomUser.objects.get(username=username)
+	request.user.blocked_user.add(blockUser)
+	return redirect('chat')
+
+@login_required
+def unblock(request, username):
+	print("unblocking")
+	try:
+		unblock_user = CustomUser.objects.get(username=username)
+		if not request.user.blocked_user.filter(pk=unblock_user.pk).exists():
+			return JsonResponse({'status': 'fail', 'message': 'User is not blocked'}, status=400)
+		request.user.blocked_user.remove(unblock_user)
+		return JsonResponse({'status': 'success', 'message': 'User unblocked'})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'fail', 'message': 'User does not exist'}, status=404)
+	except Exception as e:
+		return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 	
 def callback(request):
 	authroization_code = request.GET.get('code')
@@ -72,7 +96,6 @@ def callback(request):
 	
 	o42 = Oauth42()
 	token = o42.get_token(authroization_code)
-	print(token)
 	if token == None:
 		messages.warning(request, "Couldn't exchange code for access token.")
 		return redirect('login')

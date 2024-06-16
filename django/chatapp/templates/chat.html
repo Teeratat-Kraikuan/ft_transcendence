@@ -24,84 +24,25 @@
 			<div class="chat-h-body h-75">
 				<ui class="chat-contacts">
 					{% if rooms %}
-					{% for room in rooms %}
-						{% if room.user1 == request.user and room.user2.active %}
-							<a onclick="swapApp('/chat/{{ room.slug }}')">
-								<li class="chat-box">
+						{% for loop_room in rooms %}
+							<a onclick="swapApp('/chat/{{ loop_room.slug }}')">
+								<li class="chat-box {% if room.slug == loop_room.slug %}active{% endif %}">
 									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
 										<div class="chat-image me-2">
-											<img src="{{ room.user2.profile_image.url }}" class="rounded-circle user_img">
-											<span class="online_icon"></span>
+											<img src="{% if loop_room.user1 == request.user %}{{ loop_room.user2.profile_image.url }}{% else %}{{ loop_room.user1.profile_image.url }}{% endif %}" class="rounded-circle user_img">
+											{% if loop_room.user1 == request.user and loop_room.user2.active %}
+												<span class="online_icon"></span>
+											{% elif loop_room.user2 == request.user and loop_room.user1.active %}
+												<span class="online_icon"></span>
+											{% else %}
+												<span class="online_icon offline"></span>
+											{% endif %}
 										</div>
-										<span>{{room.user2.username}}</span><br>
-										<!-- <div class="px-2">
-											<span class="profile-label-text">last text</span>
-										</div>
-										<div class="px-2 align-items-end ms-auto">
-											<p>00:00</p>
-										</div> -->
+										<span>{% if loop_room.user1 == request.user %}{{loop_room.user2.username}}{% else %}{{loop_room.user1.username}}{%endif%}</span><br>
 									</div>
 								</li>
 							</a>
-						{% elif room.user2 == request.user and room.user1.active %}
-							<a onclick="swapApp('/chat/{{ room.slug }}')">
-								<li class="chat-box">
-									<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
-										<div class="chat-image me-2">
-											<img src="{{ room.user1.profile_image.url }}" class="rounded-circle user_img">
-											<span class="online_icon"></span>
-										</div>
-										<span>{{room.user1.username}}</span><br>
-										<!-- <div class="px-2">
-											<span class="profile-label-text">last text</span>
-										</div>
-										<div class="px-2 align-items-end ms-auto">
-											<p>00:00</p>
-										</div> -->
-									</div>
-								</li>
-							</a>
-						{% endif %}
-					{% endfor %}
-					{% for room in rooms %}
-							{% if room.user1 == request.user and not room.user2.active %}
-							<a onclick="swapApp('/chat/{{ room.slug }}')">
-									<li class="chat-box">
-										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
-											<div class="chat-image me-2">
-												<img src="{{ room.user2.profile_image.url }}" class="rounded-circle user_img">
-												<span class="online_icon offline"></span>
-											</div>
-											<span>{{room.user2.username}}</span><br>
-											<!-- <div class="px-2">
-												<span class="profile-label-text">last text</span>
-											</div>
-											<div class="px-2 align-items-end ms-auto">
-												<p>00:00</p>
-											</div> -->
-										</div>
-									</li>
-								</a>	
-							{% elif room.user2 == request.user and not room.user1.active %}
-							<a onclick="swapApp('/chat/{{ room.slug }}')">
-									<li class="chat-box">
-										<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
-											<div class="chat-image me-2">
-												<img src="{{ room.user1.profile_image.url }}" class="rounded-circle user_img">
-												<span class="online_icon offline"></span>
-											</div>
-											<span>{{room.user1.username}}</span><br>
-											<!-- <div class="px-2">
-												<span class="profile-label-text">last text</span>
-											</div>
-											<div class="px-2 align-items-end ms-auto">
-												<p>00:00</p>
-											</div> -->
-										</div>
-									</li>
-								</a>
-							{% endif %}
-					{% endfor %}
+						{% endfor %}
 					{% endif %}
 				</ui>
 			</div>

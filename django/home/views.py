@@ -28,7 +28,6 @@ def login(request):
 		'authorize_uri' : authorize_uri
 	}
 	if request.method == 'POST':
-		print("POST method sent.")
 		if request.POST.get('submit') == 'sign-in':
 			username = request.POST['username']
 			password = request.POST['password']
