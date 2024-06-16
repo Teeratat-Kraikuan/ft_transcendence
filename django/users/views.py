@@ -12,13 +12,16 @@ import requests
 load_dotenv()
 
 # Create your views here.
+@login_required
 def profile(request, username):
 	context = {}
 	try:
 		profile = CustomUser.objects.get(username=username)
 		context['online'] = len(profile.friends.filter(active=True))
 		context['offline'] = len(profile.friends.filter(active=False))
-		context["profile"] = profile
+		context['profile'] = profile
+		context['isFriend'] = True if profile.friends.filter(username=request.user).exists() else False
+		context['allFriend'] = profile.friends.all
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')

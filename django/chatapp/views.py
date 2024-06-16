@@ -29,5 +29,5 @@ def room(request, slug):
 	context['rooms'] = rooms
 	context['room'] = room
 	context['messages'] = messages
-	context['friend'] = room.user2 if request.user.username == room.user1 else room.user1
+	context['friend'] = room.user2 if request.user == room.user1 else room.user1
 	return render(request, "room.html", context)

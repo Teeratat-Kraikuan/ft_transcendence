@@ -2,28 +2,63 @@
 {% load static %}
 {% block content %}
 
-<div class="justify-content-center popup-menu" id="popUp">
+<div class="justify-content-center popup-menu" id="popUpEdit">
 	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
-		<div class="d-flex row content-solid card-main mx-2" style="width:  30%;">
+		<div class="d-flex row content-solid card-main mx-2" style="width: 350px">
 			<div class="card-topic">Edit</div>
 			<form action="#" class="mt-2 px-5">
-				<textarea type="text" placeholder="bio"></textarea>	
-
-				<div class=" mt-4 px-5">
+				<textarea type="text" placeholder="bio"></textarea>
+				<div class=" mt-4">
 					<label for="formProfilePic" class="form-label">Profile picture</label>
 					<input class="form-control form-control-sm text-center" id="formProfilePic" type="file">
-	
+
 					<label for="formBgPic" class="form-label pt-3">Background picture</label>
 					<input class="form-control form-control-sm text-center" id="formBgPic" type="file">
 				</div>
 			</form>
-			<a href="javascript:void(0);" onclick="doneEdit();">
-				<button type="button" class="btn btn-light mt-5" style="width: 35%; font-size: 1rem;">
+			<a onclick="doneEdit();">
+				<button type="button" class="btn btn-light mt-5" style="width: 120px; font-size: 1rem;">
 					Done
 				</button>
 			</a>
 		</div>
-		
+
+	</div>
+</div>
+
+<div class="justify-content-center popup-menu" id="popUpFriend">
+	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
+		<div class="d-flex row content-solid card-main mx-2" style="width: 350px;">
+			<div class="card-topic">Friend</div>
+			<div class="chat-h-body px-4" style="height: 250px;">
+				<ul class="chat-contacts">
+					{% for friend in allFriend %}
+					<li class="chat-box active">
+						<div class="d-flex bd-highligh align-items-center profile-content-text py-1">
+							<div class="chat-image me-2">
+								<img src="{{ friend.profile_image.url }}" class="rounded-circle user_img">
+							</div>
+							<span>{{friend.username}}</span>
+							<!-- if block -->
+							<button class="btn btn-outline-light btn-sm me-2 ms-auto" style=" font-size: 0.7rem;">
+								<i class="bi bi-ban"></i> Block
+							</button>
+							<!-- else -->
+							<!-- <button class="btn btn-light btn-sm me-2 ms-auto" style=" font-size: 0.7rem; color: red">
+								<i class="bi bi-ban"></i> Unblock
+							</button> -->
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+			<a onclick="doneFriendManage();">
+				<button type="button" class="btn btn-light mt-5" style="width: 120px; font-size: 1rem;">
+					Done
+				</button>
+			</a>
+		</div>
+
 	</div>
 </div>
 
@@ -32,14 +67,17 @@
 		<!-- all -->
 		<div class="col-md-11">
 			<div class="row justify-content-center mb-4">
-
-			<!-- bg -->
-			<div class="text-center" style="background-image: url('{{ profile.banner_image.url}}'); background-size: cover; height: 200px;"></div>
-			<!-- top -->
+				<!-- bg -->
+				<div class="text-center"
+					style="background-image: url('{{ profile.banner_image.url}}'); background-size: cover; height: 200px;">
+				</div>
+				<!-- top -->
 				<div class="row profile-solid rounded-bottom py-3">
 					<!-- profile pic -->
 					<div class="col-md-3 mt-1 text-center">
-						<img class="image-profile" style="width: 125px; height: 125px; margin-top: -60px; border: 5px solid #353535;"  src='{{ profile.profile_image.url}}'>
+						<img class="image-profile"
+							style="width: 125px; height: 125px; margin-top: -60px; border: 5px solid #353535;"
+							src='{{ profile.profile_image.url}}'>
 					</div>
 					<!-- profile name -->
 					<div class="col-md-6 mt-1">
@@ -59,30 +97,32 @@
 
 					<!-- Button -->
 					{% url 'profile' username=user.username as user_url %}
-					{% if request.path == user_url %}										
+					{% if request.path == user_url %}
 					<div class="col-md-3" style="text-align: right;">
-						<a href="javascript:void(0);" onclick="showEdit();">
+						<a onclick="showEdit();">
 							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
 								<i class="bi bi-pencil-fill"></i>
 								edit
 							</button>
 						</a>
+						<a onclick="showFriendManage();">
+							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+								<i class="bi bi-person-gear"></i>
+								friend
+							</button>
+						</a>
 					</div>
 					{% else %}
+					{% if not isFriend %}
 					<div class="col-md-3" style="text-align: right;">
-						<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
-							<i class="bi bi-joystick"></i>
-							invite
-						</button>
-						<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
-							<i class="bi bi-chat-left-fill"></i>
-							chat
-						</button>
-						<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
-							<i class="bi bi-person-slash"></i>
-							unfriend
-						</button>
+						<a onclick="swapApp('/users/send_friend_request/{{profile.id}}/')">
+							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+								<i class="bi bi-person-add"></i>
+								Add Friend
+							</button>
+						</a>
 					</div>
+					{% endif %}
 					{% endif %}
 
 				</div>
@@ -134,7 +174,7 @@
 					<!-- content -->
 					<div class="row mb-4">
 						<div class="col-sm-6" id="bsb-chart-7"></div>
-						<div class="col-sm-6 my-2 profile-content-text" >
+						<div class="col-sm-6 my-2 profile-content-text">
 							<div class="profile-main-text my-2" style="font-size: 0.9rem;">Win percentage 25%</div>
 							Gmaeplayed 4<br>
 							Win 1<br>
@@ -148,8 +188,10 @@
 						<div class="col-6 profile-label-text text-end">Goals Scored 0</div>
 					</div>
 					<div class="progress" style="border: 2px solid #b3b3b3;">
-						<div class="progress-bar bg-light" role="progressbar" style="width: 75%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-						<div class="progress-bar bg-dark" role="progressbar" style="width: 25%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+						<div class="progress-bar bg-light" role="progressbar" style="width: 75%" aria-valuenow="30"
+							aria-valuemin="0" aria-valuemax="100"></div>
+						<div class="progress-bar bg-dark" role="progressbar" style="width: 25%" aria-valuenow="20"
+							aria-valuemin="0" aria-valuemax="100"></div>
 					</div>
 					<div class="text-center profile-content-text my-3">Difference -5</div>
 
@@ -157,13 +199,15 @@
 
 				<!-- friends -->
 				<div class="col-md-2 p-3 profile-solid rounded mt-4">
-					<div class="profile-main-text mb-4">Friends</div>
+					<div class="profile-main-text">Friends</div>
 					<div style="overflow-y: auto">
-						<div class="profile-label-text">ONLINE - {{ online }}</div>
+						{% if request.path == user_url %}
+						<div class="profile-label-text mt-3">ONLINE - {{ online }}</div>
 						<ul class="chat-contacts">
-							{% for friend in profile.friends.all %}
+							{% for friend in allFriend %}
 							{% if friend.active %}
-							<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text" style="text-decoration: none; color: #fff;">
+							<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text"
+								style="text-decoration: none; color: #fff;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
@@ -178,12 +222,13 @@
 							</a>
 							{% endif %}
 							{% endfor %}
-							</ul>
-							<div class="profile-label-text">OFFLINE - {{ offline }}</div>
-							<ul class="chat-contacts">
-							{% for friend in profile.friends.all %}
+						</ul>
+						<div class="profile-label-text">OFFLINE - {{ offline }}</div>
+						<ul class="chat-contacts">
+							{% for friend in allFriend %}
 							{% if not friend.active %}
-							<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text" style="text-decoration: none; color: #fff;">
+							<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text"
+								style="text-decoration: none; color: #fff;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center profile-content-text py-1">
 										<div class="chat-image">
@@ -199,10 +244,31 @@
 							{% endif %}
 							{% endfor %}
 						</ul>
+						{% endif %}
+						{% if request.path != user_url %}
+						<ul class="chat-contacts">
+							{% for friend in allFriend %}
+							<a onclick="swapApp('/users/{{ friend.username }}')" class="profile-content-text"
+								style="text-decoration: none; color: #fff;">
+								<li style="margin-bottom: 0px;">
+									<div class="d-flex align-items-center profile-content-text py-1">
+										<div class="chat-image">
+											<img src="{{ friend.profile_image.url}}" class="rounded-circle user_img">
+										</div>
+										<div class="px-2">
+											{{ friend.username }}
+										</div>
+									</div>
+								</li>
+							</a>
+							{% endfor %}
+						</ul>
+						{% endif %}
+
 					</div>
 				</div>
 			</div>
-		</div>		
+		</div>
 	</div>
 </div>
 

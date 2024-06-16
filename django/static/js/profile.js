@@ -59,9 +59,15 @@
 	// var progressValue = 0.8; // progress
 	// progress.style.width = progressValue * 100 + "%";
 
-	function showEdit() {
-		document.getElementById("popUp").style.display = 'block';
-	}
-	function doneEdit() {
-		document.getElementById("popUp").style.display = 'none';
-	}
+function showEdit() {
+	document.getElementById("popUpEdit").style.display = 'block';
+}
+function doneEdit() {
+	document.getElementById("popUpEdit").style.display = 'none';
+}
+function showFriendManage() {
+	document.getElementById("popUpFriend").style.display = 'block';
+}
+function doneFriendManage() {
+	document.getElementById("popUpFriend").style.display = 'none';
+}
