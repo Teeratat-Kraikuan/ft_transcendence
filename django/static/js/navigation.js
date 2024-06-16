@@ -14,6 +14,9 @@ function updateApp(path) {
 	if (chatSocket) {
 		chatSocket.close();
 	}
+	if (window.cleanupPongAI) {
+		window.cleanupPongAI();
+	}
 
 	fetch(path, { headers: { "X-Requested-With": "XMLHttpRequest" } })
 	 .then(response => response.text())
@@ -47,6 +50,12 @@ function loadScripts(path) {
 	}
 	else if (path === '/game/') {
 		loadScript('/static/js/game.js');
+	}
+	else if (path.includes('/pong-ai')) {
+		loadScript('/static/js/pong-ai.js');
+	}
+	else if (path.includes('/pong-local')) {
+		loadScript('/static/js/pong-local.js');
 	}
 }
 

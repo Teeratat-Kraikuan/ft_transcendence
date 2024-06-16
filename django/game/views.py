@@ -54,6 +54,10 @@ def pong_ai(request):
 	context = {}
 	return render(request, 'pong-ai.html', context)
 
+def pong_local(request):
+	context = {}
+	return render(request, 'pong-local.html', context)
+
 @login_required
 def tournament(request):
 	if not request.user.is_authenticated:

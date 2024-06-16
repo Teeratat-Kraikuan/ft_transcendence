@@ -34,9 +34,9 @@
 		<div class="wrapper justify-content-center" style="width: 100%">
 			<div class="col-2 p-3 mt-4 justify-content-center text-center">
 				<div class="user-image">
-					<img src="{% if request.user.is_authenticated %}{{request.user.profile_image.url}}{%else%}/media/profile_pics/default_profile_image.png{%endif%}" class="rounded-circle user_img">
+					<img src="/media/profile_pics/default_profile_image.png" class="rounded-circle user_img">
 				</div>
-				<h4 id="player1">{% if request.user.is_authenticated %}{{request.user.username}}{%else%}Player1{%endif%}</h4>
+				<h4 id="player1">Player1</h4>
 				<h1 class="mt-5" id="player1Score">0</h1>
 			</div>
 			<div class="justify-content-center wrapper" style="width: 100%;">
@@ -56,9 +56,9 @@
 			</div>
 			<div class="col-2 p-3 mt-4 justify-content-center text-center">
 				<div class="user-image">
-					<img src="/media/profile_pics/robot.jpg" class="rounded-circle user_img">
+					<img src="/media/profile_pics/default_profile_image.png" class="rounded-circle user_img">
 				</div>
-				<h4 id="player2">Bot</h4>
+				<h4 id="player2">Player2</h4>
 				<h1 class="mt-5" id="player2Score">0</h1>
 			</div>
 		</div>
