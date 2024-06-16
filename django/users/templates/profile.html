@@ -102,13 +102,13 @@
 						<a onclick="showEdit();">
 							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
 								<i class="bi bi-pencil-fill"></i>
-								edit
+								Edit
 							</button>
 						</a>
 						<a onclick="showFriendManage();">
 							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
 								<i class="bi bi-person-gear"></i>
-								friend
+								Manage
 							</button>
 						</a>
 					</div>
@@ -121,6 +121,14 @@
 								Add Friend
 							</button>
 						</a>
+					</div>
+					{% endif %}
+					{% if isFriend %}
+					<div class="col-md-3" style="text-align: right;">
+						<div class="mt-1 text-light" style=" font-size: 0.7rem;">
+							Your Friend
+							<i class="bi bi-patch-check-fill"></i>
+						</div>
 					</div>
 					{% endif %}
 					{% endif %}

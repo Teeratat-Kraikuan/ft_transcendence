@@ -4,12 +4,12 @@
 
 
 <div class="justify-content-center" style="text-align: center;"> 
-	<div class="wrapper justify-content-center" style="margin-top: 18vh;">
+	<div class="wrapper justify-content-center" style="margin-top: 23vh;">
 
 		<!-- board -->
-		<div class="column content-solid card-side mx-2" id="scoreCard">
+		<!-- <div class="column content-solid card-side mx-2" id="scoreCard">
 			<div class="card-topic">Score board</div>
-		</div>
+		</div> -->
 		<!-- Main game -->
 		<div class="column content-solid card-main  mx-2">
 			<img style="margin-top: 25px; width: 168px;"  src="{% static 'pongpong.png' %}">
@@ -30,16 +30,16 @@
 					Join
 				</button>
 			</form>
-			<button id="scoreButton" type="button" class="btn btn-light card-x-btn my-2">
+			<!-- <button id="scoreButton" type="button" class="btn btn-light card-x-btn my-2">
 				Score board
 			</button>
 			<button id="settingButton" type="button" class="btn btn-light card-x-btn my-2">
 				<i class="bi bi-gear-fill" style="width: 14px;"></i>
 				Setting
-			</button>
+			</button> -->
 		</div>
 		<!-- Setting game -->
-		<div class="column content-solid card-side mx-2" id="settingCard">
+		<!-- <div class="column content-solid card-side mx-2" id="settingCard">
 			<div class="card-topic">Game Setting</div>
 			<div class="column mb-2 mt-5">
 				<div class="justify-content-between">
@@ -64,11 +64,11 @@
 				<input type="radio" class="btn-check" name="btntheme" id="btntheme3" autocomplete="off">
 				<label class="btn btn-light" for="btntheme3">Theme 3</label>
 			  </div>
-		</div>
+		</div> -->
 	</div>
 </div>
 
-<script>
+<!-- <script>
 	window.onload = function() {
 		var scoreCard = document.getElementById('scoreCard');
 		var settingCard = document.getElementById('settingCard');
@@ -80,6 +80,6 @@
 			document.getElementById('settingCard').classList.toggle('active');
 		});
 	};
-</script>
+</script> -->
 
 {% endblock %}s
