@@ -17,13 +17,14 @@ def profile(request, username):
 	context = {}
 	try:
 		profile = CustomUser.objects.get(username=username)
-		context['online'] = len(profile.friends.filter(active=True))
-		context['offline'] = len(profile.friends.filter(active=False))
 		context['profile'] = profile
 		context['isFriend'] = True if profile.friends.filter(username=request.user).exists() else False
+		context['isBlocked'] = True if request.user.blocked_user.filter(username=profile.username).exists() else False
 		context['blockedUsers'] = profile.blocked_user.all()
 		blockedUsers = [b for b in profile.blocked_user.all()]
 		context['allFriend'] = profile.friends.exclude(username__in=blockedUsers)
+		context['online'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=True))
+		context['offline'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=False))
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')

@@ -113,7 +113,21 @@
 						</a>
 					</div>
 					{% else %}
-					{% if not isFriend %}
+					{% if isBlocked %}
+					<div class="col-md-3" style="text-align: right;">
+						<div class="mt-1 text-light" style=" font-size: 0.7rem;">
+							Blocked
+							<i class="bi bi-ban"></i>
+						</div>
+					</div>
+					{% elif isFriend %}
+					<div class="col-md-3" style="text-align: right;">
+						<div class="mt-1 text-light" style=" font-size: 0.7rem;">
+							Your Friend
+							<i class="bi bi-patch-check-fill"></i>
+						</div>
+					</div>
+					{% else %}
 					<div class="col-md-3" style="text-align: right;">
 						<a onclick="swapApp('/users/send_friend_request/{{profile.id}}/')">
 							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
@@ -121,14 +135,6 @@
 								Add Friend
 							</button>
 						</a>
-					</div>
-					{% endif %}
-					{% if isFriend %}
-					<div class="col-md-3" style="text-align: right;">
-						<div class="mt-1 text-light" style=" font-size: 0.7rem;">
-							Your Friend
-							<i class="bi bi-patch-check-fill"></i>
-						</div>
 					</div>
 					{% endif %}
 					{% endif %}
