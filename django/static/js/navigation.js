@@ -1,4 +1,5 @@
 let chatSocket;
+let pongSocket;
 
 document.addEventListener('DOMContentLoaded', function() {
 	updateApp(window.location.pathname);
@@ -12,7 +13,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function updateApp(path) {
 	if (chatSocket) {
+		console.log("closing chat socket")
 		chatSocket.close();
+		chatSocket = null;
+	}
+	if (pongSocket) {
+		console.log("closing pong socket")
+		pongSocket.close();
+		pongSocket = null;
 	}
 	if (window.cleanupPongAI) {
 		window.cleanupPongAI();

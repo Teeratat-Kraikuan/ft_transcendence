@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import PongGame
 import random
+import json
 
 # Create your views here.
 def game(request):
@@ -13,7 +14,7 @@ def pong(request):
 	username = request.user.username if request.user.is_authenticated else 'guest'
 	context['default_image'] = '/media/profile_pics/default_profile_image.png'
 	context['username'] = username
-	context['profile_image'] = request.user.profile_image if request.user.is_authenticated else '/media/profile_pics/default_profile_image.png'
+	context['profile_image'] = request.user.profile_image.url if request.user.is_authenticated else '/media/profile_pics/default_profile_image.png'
 	if request.method == "POST":
 		if request.POST.get('type') == 'create':
 			created = False
@@ -22,18 +23,24 @@ def pong(request):
 				pong_room, created = PongGame.objects.get_or_create(room_code=room_code, player1=username)
 			context['playerNo'] = 1
 			context['room_code'] = room_code
+			context['game_state'] = 'None'
 			return render(request, "pong.html", context)
 		elif request.POST.get('type') == 'join':
 			room_code = request.POST.get('room_code')
 			try:
 				pong_room = PongGame.objects.get(room_code=room_code)
+				context['room_code'] = room_code
+				context['game_state'] = pong_room.game_state
 				if pong_room.player2 != "to-be-decide":
+					if pong_room.player1 == request.user.username or pong_room.player2 == request.user.username:
+						context['playerNo'] = 1 if pong_room.player1 == request.user.username else 2
+						context['isJoin'] = True
+						return render(request, "pong.html", context)
 					messages.error(request, "that room is full")
 					return redirect('game')
 				pong_room.player2 = username
 				pong_room.save()
 				context['playerNo'] = 2
-				context['room_code'] = room_code
 				print('game start')
 				return render(request, "pong.html", context)
 			except:
@@ -80,9 +87,6 @@ def tournament_game(request): # Waiting in game
 	if not request.user.is_authenticated:
 		return redirect('login')
 	return render(request, 'tournament_pong.html')
-
-def queue(request):
-	pass
 
 def round_robin_concurrent(num_players):
   pairings = []
