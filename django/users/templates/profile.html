@@ -3,28 +3,27 @@
 {% block content %}
 
 <div class="justify-content-center popup-menu" id="popUpEdit">
-	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
-		<div class="d-flex row content-solid card-main mx-2" style="width: 350px">
-			<div class="card-topic">Edit</div>
-			<form action="#" class="mt-2 px-5">
-				<textarea type="text" placeholder="bio"></textarea>
-				<div class=" mt-4">
-					<label for="formProfilePic" class="form-label">Profile picture</label>
-					<input class="form-control form-control-sm text-center" id="formProfilePic" type="file">
+    <div class="wrapper justify-content-center" style="margin-top: 21vh;">
+        <div class="d-flex row content-solid card-main mx-2 justify-content-center" style="width: 350px">
+            <div class="card-topic">Edit</div>
+            <form id="editProfileForm" class="mt-2 px-5" enctype="multipart/form-data">
+                {% csrf_token %}
+                <textarea type="text" placeholder="bio" name="description">{{ profile.description }}</textarea>
+                <div class=" mt-4">
+                    <label for="formProfilePic" class="form-label">Profile picture</label>
+                    <input class="form-control form-control-sm text-center" id="formProfilePic" type="file" name="profile_image">
 
-					<label for="formBgPic" class="form-label pt-3">Background picture</label>
-					<input class="form-control form-control-sm text-center" id="formBgPic" type="file">
-				</div>
-			</form>
-			<a onclick="doneEdit();">
-				<button type="button" class="btn btn-light mt-5" style="width: 120px; font-size: 1rem;">
-					Done
-				</button>
-			</a>
-		</div>
-
-	</div>
+                    <label for="formBgPic" class="form-label pt-3">Background picture</label>
+                    <input class="form-control form-control-sm text-center" id="formBgPic" type="file" name="banner_image">
+                </div>
+                <button type="button" name="submit" value="edit" class="btn btn-light mt-5" style="width: 120px; font-size: 1rem;" onclick="submitEditForm();">
+                    Done
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
+
 
 <div class="justify-content-center popup-menu" id="popUpFriend">
 	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
