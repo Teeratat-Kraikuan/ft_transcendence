@@ -23,8 +23,8 @@ def profile(request, username):
 		context['blockedUsers'] = profile.blocked_user.all()
 		blockedUsers = [b for b in profile.blocked_user.all()]
 		context['allFriend'] = profile.friends.exclude(username__in=blockedUsers)
-		context['online'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=True))
-		context['offline'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=False))
+		context['online'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active__gt=0))
+		context['offline'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=0))
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')
@@ -36,8 +36,8 @@ def friend(request):
 	all_friend_requests = FriendRequest.objects.filter(to_user=request.user)
 	from_user_ids = all_friend_requests.values_list('from_user_id', flat=True)
 	allusers = CustomUser.objects.all().exclude(id__in=from_user_ids)
-	context['online'] = len(request.user.friends.filter(active=True))
-	context['offline'] = len(request.user.friends.filter(active=False))
+	context['online'] = len(request.user.friends.filter(active__gt=0))
+	context['offline'] = len(request.user.friends.filter(active=0))
 	context['all_friend_requests'] = all_friend_requests
 	context['allusers'] = allusers
 	blockedUsers = [b for b in request.user.blocked_user.all()]
