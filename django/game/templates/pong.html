@@ -62,14 +62,14 @@
 				<div class="wrapper justify-content-between" style="margin-top: 25vh; margin-bottom: 10vh;">
 					<h2 class="wrapper">
 						<div class="chat-image mx-2">
-							<img src="{{ profile_image.url }}" class="rounded-circle user_img">
+							<img src="{% if request.user.is_authenticated %}{{ profile_image.url }}{% else %}/media/profile_pics/default_profile_image.png{% endif %}" class="rounded-circle user_img">
 						</div>
 						{{ username }}
 					</h2>
 					<h1 class="fw-bolder">VS</h1>
 					<h2 class="wrapper">
 						<div class="chat-image mx-2">
-							<img src="{{ default_image.url }}" class="rounded-circle user_img">
+							<img src="/media/profile_pics/default_profile_image.png" class="rounded-circle user_img">
 						</div>
 						<div>???</div>
 					</h2>
