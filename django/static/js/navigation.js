@@ -22,9 +22,6 @@ function updateApp(path) {
 		pongSocket.close();
 		pongSocket = null;
 	}
-	if (window.cleanupPongAI) {
-		window.cleanupPongAI();
-	}
 
 	fetch(path, { headers: { "X-Requested-With": "XMLHttpRequest" } })
 	 .then(response => response.text())
