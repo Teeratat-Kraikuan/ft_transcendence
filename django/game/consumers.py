@@ -11,6 +11,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.username = self.scope['user'].username if self.scope['user'].is_authenticated else 'guest'
 		self.image = self.scope['user'].profile_image.url if self.scope['user'].is_authenticated else '/media/profile_pics/default_profile_image.png'
 
+		await self.update_room_incr(self.room_code)
+
 		await self.channel_layer.group_add(
 			self.roomGroupName,
 			self.channel_name
@@ -18,6 +20,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 
 	async def disconnect(self, close_code):
+		await self.update_room_decr(self.room_code)
+
+		if await self.get_room_user(self.room_code) == 0:
+			await self.delete_room()
+
 		await self.channel_layer.group_discard(
             self.roomGroupName,
             self.channel_name
@@ -68,3 +75,20 @@ class PongConsumer(AsyncWebsocketConsumer):
         # Update the game state
 		pongGame.game_state = json.dumps(self.current_game_state)
 		pongGame.save()
+
+	@sync_to_async
+	def update_room_incr(self, room_code):
+		room = PongGame.objects.get(room_code=room_code)
+		room.plyaer_in_room += 1
+		room.save()
+
+	@sync_to_async
+	def update_room_decr(self, room_code):
+		room = PongGame.objects.get(room_code=room_code)
+		room.plyaer_in_room -= 1
+		room.save()
+
+	@sync_to_async
+	def get_room_user(self, room_code):
+		room = PongGame.objects.get(room_code=room_code)
+		return room.plyaer_in_room
