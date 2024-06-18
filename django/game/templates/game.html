@@ -20,7 +20,7 @@
 		<div class="column content-solid card-main  mx-2">
 			<img style="margin-top: 25px; width: 168px;"  src="{% static 'pongpong.png' %}">
 			<div class="column mb-2 mt-5">
-				<button id="singlePButton" type="button" class="btn btn-light" style="width: 39%; font-size: 1rem;" onclick="swapApp('/game/pong-ai')">1P</button>
+				<button id="singlePButton" type="button" class="btn btn-light" style="width: 39%; font-size: 1rem;" >1P</button>
 				<button id="localPlay" type="button" class="btn btn-light" style="width: 39%; font-size: 1rem;">2P</button>
 			</div>
 			<button id="multiPButton" type="button" class="btn btn-light card-x-btn mb-4">
@@ -50,7 +50,15 @@
 				</button>
 			</form>
 		</div>
-	</div>
+
+		<div class="column content-solid card-side mx-2" id="singlePCard">
+		<div class="card-topic">Single Player</div>
+		<span style="font-size: 0.8rem; color: #ffffff; line-height: 0.7; font-family: monospace;">Enjoy with<br>the best AI!</span><br>
+			<div class="column" style="margin-top: 45%;">
+				<button type="submit" name="type" value="2D" class="btn btn-light card-x-btn" style="width: 40%;">2D</button>
+				<button type="submit" name="type" value="3D" class="btn btn-light card-x-btn" style="width: 40%;">3D</button>
+			</div>
+		</div>
 </div>
 
 {% endblock %}
