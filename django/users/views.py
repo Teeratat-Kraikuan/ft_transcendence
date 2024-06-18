@@ -3,8 +3,9 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from .models import CustomUser, FriendRequest
+from .models import CustomUser, FriendRequest, MatchHistory
 from chatapp.models import Room
+from django.db.models import Q
 from dotenv import load_dotenv
 import os
 import requests
@@ -41,8 +42,25 @@ def profile(request, username):
 		context['blockedUsers'] = profile.blocked_user.all()
 		blockedUsers = [b for b in profile.blocked_user.all()]
 		context['allFriend'] = profile.friends.exclude(username__in=blockedUsers)
-		context['online'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=True))
-		context['offline'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=False))
+		context['online'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active__gt=0))
+		context['offline'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=0))
+		match_history = MatchHistory.objects.filter(
+            Q(player1__username=request.user.username) | Q(player2__username=request.user.username)
+        )
+
+        # Serialize match history data if needed
+		serialized_data = []
+		for match in match_history:
+			serialized_data.append({
+                'game_type': match.game_type,
+                'player1': match.player1.username if match.player1 else None,
+                'player2': match.player2.username if match.player2 else None,
+                'winner': match.winner.username if match.winner else None,
+                'player1_score': match.player1_score,
+                'player2_score': match.player2_score,
+                'date_played': match.date_played.strftime('%Y-%m-%d')  # Format datetime as needed
+            })
+		context['matchHistories'] = serialized_data
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')
@@ -54,8 +72,8 @@ def friend(request):
 	all_friend_requests = FriendRequest.objects.filter(to_user=request.user)
 	from_user_ids = all_friend_requests.values_list('from_user_id', flat=True)
 	allusers = CustomUser.objects.all().exclude(id__in=from_user_ids)
-	context['online'] = len(request.user.friends.filter(active=True))
-	context['offline'] = len(request.user.friends.filter(active=False))
+	context['online'] = len(request.user.friends.filter(active__gt=0))
+	context['offline'] = len(request.user.friends.filter(active=0))
 	context['all_friend_requests'] = all_friend_requests
 	context['allusers'] = allusers
 	blockedUsers = [b for b in request.user.blocked_user.all()]

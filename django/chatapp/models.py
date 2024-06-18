@@ -20,6 +20,7 @@ class Room(models.Model):
 
 class Message(models.Model):
 	content = models.TextField()
+	is_link = models.BooleanField(default=False)
 	user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	room = models.ForeignKey(Room, on_delete=models.CASCADE)
 	create_on = models.DateTimeField(auto_now_add=True)

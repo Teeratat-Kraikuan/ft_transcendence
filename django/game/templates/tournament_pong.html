@@ -62,7 +62,7 @@
 </div>
 {% endblock %}
 
-{% block body-script %}
+{% comment %} {% block body-script %}
 <script>
 	let userScore = parseInt(document.getElementById("userScore").textContent);
 	let opponentScore = parseInt(document.getElementById("opponentScore").textContent);
@@ -136,4 +136,4 @@
 
 </script>
 
-{% endblock %}s
+{% endblock %}s {% endcomment %}

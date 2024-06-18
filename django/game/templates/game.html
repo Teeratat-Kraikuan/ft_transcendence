@@ -34,7 +34,7 @@
 			</a>
 		</div>
 
-			<!-- 2Player -->
+		<!-- 2Player -->
 		<div class="column content-solid card-side mx-2" id="multiPCard">
 			<form id="multiPlayerForm" method="post" action="{% url 'pong' %}">
 			{% csrf_token %}
@@ -42,17 +42,17 @@
 				<div class="card-topic">MULTI PLAYER</div>
 				<span style="font-size: 0.8rem; color: #ffffff; line-height: 0.7; font-family: monospace;">Enjoy with<br>your friend!</span><br>
 
-				<button type="submit" name="type" value="create" class="btn btn-light card-m-btn my-2 mt-3" style="width: 60%;">Create Room</button>
+				<button id="createRoomBtn" type="submit" name="type" value="create" class="btn btn-light card-m-btn my-2 mt-3" style="width: 60%;">Create Room</button>
 				<div style="color: #ffffff;" class="my-2"> Or </div>
 				<input class="input-box" type="text" name="room_code" placeholder="room code" style="width: 60%; text-align: center;">
-				<button type="submit" name="type" value="join" class="btn btn-light card-x-btn mb-4" style="width: 60%;">
+				<button id="joinRoomBtn" type="submit" name="type" value="join" class="btn btn-light card-x-btn mb-4" style="width: 60%;">
 					Join Room
 				</button>
 			</form>
 		</div>
 
 		<div class="column content-solid card-side mx-2" id="singlePCard">
-		<div class="card-topic">Single Player</div>
+		<div class="card-topic">SINGLE PLAYER</div>
 		<span style="font-size: 0.8rem; color: #ffffff; line-height: 0.7; font-family: monospace;">Enjoy with<br>the best AI!</span><br>
 			<div class="column" style="margin-top: 45%;">
 				<button type="submit" name="type" value="2D" class="btn btn-light card-x-btn" style="width: 40%;">2D</button>

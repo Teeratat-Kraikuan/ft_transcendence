@@ -9,6 +9,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.room_code = self.scope['url_route']['kwargs']['room_code']
 		self.roomGroupName = 'pong_%s' % self.room_code
 		self.username = self.scope['user'].username if self.scope['user'].is_authenticated else 'guest'
+		self.image = self.scope['user'].profile_image.url if self.scope['user'].is_authenticated else '/media/profile_pics/default_profile_image.png'
+
+		await self.update_room_incr(self.room_code)
 
 		await self.channel_layer.group_add(
 			self.roomGroupName,
@@ -17,20 +20,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 
 	async def disconnect(self, close_code):
-		await self.delete_room()
-		await self.channel_layer.group_send(
-            self.roomGroupName, {
-                "type": "game_update",
-				"username" : self.username,
-                "score": 0,
-				"start_point": False,
-				"exit": True,
-				"moving": "no",
-				"ball": False,
-				"ballX": 0,
-				"ballY": 0,
-            }
-        )
+		await self.update_room_decr(self.room_code)
+
+		if await self.get_room_user(self.room_code) == 0:
+			await self.delete_room()
+
 		await self.channel_layer.group_discard(
             self.roomGroupName,
             self.channel_name
@@ -38,45 +32,34 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
-		score = text_data_json["score"]
+		self.current_game_state = text_data_json
+		await self.update_game_state()
+		player1score = text_data_json['player1score']
+		player2score = text_data_json['player2score']
 		start_point = text_data_json["start_point"]
-		moving = text_data_json["moving"]
-		ball = text_data_json["ball"]
-		ballX = 0
-		ballY = 0
-		if (ball):
-			ballX = text_data_json["ballX"]
-			ballY = text_data_json["ballY"]
 
 		await self.channel_layer.group_send(
             self.roomGroupName, {
                 "type": "game_update",
 				"username" : self.username,
-                "score": score,
+				"profile_image": self.image,
+                "player1score": player1score,
+                "player2score": player2score,
 				"start_point": start_point,
-				"exit": False,
-				"moving": moving,
-				"ball": ball,
-				"ballX": ballX,
-				"ballY": ballY,
             }
         )
 
 	async def game_update(self, event):
 		username = event['username']
-		score = event['score']
+		image = event['profile_image']
+		player1score = event['player1score']
+		player2score = event['player2score']
 		start_point = event['start_point']
-		moving = event['moving']
-		is_exit = True if event['exit'] else False
-		ball = event['ball']
-		ballX = event['ballX']
-		ballY = event['ballY']
 		await self.send(text_data = json.dumps({"username": username,
-										  		"score": score,
-												"start_point": start_point,
-												"exit": is_exit,
-												"moving": moving,
-												"ball": ball, "ballX": ballX, "ballY": ballY}))
+										  		"profile_image": image,
+												"player1score": player1score,
+												"player2score": player2score,
+												"start_point": start_point,}))
 
 	@sync_to_async
 	def delete_room(self):
@@ -85,5 +68,27 @@ class PongConsumer(AsyncWebsocketConsumer):
 		except:
 			pass
 
-class QueueManager(AsyncWebsocketConsumer):
-	pass
+	@sync_to_async
+	def update_game_state(self):
+		# Retrieve or create the game session
+		pongGame, created = PongGame.objects.get_or_create(room_code=self.room_code)
+        # Update the game state
+		pongGame.game_state = json.dumps(self.current_game_state)
+		pongGame.save()
+
+	@sync_to_async
+	def update_room_incr(self, room_code):
+		room = PongGame.objects.get(room_code=room_code)
+		room.plyaer_in_room += 1
+		room.save()
+
+	@sync_to_async
+	def update_room_decr(self, room_code):
+		room = PongGame.objects.get(room_code=room_code)
+		room.plyaer_in_room -= 1
+		room.save()
+
+	@sync_to_async
+	def get_room_user(self, room_code):
+		room = PongGame.objects.get(room_code=room_code)
+		return room.plyaer_in_room
