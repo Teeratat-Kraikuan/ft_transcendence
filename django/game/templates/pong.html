@@ -286,10 +286,8 @@
 			console.log('match recording');
 			const formData = new FormData();
 			formData.append('gameType', '1v1');
-			if (player1name !== 'guest')
-				formData.append('player1name', player1name);
-			if (player2name !== 'guest')
-				formData.append('player2name', player2name);
+			formData.append('player1name', player1name);
+			formData.append('player2name', player2name);
 			formData.append('winner', winner);
 			formData.append('player1score', player1Score);
 			formData.append('player2score', player2Score);
