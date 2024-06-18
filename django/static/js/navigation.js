@@ -28,8 +28,6 @@ function updateApp(path) {
 }
 
 function swapApp(path) {
-	if (path === window.location.pathname)
-		return;
 	console.log(path);
 	window.history.pushState({}, '', path);
 	updateApp(path);

@@ -15,6 +15,24 @@ load_dotenv()
 @login_required
 def profile(request, username):
 	context = {}
+	if request.method == 'POST':
+		if request.POST.get('submit') == 'edit':
+			profile_image = request.FILES.get('profile_image')
+			banner_image = request.FILES.get('banner_image')
+			description = request.POST.get('description')
+
+			user_profile = request.user
+			if profile_image:
+				user_profile.profile_image = profile_image
+			if banner_image:
+				user_profile.banner_image = banner_image
+			if description:
+				user_profile.description = description
+			user_profile.save()
+			return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
+		else:
+			return JsonResponse({'success': False, 'errors': 'Invalid submission.'}, status=400)
+
 	try:
 		profile = CustomUser.objects.get(username=username)
 		context['profile'] = profile
