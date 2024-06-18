@@ -33,11 +33,11 @@ function updateApp(path) {
 }
 
 function updateAppPost(path, formData) {
-	const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+	// const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     fetch(path, {
         method: 'POST',
         headers: {
-            'X-CSRFToken': csrftoken,
+            'X-CSRFToken': getCookie('csrftoken'),
         },
         body: formData
     })
@@ -58,6 +58,8 @@ function swapApp(path) {
 }
 
 function loadScripts(path) {
+	removeOldScripts();
+
 	if (path.includes('/login')) {
 		loadScript('/static/js/login.js');
 	}
@@ -111,7 +113,48 @@ function executeInlineScripts() {
 		}
 	});
 }
+function removeOldScripts() {
+    const scriptsToRemove = [
+        '/static/js/pong-ai.js',
+        '/static/js/pong-local.js'
+        // Add more scripts to remove as needed
+    ];
+
+    const scriptElements = document.querySelectorAll('script');
+    scriptElements.forEach(script => {
+        if (scriptsToRemove.includes(script.src)) {
+            script.remove();
+            console.log(`Removed script: ${script.src}`);
+        }
+    });
+}
+
+function playGame(room_code) {
+	console.log("joining room " + room_code);
+	const formData = new FormData();
+	formData.append('type', 'join');
+	formData.append('room_code', room_code);
+	updateAppPost('/game/pong/', formData);
+}
+
+function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			// Does this cookie string begin with the name we want?
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}
 
 window.swapApp = swapApp;
 window.updateApp = updateApp;
 window.updateAppPost = updateAppPost;
+window.playGame = playGame;
+window.getCookie = getCookie;

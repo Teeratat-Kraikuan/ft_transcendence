@@ -65,7 +65,7 @@
 				{% elif room.user2 == request.user %}
 					<div class="profile-main-text me-auto"> {{ room.user1.username }} </div>
 				{% endif %}
-				<button class="btn btn-light btn-sm me-2" style=" font-size: 0.7rem;">
+				<button id="invite" class="btn btn-light btn-sm me-2" style=" font-size: 0.7rem;">
 					<i class="bi bi-joystick"></i> invite
 				</button>
 				<a onclick="swapApp('/users/{{ friend.username }}/')">
@@ -92,7 +92,11 @@
 							</div>
 							<div class="d-flex flex-column ps-2">
 								<span>
-									{{ message.content }}
+									{% if message.is_link %}
+										<a onclick="playGame('{{message.content}}')" style="color: lightblue; cursor: pointer">{{ message.content }}</a>
+									{% else %}
+										<a>{{ message.content }}</a>
+									{% endif %}
 								</span>
 								<span class="profile-label-text">
 									{{ message.create_on|date:"N d, H:i" }}
@@ -104,7 +108,11 @@
 						<div class="d-flex justify-content-end mb-4">
 							<div class="d-flex flex-column pe-2">
 								<span>
-									{{ message.content }}
+									{% if message.is_link %}
+										<a onclick="playGame('{{message.content}}')" style="color: lightblue; cursor: pointer">{{ message.content }}</a>
+									{% else %}
+										<a>{{ message.content }}</a>
+									{% endif %}
 								</span>
 								<span class="profile-label-text" style="text-align: end;">
 									{{ message.create_on|date:"N d, H:i" }}
@@ -139,6 +147,7 @@
 	const username = "{{ request.user.username }}"
 	const my_img = "{{ request.user.profile_image.url }}"
 	const friend_img = "{{ friend.profile_image.url }}"
+	const friend_username = "{{ friend.username }}"
 
 	chatSocket = new WebSocket("wss://" + window.location.host + "/ws/chat/" + roomSlug + "/");
 	chatSocket.onopen = function (e) {
@@ -159,7 +168,7 @@
 		).value;
 		if (document.querySelector("#id_message_send_input").value == "")
 			return;
-		chatSocket.send(JSON.stringify({ message: messageInput, username: "{{request.user.username}}", room_name: roomName}));
+		chatSocket.send(JSON.stringify({ message: messageInput, username: "{{request.user.username}}", room_name: roomName, is_link: false}));
 		document.querySelector("#id_message_send_input").value = "";
 	};
 	chatSocket.onmessage = function (e) {
@@ -175,7 +184,15 @@
 		
 		var div = document.createElement("div");
 		var span_text = document.createElement("span");
-		span_text.appendChild(document.createTextNode(data.message));
+		var a = document.createElement("a");
+		if (data.is_link) {
+			a.style = "color: lightblue; cursor: pointer";
+			a.onclick = function() {
+				playGame(data.message);
+			};
+		}
+		a.appendChild(document.createTextNode(data.message));
+		span_text.appendChild(a);
 		var span_img = document.createElement("span");
 		span_img.className = "profile-label-text";
 		span_img.appendChild(document.createTextNode(data.time));
@@ -199,5 +216,32 @@
 		document.querySelector("#id_message_send_input").value = "";
 		document.querySelector("#id_chat_item_container").appendChild(div_head);
 	};
+
+	document.getElementById("invite").addEventListener("click", invite_message);
+	function invite_message() {
+		const formData = new FormData();
+		formData.append('username', friend_username);
+
+		fetch('/chat/invite/', {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': getCookie('csrftoken')  // Include the CSRF token for security
+			},
+			body: formData
+		})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log('Room Code:', data.room_code);
+			chatSocket.send(JSON.stringify({ message: data.room_code, username: "{{ request.user.username }}", room_name: roomName, is_link: true }));
+		})
+		.catch(error => {
+			console.error('Error fetching invite:', error);
+		});
+	}
 </script>
 {% endblock %}
