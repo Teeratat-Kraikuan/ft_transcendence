@@ -32,6 +32,23 @@ function updateApp(path) {
 	 .catch(error => console.error(error));
 }
 
+function updateAppPost(path, formData) {
+	const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(path, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+        },
+        body: formData
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.body.innerHTML = html;
+        loadScripts(path);
+    })
+    .catch(error => console.error(error));
+}
+
 function swapApp(path) {
 	if (path === window.location.pathname)
 		return;
@@ -61,6 +78,10 @@ function loadScripts(path) {
 	}
 	else if (path.includes('/pong-local')) {
 		loadScript('/static/js/pong-local.js');
+	}
+	else if (path === '/game/pong/') {
+		console.log("/game/pong/ executing")
+		executeInlineScripts();
 	}
 }
 
@@ -93,3 +114,4 @@ function executeInlineScripts() {
 
 window.swapApp = swapApp;
 window.updateApp = updateApp;
+window.updateAppPost = updateAppPost;
