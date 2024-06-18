@@ -149,36 +149,25 @@
 					<div class="profile-main-text mb-4">Match History</div>
 					<div class="text-center px-2" style="overflow-y: auto">
 						<!-- match card -->
-						<div class="card-match rounded p-1 mb-2">
-							<div class="row">
-								<div class="col-sm-4 text-start">
-									<div class="profile-content-text">00-00-00</div>
-									<div class="profile-label-text">Game Type</div>
-								</div>
-								<div class="col-sm-8">
-									<div class="d-flex justify-content-around profile-content-text">
-										<p>name1</p>
-										<p class="win">0 - 0</p>
-										<p>name2</p>
+						{% if matchHistories %}
+						{% for matchHistory in matchHistories %}
+							<div class="card-match rounded p-1 mb-2">
+								<div class="row">
+									<div class="col-sm-4 text-start">
+										<div class="profile-content-text">{{matchHistory.date_played}}</div>
+										<div class="profile-label-text">{{matchHistory.game_type}}</div>
+									</div>
+									<div class="col-sm-8">
+										<div class="d-flex justify-content-around profile-content-text">
+											<p>{%if matchHistory.player1%}{{matchHistory.player1}}{%else%}guest{%endif%}</p>
+											<p class="{%if matchHistory.winner == request.user.username %}win{%else%}loss{%endif%}">{{matchHistory.player1_score}} - {{matchHistory.player2_score}}</p>
+											<p>{%if matchHistory.player2%}{{matchHistory.player2}}{%else%}guest{%endif%}</p>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-						<div class="card-match rounded p-1 mb-2">
-							<div class="row">
-								<div class="col-sm-4 text-start">
-									<div class="profile-content-text">00-00-00</div>
-									<div class="profile-label-text">Game Type</div>
-								</div>
-								<div class="col-sm-8">
-									<div class="d-flex justify-content-around profile-content-text">
-										<p>name1</p>
-										<p class="loss">0 - 0</p>
-										<p>name2</p>
-									</div>
-								</div>
-							</div>
-						</div>
+						{% endfor %}
+						{% endif %}
 
 					</div>
 				</div>

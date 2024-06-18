@@ -3,8 +3,9 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from .models import CustomUser, FriendRequest
+from .models import CustomUser, FriendRequest, MatchHistory
 from chatapp.models import Room
+from django.db.models import Q
 from dotenv import load_dotenv
 import os
 import requests
@@ -25,6 +26,23 @@ def profile(request, username):
 		context['allFriend'] = profile.friends.exclude(username__in=blockedUsers)
 		context['online'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active__gt=0))
 		context['offline'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=0))
+		match_history = MatchHistory.objects.filter(
+            Q(player1__username=request.user.username) | Q(player2__username=request.user.username)
+        )
+
+        # Serialize match history data if needed
+		serialized_data = []
+		for match in match_history:
+			serialized_data.append({
+                'game_type': match.game_type,
+                'player1': match.player1.username if match.player1 else None,
+                'player2': match.player2.username if match.player2 else None,
+                'winner': match.winner.username if match.winner else None,
+                'player1_score': match.player1_score,
+                'player2_score': match.player2_score,
+                'date_played': match.date_played.strftime('%Y-%m-%d')  # Format datetime as needed
+            })
+		context['matchHistories'] = serialized_data
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')
