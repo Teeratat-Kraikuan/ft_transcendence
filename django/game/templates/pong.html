@@ -25,6 +25,20 @@
 
 {% block content %}
 
+<div class="justify-content-center popup-menu" id="popUpEdit">
+	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
+		<div class="d-flex row content-solid card-main mx-2" style="width: 350px">
+			<div id="winner" class="card-topic"></div>
+			<a>
+				<button id="doneBtn" type="button" class="btn btn-light mt" style="width: 120px; font-size: 1rem;">
+					Done
+				</button>
+			</a>
+		</div>
+
+	</div>
+</div>
+
 <div class="justify-content-center popup-menu" id="popUp">
 	<div class="wrapper justify-content-center" style="margin-top: 30vh; margin-left: 100px;">
 		<div class="d-flex row content-solid card-main mx-2 pt-5" style="width:  30%;">
@@ -150,6 +164,9 @@
 	const playerNo = "{{ playerNo }}";
 	const gameState = "{{ game_state }}"
 	const isJoin = "{{ isJoin }}"
+	let player1name;
+	let player2name;
+	let winner;
 	
 	pongSocket = new WebSocket("wss://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
 	pongSocket.onopen = function (e) {
@@ -159,6 +176,7 @@
 				document.getElementById("waiting-content").style.display = 'none';
 				document.getElementById("game-content").style.display = 'block';
 			}
+			player1name = username;
 			document.getElementById("player1Top").innerHTML = username;
 			document.getElementById("player1").innerHTML = username;
 			document.getElementById("img_player1").src = profile_image;
@@ -167,6 +185,7 @@
 			document.getElementById("waiting-content").style.display = 'none';
 			document.getElementById("game-content").style.display = 'block';
 
+			player2name = username;
 			document.getElementById("player2Top").innerHTML = username;
 			document.getElementById("player2").innerHTML = username;
 			document.getElementById("img_player2").src = profile_image;
@@ -192,11 +211,13 @@
 		const data = JSON.parse(e.data);
 		if (!data.exit && data.username != username) {
 			if (playerNo == 1) {
+				player2name = data.username;
 				document.getElementById("player2Top").innerHTML = data.username;
 				document.getElementById("player2").innerHTML = data.username;
 				document.getElementById("img_player2").src = data.profile_image;
 			}
 			else if (playerNo == 2) {
+				player1name = data.username;
 				document.getElementById("player1Top").innerHTML = data.username;
 				document.getElementById("player1").innerHTML = data.username;
 				document.getElementById("img_player1").src = data.profile_image;
@@ -236,140 +257,83 @@
 		document.getElementById("player1ScorePopUp").innerHTML = player1Score;
 		document.getElementById("player2Score").innerHTML = player2Score;
 		document.getElementById("player2ScorePopUp").innerHTML = player2Score;
-
+		
 		document.getElementById("player1Scale").style.width = player1Score * 5 + "%";
 		document.getElementById("blankScale").style.width = (20 - player1Score - player2Score) * 5 + "%";
 		document.getElementById("player2Scale").style.width = player2Score * 5 + "%";
-	}
-</script>
-{% comment %} <script>
-	let userScore;
-	let opponentScore;
-	let animationId;
-	const roomCode = "{{ room_code }}";
-	const username = "{{ username }}";
-	const playerNo = "{{ playerNo }}";
-	const pongSocket = new WebSocket("wss://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
-
-	pongSocket.onopen = function (e) {
-		if (playerNo == 1) {
-			userScore = parseInt(document.getElementById("player1Score").textContent);
-			opponentScore = parseInt(document.getElementById("player2Score").textContent);
-			document.getElementById("player1Top").innerHTML = username;
-			document.getElementById("player1").innerHTML = username;
-		} else if (playerNo == 2) {
-			userScore = parseInt(document.getElementById("player2Score").textContent);
-			opponentScore = parseInt(document.getElementById("player1Score").textContent);
-			document.getElementById("player2Top").innerHTML = username;
-			document.getElementById("player2").innerHTML = username;
-		}
-		console.log("The connection was setup successfully !");
-		if (playerNo == 2) {
-			document.getElementById("waiting-content").style.display = 'none';
-			document.getElementById("game-content").style.display = 'block';
-			animationId = requestAnimationFrame(update);
-			document.addEventListener("keydown", movePlayer);
-			document.addEventListener("keyup", stopPlayer);
-		}
-		// Send message requesting username of other player
-		pongSocket.send(JSON.stringify({ score: 0, start_point: true, moving: "no", ball: false }));
-	};
-	pongSocket.onclose = function (e) {
-		console.log("Something unexpected happened !");
-	};
-	pongSocket.error = function (e) {
-		console.log("error !");
-	};
-	pongSocket.onmessage = function (e) {
-		const data = JSON.parse(e.data);
-		if (userScore < 10 && opponentScore < 10 && data.exit)
-			opponentLeave();
-		else if (!data.exit && data.username != username) { // opponent information
-			if (playerNo == 1){
-				document.getElementById("player2Top").innerHTML = data.username;
-				document.getElementById("player2").innerHTML = data.username;
-				document.getElementById("player2Score").innerHTML = data.score;
-				document.getElementById("player2ScorePopUp").innerHTML = data.score;
-			}
-			else if (playerNo == 2){
-				document.getElementById("player1Top").innerHTML = data.username;
-				document.getElementById("player1").innerHTML = data.username;
-				document.getElementById("player1Score").innerHTML = data.score;
-				document.getElementById("player1ScorePopUp").innerHTML = data.score;
-			}
-			if (data.moving == "up" || data.moving == "down" || data.moving == "stop")
-				moveOpponent(data.moving);
-			opponentScore = data.score;
-			changeScale();
-			if (data.start_point){
-				document.getElementById("waiting-content").style.display = 'none';
-				document.getElementById("game-content").style.display = 'block';
-				animationId = requestAnimationFrame(update);
-				document.addEventListener("keydown", movePlayer);
-				document.addEventListener("keyup", stopPlayer);
-				pongSocket.send(JSON.stringify({ score: 0, start_point: false, moving: "no", ball:false }));
-			}
-			if (data.ball) {
-				ball.x = data.ballX;
-				ball.y = data.ballY;
-			}
-		}
 		checkWinLose();
-	};
-	
-	function changeScale() {
-		if (playerNo == 1) {
-			document.getElementById("opponentScale").style.width = opponentScore * 5 + "%";
-			document.getElementById("userScale").style.width = userScore * 5 + "%";
-			document.getElementById("blankScale").style.width = (20 - userScore - opponentScore) * 5 + "%";
+	}
+
+	function checkWinLose() {
+		if (player1Score >= 10) {
+			console.log("player1 Win!");
+			winner = player1name;
+			document.getElementById("winner").innerHTML = 'The winner is ' + winner;
+			showEdit();
 		}
-		else if (playerNo == 2) {
-			document.getElementById("opponentScale").style.width = userScore * 5 + "%";
-			document.getElementById("userScale").style.width = opponentScore * 5 + "%";
-			document.getElementById("blankScale").style.width = (20 - userScore - opponentScore) * 5 + "%";
+		else if (player2Score >= 10) {
+			console.log("player2 Win!");
+			winner = player2name;
+			document.getElementById("winner").innerHTML = 'The winner is ' + winner;
+			showEdit();
 		}
 	}
 
-	function increaseScore() {
-		userScore++;
-		if (playerNo == 1) {
-			document.getElementById("player1Score").innerHTML = userScore;
-			document.getElementById("player1ScorePopUp").innerHTML = userScore;
+
+	// record game
+	function recordGame() {
+		if (winner === username) {
+			console.log('match recording');
+			const formData = new FormData();
+			formData.append('gameType', '1v1');
+			if (player1name !== 'guest')
+				formData.append('player1name', player1name);
+			if (player2name !== 'guest')
+				formData.append('player2name', player2name);
+			formData.append('winner', winner);
+			formData.append('player1score', player1Score);
+			formData.append('player2score', player2Score);
+
+			fetch('/game/match_record/', {
+			 	method: 'POST',
+			 	body: formData,
+			 	headers: {
+			 		'X-CSRFToken': getCookie('csrftoken')  // Include CSRF token for security
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Response from server:', data);
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
 		}
-		else if (playerNo == 2) {
-			document.getElementById("player2Score").innerHTML = userScore;
-			document.getElementById("player2ScorePopUp").innerHTML = userScore;
-		}
-		changeScale();
-		pongSocket.send(JSON.stringify({ score: userScore, start_point: false, moving: "no", ball: false }));
+		swapApp('/game/');
 	}
-	function checkWinLose() {
-		const gameStatus = document.getElementById("gameStatus");
-		if (userScore >= 10) {
-			showPopUp("YOU WIN!!")
-			if (animationId){
-				cancelAnimationFrame(animationId);
-				// animationId = null;
+	function showEdit() {
+		document.getElementById("popUpEdit").style.display = 'block';
+	}
+	function doneEdit() {
+		recordGame();
+		document.getElementById("popUpEdit").style.display = 'none';
+	}
+	document.getElementById("doneBtn").addEventListener("click", doneEdit);
+
+	function getCookie(name) {
+		let cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			const cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
 			}
-		} else if (opponentScore >= 10) {
-			showPopUp("YOU LOSE!!")
-			if (animationId) {
-				cancelAnimationFrame(animationId);
-				// animationId = null;
-			}
 		}
-	}
-	function showPopUp(str) {
-		document.getElementById("popUp").style.display = 'block';
-		document.getElementById("popUpStatus").innerHTML = str;
-	}
-	function donePopUp() {
-		document.getElementById("popUp").style.display = 'none';
-	}
-	function opponentLeave() {
-		document.getElementById("gameStatus").innerHTML = "<h1>Your opponent LEAVE GAME!!</h1>";
-		document.getElementById("gameStatus").style = 'text-align: center; margin-top: 40vh;';
+		return cookieValue;
 	}
 </script>
-<script src="{% static 'js/pong.js' %}"></script> {% endcomment %}
 {% endblock %}

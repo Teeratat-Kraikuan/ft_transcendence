@@ -7,9 +7,6 @@ class CustomUser(AbstractUser):
 	profile_image = models.ImageField(default='profile_pics/default_profile_image.png', upload_to='profile_pics')
 	banner_image = models.ImageField(default='banner_pics/default_banner_image.png', upload_to='banner_pics')
 	description = models.TextField('Description', max_length=600, default="I am the winner")
-	wins = models.IntegerField(default=0)
-	loses = models.IntegerField(default=0)
-	draws = models.IntegerField(default=0)
 	is_student = models.BooleanField(default=False)
 	friends = models.ManyToManyField('self', blank=True)
 	blocked_user = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='blocked_by')
@@ -29,3 +26,14 @@ class FriendRequest(models.Model):
 	def __str__(self):
 		return self.from_user.username
 
+class MatchHistory(models.Model):
+    game_type = models.CharField(max_length=150)
+    player1 = models.ForeignKey(CustomUser, related_name='matches_as_player1', on_delete=models.CASCADE, null=True, blank=True)
+    player2 = models.ForeignKey(CustomUser, related_name='matches_as_player2', on_delete=models.CASCADE, null=True, blank=True)
+    winner = models.ForeignKey(CustomUser, related_name='matches_won', on_delete=models.CASCADE, null=True, blank=True)
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
+    date_played = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.player1} vs {self.player2} - {self.game_type} on {self.date_played}"

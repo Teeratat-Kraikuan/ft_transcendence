@@ -1,7 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.contrib import messages
 from .models import PongGame
+from users.models import CustomUser, MatchHistory
 import random
 import json
 
@@ -95,3 +97,43 @@ def round_robin_concurrent(num_players):
     pairings.append([i, partner])
 
   return pairings
+
+def match_record(request):
+    if request.method == "POST":
+        try:
+            # Extract data from FormData sent by JavaScript
+            game_type = request.POST.get('gameType')
+            player1_name = request.POST.get('player1name')
+            player2_name = request.POST.get('player2name')
+            winner_name = request.POST.get('winner')
+            player1_score = int(request.POST.get('player1score'))
+            player2_score = int(request.POST.get('player2score'))
+
+            # Fetch player objects
+            if player1_name:
+                player1 = CustomUser.objects.get(username=player1_name)
+            else:
+                player1 = None
+            
+            if player2_name:
+                player2 = CustomUser.objects.get(username=player2_name)
+            else:
+                player2 = None
+
+            winner = CustomUser.objects.get(username=winner_name)
+
+            # Create new match history record
+            match = MatchHistory.objects.create(
+                game_type=game_type,
+                player1=player1,
+                player2=player2,
+                winner=winner,
+                player1_score=player1_score,
+                player2_score=player2_score
+            )
+
+            return JsonResponse({'message': 'Match recorded successfully'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

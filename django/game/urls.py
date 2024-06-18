@@ -9,4 +9,5 @@ urlpatterns = [
 	path('tournament/', views.tournament, name='tournament'),
     path('tournament_waiting/', views.tournament_waiting, name='tournament_waiting'),
     path('tournament_pong/', views.tournament_pong, name='tournament_pong'),
+	path('match_record/', views.match_record, name='match_record'),
 ]
