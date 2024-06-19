@@ -59,25 +59,25 @@ function loadScripts(path) {
 	removeOldScripts();
 
 	if (path.includes('/login')) {
-		loadScript('/static/js/login.js');
+		loadScriptBody('/static/js/login.js');
 	}
 	else if (path.includes('/logout')) {
 		onlineSocket.close();
 	}
 	else if (path.includes('/users') && !(path.includes('/friend'))) {
-		loadScript('/static/js/profile.js');
+		loadScriptBody('/static/js/profile.js');
 	}
 	else if (path.includes('/chat') && path !== '/chat/') {
 		executeInlineScripts();
 	}
 	else if (path === '/game/') {
-		loadScript('/static/js/game.js');
+		loadScriptBody('/static/js/game.js');
 	}
 	else if (path.includes('/pong-ai')) {
-		loadScript('/static/js/pong-ai.js');
+		loadScriptHead('/static/js/pong-ai.js');
 	}
 	else if (path.includes('/pong-local')) {
-		loadScript('/static/js/pong-local.js');
+		loadScriptHead('/static/js/pong-local.js');
 	}
 	else if (path === '/game/pong/') {
 		console.log("/game/pong/ executing")
@@ -85,17 +85,46 @@ function loadScripts(path) {
 	}
 }
 
-function loadScript(src) {
-	const existingScript = document.querySelector(`script[src="${src}"]`);
-	if (!existingScript) {
-		const script = document.createElement('script');
-		script.src = src;
-		script.onload = () => console.log(`${src} loaded successfully.`);
-		script.onerror = () => console.error(`Error loading ${src}`);
-		document.body.appendChild(script);
-	} else {
-		console.log(`${src} is already loaded.`);
-	}
+function normalizePath(path) {
+    const a = document.createElement('a');
+    a.href = path;
+    return a.href;
+}
+
+function isScriptAlreadyLoaded(src) {
+    const normalizedSrc = normalizePath(src);
+    const scripts = Array.from(document.querySelectorAll('script'));
+    return scripts.some(script => normalizePath(script.src) === normalizedSrc);
+}
+
+function loadScriptBody(src) {
+    const normalizedSrc = normalizePath(src);
+
+    if (!isScriptAlreadyLoaded(normalizedSrc)) {
+        const script = document.createElement('script');
+        script.type = "text/javascript";
+        script.src = src;
+        script.onload = () => console.log(`${src} loaded successfully.`);
+        script.onerror = () => console.error(`Error loading ${src}`);
+        document.body.appendChild(script);
+    } else {
+        console.log(`${src} is already loaded.`);
+    }
+}
+
+function loadScriptHead(src) {
+    const normalizedSrc = normalizePath(src);
+
+    if (!isScriptAlreadyLoaded(normalizedSrc)) {
+        const script = document.createElement('script');
+        script.type = "text/javascript";
+        script.src = src;
+        script.onload = () => console.log(`${src} loaded successfully.`);
+        script.onerror = () => console.error(`Error loading ${src}`);
+        document.head.appendChild(script);
+    } else {
+        console.log(`${src} is already loaded.`);
+    }
 }
 
 function executeInlineScripts() {
@@ -111,6 +140,7 @@ function executeInlineScripts() {
 		}
 	});
 }
+
 function removeOldScripts() {
     const scriptsToRemove = [
         '/static/js/pong-ai.js',
@@ -119,11 +149,23 @@ function removeOldScripts() {
     ];
 
     const scriptElements = document.querySelectorAll('script');
+    // console.log('Current scripts in document:', scriptElements);
+    
     scriptElements.forEach(script => {
-        if (scriptsToRemove.includes(script.src)) {
-            script.remove();
-            console.log(`Removed script: ${script.src}`);
-        }
+        // console.log('Checking script:', script.src);
+        scriptsToRemove.forEach(src => {
+            if (script.src.includes(src)) {
+                // If there's a cleanup function, call it before removing the script
+                if (script.src.includes('pong-ai.js') && typeof window.cleanupGameAi === 'function') {
+                    cleanupGameAi();
+                }
+                if (script.src.includes('pong-local.js') && typeof window.cleanupGameLocal === 'function') {
+                    cleanupGameLocal();
+                }
+                script.remove();
+                console.log(`Removed script: ${script.src}`);
+            }
+        });
     });
 }
 

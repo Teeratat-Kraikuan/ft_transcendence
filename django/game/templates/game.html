@@ -6,7 +6,8 @@
 <ul class="messages">
 	{% for message in messages %}
 	<script>
-		alert('{{ message }}')
+		alert('{{ message }}');
+		swapApp('/game/');
 	</script>
 	{% endfor %}
 </ul>

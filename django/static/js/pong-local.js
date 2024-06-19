@@ -1,4 +1,6 @@
 (function() {
+    let gameLoopIdLocal;
+
     const canvas = document.getElementById("pongCanvas");
     const context = canvas.getContext("2d");
 
@@ -191,11 +193,9 @@
             // Stop game loop if game is over
             return;
         }
-        requestAnimationFrame(gameLoop);
+        gameLoopIdLocal = requestAnimationFrame(gameLoop);
     }
-
-    gameLoop();
-	
+    
 	function updateScore() {
 		document.getElementById("player1Score").innerHTML = player1Score;
 		document.getElementById("player2Score").innerHTML = player2Score;
@@ -204,5 +204,14 @@
 		document.getElementById("player1Scale").style.width = player1Score * 5 + "%";
 		document.getElementById("blankScale").style.width = (20 - player1Score - player2Score) * 5 + "%";
 	}
+
+    window.cleanupGameLocal = function() {
+        cancelAnimationFrame(gameLoopIdLocal);
+        document.removeEventListener("keydown", keyDownHandler);
+        document.removeEventListener("keyup", keyUpHandler);
+        console.log("Cleaned up game script");
+    };
+
+    gameLoop();
 })();
 	

@@ -43,10 +43,9 @@ def pong(request):
 				pong_room.player2 = username
 				pong_room.save()
 				context['playerNo'] = 2
-				print('game start')
 				return render(request, "pong.html", context)
 			except:
-				messages.error(request, "no room with this code")
+				messages.error(request, "cannot access this room")
 				return redirect('game')
 	return render(request, "pong.html", context)
 
@@ -66,15 +65,17 @@ def tournament(request):
 
 @login_required
 def tournament_waiting(request): # Waiting room
-	if not request.user.is_authenticated:
-		return redirect('login')
-	if request.method != 'POST':
-		return render(request, 'tournament.html')
+	# if not request.user.is_authenticated:
+	# 	return redirect('login')
+	# if request.method != 'POST':
+	# 	return render(request, 'tournament.html')
 	context = {}
-	num_players = int(request.POST.get('num_players'))
+	# num_players = int(request.POST.get('num_players'))
+	num_players = 4
 	context['num_players'] = num_players
 	context['range_num_players'] = range(num_players)
-	context['username'] = request.POST.get('aka') or request.user.username
+	# context['username'] = request.POST.get('aka') or request.user.username
+	context['username'] = "Dummy"
 	return render(request, 'tournament_waiting.html', context) 
 	# return render(request, 'tournament_waiting.html', context) # original
 
