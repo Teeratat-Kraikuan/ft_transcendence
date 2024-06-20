@@ -129,8 +129,6 @@
 				</div>
 				<h4 id="player1">{{ username }}</h4>
 				<h1 class="mt-5" id="player1Score">0</h1>
-	
-				<button id="increaseScoreBtn">Click</button>
 			</div>
 			<div class="justify-content-center wrapper" style="width: 100%;">
 				<div class="col-12 p-3 profile-solid mt-4 mx-3 rounded justify-content-center">
@@ -207,7 +205,6 @@
 	// Game over state
 	let gameOver = false;
 
-	document.getElementById("increaseScoreBtn").addEventListener('click', increaseScore);
 	document.addEventListener("keydown", keyDownHandler);
 	document.addEventListener("keyup", keyUpHandler);
 
@@ -282,20 +279,8 @@
 	}
 
 	// pong game javascript
-	function increaseScore() {
-		if (playerNo == 1)
-			player1Score++;
-		else if (playerNo == 2)
-			player2Score++;
-		document.getElementById("player1Score").innerHTML = player1Score;
-		document.getElementById("player1ScorePopUp").innerHTML = player1Score;
-		updateScore();
-		pongSocket.send(JSON.stringify({ball_x: ballX, ball_y: ballY, paddle1_y: paddle1Y, paddle2_y: paddle2Y, player1score: player1Score, player2score: player2Score, start_point: false }));
-	}
 
 	function keyDownHandler(event) {
-		console.log(playerNo);
-		console.log('keydown');
         if (event.key === "ArrowUp" || event.key === "w") {
 			if (playerNo == 1)
 				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown',  direction: 'up', player: 1}));
