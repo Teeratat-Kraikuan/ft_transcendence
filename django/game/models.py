@@ -1,12 +1,37 @@
 from django.db import models
+import json
 
 # Create your models here.
 class PongGame(models.Model):
 	room_code = models.CharField()
 	player1 = models.CharField()
 	player2 = models.CharField(default='to-be-decide')
-	game_state = models.TextField(default=None, null=True)
-	plyaer_in_room = models.IntegerField(default=0)
+	player_in_room = models.IntegerField(default=0)
+	ball_x = models.FloatField(default=400)
+	ball_y = models.FloatField(default=200)
+	ballSpeedX = models.IntegerField(default=5)
+	ballSpeedY = models.IntegerField(default=5)
+	ballSize = models.IntegerField(default=5)
+	paddle1_y = models.FloatField(default=150)
+	paddle2_y = models.FloatField(default=150)
+	paddleWidth = models.IntegerField(default=10)
+	paddleHeight = models.IntegerField(default=100)
+	paddleSpeed = models.IntegerField(default=10)
+	player1_score = models.IntegerField(default=0)
+	player2_score = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.room_code
+	
+	def get_game_state(self):
+		game_state = {
+            "player1": self.player1,
+            "player2": self.player2,
+            "ball_x": self.ball_x,
+            "ball_y": self.ball_y,
+            "paddle1_y": self.paddle1_y,
+            "paddle2_y": self.paddle2_y,
+            "player1_score": self.player1_score,
+            "player2_score": self.player2_score,
+        }
+		return json.dumps(game_state)

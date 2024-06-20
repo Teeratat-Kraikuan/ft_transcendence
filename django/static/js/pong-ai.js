@@ -79,10 +79,10 @@
         context.closePath();
 
         // Draw scores
-        context.font = "20px Arial";
-        context.fillStyle = "white";
-        context.fillText("Player 1: " + player1Score, 100, 50);
-        context.fillText("Player 2: " + player2Score, canvas.width - 200, 50);
+        // context.font = "20px Arial";
+        // context.fillStyle = "white";
+        // context.fillText("Player 1: " + player1Score, 100, 50);
+        // context.fillText("Player 2: " + player2Score, canvas.width - 200, 50);
 
         // Draw pause or game over text
         if (paused && !gameOver) {

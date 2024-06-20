@@ -82,6 +82,7 @@ function loadScripts(path) {
 	else if (path === '/game/pong/') {
 		console.log("/game/pong/ executing")
 		executeInlineScripts();
+		loadScriptHead('/static/js/pong.js');
 	}
 }
 
@@ -144,7 +145,8 @@ function executeInlineScripts() {
 function removeOldScripts() {
     const scriptsToRemove = [
         '/static/js/pong-ai.js',
-        '/static/js/pong-local.js'
+        '/static/js/pong-local.js',
+        '/static/js/pong.js'
         // Add more scripts to remove as needed
     ];
 
@@ -161,6 +163,9 @@ function removeOldScripts() {
                 }
                 if (script.src.includes('pong-local.js') && typeof window.cleanupGameLocal === 'function') {
                     cleanupGameLocal();
+                }
+                if (script.src.includes('pong.js') && typeof window.cleanupGameLocal === 'function') {
+                    cleanupGameRps();
                 }
                 script.remove();
                 console.log(`Removed script: ${script.src}`);

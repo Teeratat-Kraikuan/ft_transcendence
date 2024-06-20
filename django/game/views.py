@@ -26,14 +26,16 @@ def pong(request):
 			context['playerNo'] = 1
 			context['room_code'] = room_code
 			context['game_state'] = 'None'
+			print(context['game_state'])
 			return render(request, "pong.html", context)
 		elif request.POST.get('type') == 'join':
 			room_code = request.POST.get('room_code')
 			try:
 				pong_room = PongGame.objects.get(room_code=room_code)
 				context['room_code'] = room_code
-				context['game_state'] = pong_room.game_state
+				context['game_state'] = 'None'
 				if pong_room.player2 != "to-be-decide":
+					context['game_state'] = pong_room.get_game_state()
 					if pong_room.player1 == request.user.username or pong_room.player2 == request.user.username:
 						context['playerNo'] = 1 if pong_room.player1 == request.user.username else 2
 						context['isJoin'] = True

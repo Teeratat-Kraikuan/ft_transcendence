@@ -20,6 +20,11 @@
 		background-color: #6601FE;
 		text-align: left;
 	}
+	canvas {
+		border: 1px solid black;
+		display: block;
+		margin: auto;
+	}
 </style>
 {% endblock %}
 
@@ -130,7 +135,7 @@
 			<div class="justify-content-center wrapper" style="width: 100%;">
 				<div class="col-12 p-3 profile-solid mt-4 mx-3 rounded justify-content-center">
 					<div class="game-panel">
-						<canvas id="board"></canvas>
+						<canvas id="pongCanvas" width="800" height="400"></canvas>
 					</div>
 					<div class="my-2">
 						<div class="progress" style="border: 2px solid #b3b3b3;">
@@ -168,6 +173,44 @@
 	let player2name;
 	let winner;
 	
+	// game variable
+	let gameLoopIdRps;
+
+	const canvas = document.getElementById("pongCanvas");
+	const context = canvas.getContext("2d");
+
+	// Ball properties
+	let ballX = canvas.width / 2;
+	let ballY = canvas.height / 2;
+	let ballSpeedX = 5;
+	let ballSpeedY = 5;
+	const ballSize = 10;
+
+	// Paddle properties
+	const paddleWidth = 10;
+	const paddleHeight = 100;
+	let paddle1Y = 150;
+	let paddle2Y = 150;
+	const paddleSpeed = 10;
+
+	// Scores
+	let player1Score = 0;
+	let player2Score = 0;
+	const winningScore = 10;
+
+	// Keyboard controls
+	let upPressed = false;
+	let downPressed = false;
+	let wPressed = false;
+	let sPressed = false;
+
+	// Game over state
+	let gameOver = false;
+
+	document.getElementById("increaseScoreBtn").addEventListener('click', increaseScore);
+	document.addEventListener("keydown", keyDownHandler);
+	document.addEventListener("keyup", keyUpHandler);
+
 	pongSocket = new WebSocket("wss://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
 	pongSocket.onopen = function (e) {
 		console.log("pong socket connect to " + roomCode + " you are player " + playerNo);
@@ -192,19 +235,16 @@
 		}
 		if (gameState !== "None"){
 			console.log(decodeHtmlEntities(gameState));
-			const newGameState = JSON.parse(decodeHtmlEntities(gameState));;
-			player1Score = newGameState.player1score;
-			player2Score = newGameState.player2score;
-			updateScore();
 		}
 		else{
 			if (playerNo == 2)
-				pongSocket.send(JSON.stringify({ player1score: player1Score, player2score: player2Score, start_point: true }));
+				pongSocket.send(JSON.stringify({ball_x: ballX, ball_y: ballY, paddle1_y: paddle1Y, paddle2_y: paddle2Y, player1score: player1Score, player2score: player2Score, start_point: true }));
 		}
 	};
 
 	pongSocket.onclose = function (e) {
 		console.log("pong socket disconnect");
+		cleanupGameRps();
 	};
 
 	pongSocket.onmessage = function (e) {
@@ -225,22 +265,23 @@
 			if (data.start_point){
 				document.getElementById("waiting-content").style.display = 'none';
 				document.getElementById("game-content").style.display = 'block';
-				pongSocket.send(JSON.stringify({ player1score: player1Score, player2score: player2Score, start_point: false }));
+				pongSocket.send(JSON.stringify({ball_x: ballX, ball_y: ballY, paddle1_y: 300, paddle2_y: 300, player1score: player1Score, player2score: player2Score, start_point: false }));
 			}
-			player1Score = data.player1score;
-			player2Score = data.player2score;
-			updateScore();
 		}
+		player1Score = data.player1score;
+		player2Score = data.player2score;
+		ballX = data.ball_x;
+		ballY = data.ball_y;
+		paddle1Y = data.paddle1_y;
+		paddle2Y = data.paddle2_y;
+		updateScore();
 	};
+
 	function decodeHtmlEntities(str) {
 		return str.replace(/&quot;/g, '"');
 	}
 
 	// pong game javascript
-	let player1Score = 0;
-	let player2Score = 0;
-	document.getElementById("increaseScoreBtn").addEventListener('click', increaseScore);
-
 	function increaseScore() {
 		if (playerNo == 1)
 			player1Score++;
@@ -249,8 +290,42 @@
 		document.getElementById("player1Score").innerHTML = player1Score;
 		document.getElementById("player1ScorePopUp").innerHTML = player1Score;
 		updateScore();
-		pongSocket.send(JSON.stringify({ player1score: player1Score, player2score: player2Score, start_point: false }));
+		pongSocket.send(JSON.stringify({ball_x: ballX, ball_y: ballY, paddle1_y: paddle1Y, paddle2_y: paddle2Y, player1score: player1Score, player2score: player2Score, start_point: false }));
 	}
+
+	function keyDownHandler(event) {
+		console.log(playerNo);
+		console.log('keydown');
+        if (event.key === "ArrowUp" || event.key === "w") {
+			if (playerNo == 1)
+				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown',  direction: 'up', player: 1}));
+			else if (playerNo == 2)
+				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown',  direction: 'up', player: 2}));
+            upPressed = true;
+        } else if (event.key === "ArrowDown" || event.key === "s") {
+			if (playerNo == 1)
+				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown', direction: 'down', player: 1}));
+			else if (playerNo == 2)
+				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown', direction: 'down', player: 2}));
+            downPressed = true;
+        }
+    }
+	
+    function keyUpHandler(event) {
+		if (event.key === "ArrowUp" || event.key === "w") {
+			if (playerNo == 1)
+				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keyup', direction: 'up', player: 1}));
+			else if (playerNo == 2)
+				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keyup', direction: 'up', player: 2}));
+            upPressed = false;
+        } else if (event.key === "ArrowDown" || event.key === "s") {
+			if (playerNo == 1)
+				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keyup', direction: 'down', player: 1}));
+			else if (playerNo == 2)
+				pongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keyup', direction: 'down', player: 2}));
+            downPressed = false;
+        }
+    }
 
 	function updateScore() {
 		document.getElementById("player1Score").innerHTML = player1Score;
@@ -279,6 +354,46 @@
 		}
 	}
 
+	function draw() {
+        // Clear canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw paddles
+        context.fillStyle = "white";
+        context.fillRect(0, paddle1Y, paddleWidth, paddleHeight);
+        context.fillRect(canvas.width - paddleWidth, paddle2Y, paddleWidth, paddleHeight);
+
+        // Draw ball
+        context.beginPath();
+        context.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
+        context.fillStyle = "white";
+        context.fill();
+        context.closePath();
+
+        // game over text
+		if (gameOver) {
+            context.fillStyle = "white";
+            context.font = "30px Arial";
+            context.fillText("GAME OVER", canvas.width / 2 - 80, canvas.height / 2);
+            context.fillText("Press Spacebar to Restart", canvas.width / 2 - 170, canvas.height / 2 + 40);
+        }
+    }
+
+	function gameLoop() {
+		draw();
+        if (gameOver)
+            return;
+        gameLoopIdRps = requestAnimationFrame(gameLoop);	
+	}
+
+	window.cleanupGameRps = function() {
+        cancelAnimationFrame(gameLoopIdRps);
+        document.removeEventListener("keydown", keyDownHandler);
+        document.removeEventListener("keyup", keyUpHandler);
+        console.log("Cleaned up game script");
+    };
+
+	gameLoop();
 
 	// record game
 	function recordGame() {
@@ -318,20 +433,5 @@
 	}
 	document.getElementById("doneBtn").addEventListener("click", doneEdit);
 
-	function getCookie(name) {
-		let cookieValue = null;
-		if (document.cookie && document.cookie !== '') {
-			const cookies = document.cookie.split(';');
-			for (let i = 0; i < cookies.length; i++) {
-				const cookie = cookies[i].trim();
-				// Does this cookie string begin with the name we want?
-				if (cookie.substring(0, name.length + 1) === (name + '=')) {
-					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
 </script>
 {% endblock %}
