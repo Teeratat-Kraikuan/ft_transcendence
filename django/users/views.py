@@ -45,13 +45,13 @@ def profile(request, username):
 		context['online'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active__gt=0))
 		context['offline'] = len(profile.friends.exclude(username__in=blockedUsers).filter(active=0))
 		match_history = MatchHistory.objects.filter(
-            Q(player1__username=request.user.username) | Q(player2__username=request.user.username)
+            Q(player1__username=profile.username) | Q(player2__username=profile.username)
         )
 
         # Serialize match history data if needed
 		serialized_data = []
 		for match in match_history:
-			serialized_data.append({
+			serialized_data.insert(0, {
                 'game_type': match.game_type,
                 'player1': match.player1.username if match.player1 else None,
                 'player2': match.player2.username if match.player2 else None,
@@ -60,7 +60,16 @@ def profile(request, username):
                 'player2_score': match.player2_score,
                 'date_played': match.date_played.strftime('%Y-%m-%d')  # Format datetime as needed
             })
+		goals_scored = sum([match.player1_score if match.player1 == profile else match.player2_score for match in match_history])
+		goals_conceded = sum([match.player2_score if match.player1 == profile else match.player1_score for match in match_history])
+		context['goals_scored'] = goals_scored
+		context['goals_conceded'] = goals_conceded
+		context['goals_diff'] = goals_scored - goals_conceded
 		context['matchHistories'] = serialized_data
+		context['wins'] = match_history.filter(winner=profile).count()
+		context['losses'] = match_history.exclude(winner=profile).count()
+		context['played'] = context['wins'] + context['losses']		
+		context['winrate'] = round(((context['wins'] / (context['played'] if context['played'] != 0 else 1)) * 100), 2)
 	except:
 		messages.error(request, 'user not found')
 		return redirect('home')

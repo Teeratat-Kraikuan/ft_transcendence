@@ -108,7 +108,8 @@ body {
 }
 
 .card-match{
-    background-color: #505050;
+    background-color: #404040;
+    /* background-color: #505050; */
 }
 
 .loss{
@@ -302,4 +303,35 @@ form textarea{
 .image-profile {
     border-radius: 100%;
     object-fit: cover;
+}
+
+.chart-container {
+    width: 220px;
+}
+  
+.game-stats {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 0 auto;
+    width: fit-content;
+    padding: 8px 32px;
+    color: #ffffff;
+    transition: all 400ms ease;
+}
+
+.game-stats .details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.programming-stats .details ul li {
+    font-size: 16px;
+    margin: 12px 0;
+    text-transform: uppercase;
+}
+
+.programming-stats .details .percentage {
+    font-weight: 700;
+    color: #e63946;
 }

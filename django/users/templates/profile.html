@@ -57,7 +57,6 @@
 				</button>
 			</a>
 		</div>
-
 	</div>
 </div>
 
@@ -146,57 +145,58 @@
 				<!-- match history -->
 				<div class="col-md-4 p-3 profile-solid rounded mt-4">
 					<div class="profile-main-text mb-4">Match History</div>
-					<div class="text-center px-2" style="overflow-y: auto">
+					<div class="text-center px-2" style="overflow-y: auto; height: 40vh;">
 						<!-- match card -->
 						{% if matchHistories %}
 						{% for matchHistory in matchHistories %}
-							<div class="card-match rounded p-1 mb-2">
-								<div class="row">
+							<div class="card-match rounded p-2 ps-3 mb-1">
+								<div class="row align-items-center">
 									<div class="col-sm-4 text-start">
 										<div class="profile-content-text">{{matchHistory.date_played}}</div>
 										<div class="profile-label-text">{{matchHistory.game_type}}</div>
 									</div>
-									<div class="col-sm-8">
+									<div class="col-sm-8"  style="align-items: center">
 										<div class="d-flex justify-content-around profile-content-text">
-											<p>{%if matchHistory.player1%}{{matchHistory.player1}}{%else%}guest{%endif%}</p>
-											<p class="{%if matchHistory.winner == request.user.username %}win{%else%}loss{%endif%}">{{matchHistory.player1_score}} - {{matchHistory.player2_score}}</p>
-											<p>{%if matchHistory.player2%}{{matchHistory.player2}}{%else%}guest{%endif%}</p>
+											<div>{%if matchHistory.player1%}{{matchHistory.player1}}{%else%}guest{%endif%}</div>
+											<div class="{%if matchHistory.winner == profile.username %}win{%else%}loss{%endif%}">{{matchHistory.player1_score}} - {{matchHistory.player2_score}}</div>
+											<div>{%if matchHistory.player2%}{{matchHistory.player2}}{%else%}guest{%endif%}</div>
 										</div>
 									</div>
 								</div>
 							</div>
 						{% endfor %}
 						{% endif %}
-
 					</div>
 				</div>
 				<!-- record -->
 				<div class="col-md-5 p-3 profile-solid rounded mt-4 mx-auto">
 					<div class="profile-main-text mb-4">Record</div>
 					<!-- content -->
-					<div class="row mb-4">
-						<div class="col-sm-6" id="bsb-chart-7"></div>
-						<div class="col-sm-6 my-2 profile-content-text">
-							<div class="profile-main-text my-2" style="font-size: 0.9rem;">Win percentage 25%</div>
-							Gmaeplayed 4<br>
-							Win 1<br>
-							Draws 1<br>
-							Losses 2
+					<div class="row mb-3">
+						<div class="game-stats justify-content-center">
+							<div class="chart-container">
+								<canvas class="my-chart" data-wins="{{ wins }}" data-losses="{{ losses }}"></canvas>
+							</div>
+							<div class="details">
+								<h5>Played: {{ played }} </h5>
+								<ul></ul>
+							</div>
 						</div>
 					</div>
+					<div class="profile-main-text text-center mb-1">Win rate <h2>{{winrate}}%</h2></div>
 					<!-- progress bar -->
-					<div class="row mb-2">
-						<div class="col-6 profile-label-text text-start">Goals Conceded 0</div>
-						<div class="col-6 profile-label-text text-end">Goals Scored 0</div>
+					<div class="col px-5">
+						<div class="row mb-2">
+							<div class="col-6 profile-label-text text-start">Goals Scored {{ goals_scored }}</div>
+							<div class="col-6 profile-label-text text-end">Goals Conceded {{ goals_conceded }}</div>
+						</div>
+						<div class="progress" style="border: 2px solid #ffffff; height: 20px;" data-score="{{ goals_scored }}" data-conceded="{{ goals_conceded }}">
+							<div class="progress-bar" role="progressbar" id="score_bar" style="width: 100%; background-color: #3ea7ed;"></div>
+							<div class="progress-bar" role="progressbar" style="width: 2px; background-color: #ffffff;"></div>
+							<div class="progress-bar" role="progressbar" id="conceded_bar" style="width: 0%; background-color: #ef5d7f;"></div>
+						</div>
+						<div class="text-center profile-content-text my-3">Difference {{ goals_diff }}</div>
 					</div>
-					<div class="progress" style="border: 2px solid #b3b3b3;">
-						<div class="progress-bar bg-light" role="progressbar" style="width: 75%" aria-valuenow="30"
-							aria-valuemin="0" aria-valuemax="100"></div>
-						<div class="progress-bar bg-dark" role="progressbar" style="width: 25%" aria-valuenow="20"
-							aria-valuemin="0" aria-valuemax="100"></div>
-					</div>
-					<div class="text-center profile-content-text my-3">Difference -5</div>
-
 				</div>
 
 				<!-- friends -->

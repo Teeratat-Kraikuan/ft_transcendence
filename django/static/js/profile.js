@@ -69,3 +69,59 @@ function submitEditForm() {
         console.error('Error:', error);
     });
 }
+
+if (document.querySelector(".progress")) {
+    const progress = document.querySelector(".progress")
+    const score = parseInt(progress.getAttribute('data-score'));
+    const conceded = parseInt(progress.getAttribute('data-conceded'));
+    const all = score + conceded
+    const p_score = (score == 0 && conceded == 0) ? 0 : (Math.round((score / all) * 100)).toString();
+    const p_conceded = (score == 0 && conceded == 0) ? 0 :  (Math.round((conceded / all) * 100)).toString();
+    document.getElementById('score_bar').style.width = p_score+'%'
+    document.getElementById('conceded_bar').style.width = p_conceded+'%'
+} else { console.log("Progress element not found")}
+
+if (document.querySelector(".my-chart")) {
+    const myChart = document.querySelector(".my-chart");
+    const wins = parseInt(myChart.getAttribute('data-wins'));
+    const losses = parseInt(myChart.getAttribute('data-losses'));
+    if (losses == 0 && wins == 0) { nothing = 1;} else {nothing = 0}
+    const chartData = {
+        labels: ["Wins", "Losses"],
+        data: [wins, losses],
+        cdata: [wins, losses, nothing],
+    };
+    new Chart(document.querySelector(".my-chart"), {
+        type: "doughnut",
+        data: {
+            labels: chartData.labels,
+            datasets: [
+                {
+                    label: "Game Stat",
+                    data: chartData.cdata,
+                    backgroundColor: ['#3ea7ed', '#ef5d7f', '#ffffff']
+                },
+            ],
+        },
+        options: {
+            borderWidth: 2,
+            borderRadius: 2,
+            hoverBorderWidth: 0,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+        },
+    });
+    const gameStatUl = () => {
+        chartData.labels.forEach((label, i) => {
+            let li = document.createElement("li");
+            li.innerHTML = `${label}: <span class='percentage'>${chartData.data[i]}</span>`;
+            document.querySelector(".game-stats .details ul").appendChild(li);
+        });
+    };
+    gameStatUl();
+} else {
+    console.error("Chart element not found");
+}
