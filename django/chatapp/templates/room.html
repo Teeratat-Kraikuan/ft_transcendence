@@ -236,7 +236,6 @@
 			return response.json();
 		})
 		.then(data => {
-			console.log('Room Code:', data.room_code);
 			chatSocket.send(JSON.stringify({ message: data.room_code, username: "{{ request.user.username }}", room_name: roomName, is_link: true }));
 		})
 		.catch(error => {

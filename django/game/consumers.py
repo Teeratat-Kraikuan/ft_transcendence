@@ -31,7 +31,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 	async def disconnect(self, close_code):
 		await self.update_room_decr(self.room_code)
 
-		if await self.get_room_user(self.room_code) == 0:
+		if await self.get_room_user(self.room_code) <= 0:
 			await self.delete_room()
 
 		await self.channel_layer.group_discard(
@@ -50,7 +50,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 				action_type = text_data_json['type']
 				direction = text_data_json['direction']
 				player = text_data_json['player']
-				if text_data_json['player'] == 1:
+				if player == 1:
 					if action_type == 'keydown' and direction == 'up':
 						self.user1Up = True
 					elif action_type == 'keydown' and direction == 'down':
@@ -59,7 +59,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 						self.user1Up = False
 					elif action_type == 'keyup' and direction == 'down':
 						self.user1Down = False
-				elif text_data_json['player'] == 2:
+				elif player == 2:
 					if action_type == 'keydown' and direction == 'up':
 						self.user2Up = True
 					elif action_type == 'keydown' and direction == 'down':
@@ -78,7 +78,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			start_point = text_data_json["start_point"]
 
 			if not hasattr(self, 'game_loop_task'):
-				await self.game_start()
+				self.game_loop_task = asyncio.create_task(self.game_loop())
 
 			await self.channel_layer.group_send(
 				self.roomGroupName, {
@@ -123,8 +123,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			pass
 
 	async def game_start(self):
-		room = await sync_to_async(PongGame.objects.get)(room_code=self.room_code)
-		if room.player_in_room == 2:
+		if await self.get_room_user(self.room_code) >= 2:
 			self.game_loop_task = asyncio.create_task(self.game_loop())
 
 	async def game_loop(self):

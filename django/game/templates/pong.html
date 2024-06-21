@@ -230,13 +230,7 @@
 			document.getElementById("player2").innerHTML = username;
 			document.getElementById("img_player2").src = profile_image;
 		}
-		if (gameState !== "None"){
-			console.log(decodeHtmlEntities(gameState));
-		}
-		else{
-			if (playerNo == 2)
-				pongSocket.send(JSON.stringify({ball_x: ballX, ball_y: ballY, paddle1_y: paddle1Y, paddle2_y: paddle2Y, player1score: player1Score, player2score: player2Score, start_point: true }));
-		}
+		pongSocket.send(JSON.stringify({ball_x: ballX, ball_y: ballY, paddle1_y: paddle1Y, paddle2_y: paddle2Y, player1score: player1Score, player2score: player2Score, start_point: true }));
 	};
 
 	pongSocket.onclose = function (e) {
@@ -326,13 +320,11 @@
 
 	function checkWinLose() {
 		if (player1Score >= 10) {
-			console.log("player1 Win!");
 			winner = player1name;
 			document.getElementById("winner").innerHTML = 'The winner is ' + winner;
 			showEdit();
 		}
 		else if (player2Score >= 10) {
-			console.log("player2 Win!");
 			winner = player2name;
 			document.getElementById("winner").innerHTML = 'The winner is ' + winner;
 			showEdit();
