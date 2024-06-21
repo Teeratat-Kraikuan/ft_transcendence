@@ -14,7 +14,7 @@
 		<div class="column content-solid card-main  mx-2">
 			<img style="margin-top: 25px; width: 168px;"  src="{% static 'pongpong.png' %}">
 			<br><span style="font-family:monospace; font-size:larger;">Tournament!!</span>
-			<form class="mt-4" method="post" action="{% url 'tournament_waiting' %}">
+			<form class="mt-4" method="post">
 				<input class="input-box" name="aka" type="text" placeholder="Name" style="height: 42px; text-align: center;">
 				{% csrf_token %}
 				<div class="column mb-3">
@@ -26,7 +26,7 @@
 						<div class="mt-1" style="font-size: small;">Number of Player</div>
 					</div>
 				</div>
-				<button type="submit" class="btn btn-dark card-x-btn mb-4">
+				<button type="submit" class="btn btn-dark card-x-btn mb-4" onclick="swapApp('/game/tournament_waiting/')">
 					Join
 				</button>
 			</form>
