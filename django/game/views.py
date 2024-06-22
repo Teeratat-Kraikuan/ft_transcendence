@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import PongGame, Tournament, TournamentParticipant
+from .models import PongGame, Tournament, TournamentParticipant, MatchTournament
 from users.models import CustomUser, MatchHistory
 import random
 import json
@@ -114,6 +114,20 @@ def tournament_waiting(request): # waiting room
 	nickname = request.POST.get('aka') or request.user.username
 	user = request.user
 	num_players = 4
+
+	# Check if the player is in a tournament with status 'started'
+	started_tournament_participant = TournamentParticipant.objects.filter(user=user, tournament__status='started').first()
+	if started_tournament_participant:
+		started_tournament = started_tournament_participant.tournament
+		participants = started_tournament.tournamentparticipant_set.all()
+		context = {
+            'num_players': 4,
+            'range_num_players': range(4),
+            'nickname': started_tournament_participant.nickname,
+            'tournament': started_tournament,
+            'participants': participants,
+        }
+		return render(request, 'tournament_waiting.html', context)
     
     # Find an open tournament with less than 4 participants
 	open_tournament = None
@@ -135,6 +149,7 @@ def tournament_waiting(request): # waiting room
 	if open_tournament.tournamentparticipant_set.count() == num_players:
 		open_tournament.status = 'started'
 		open_tournament.save()
+		generate_round_robin_matches(open_tournament)
 		
 	participants = open_tournament.tournamentparticipant_set.all()
 	
@@ -159,11 +174,19 @@ def tournament_game(request): # Waiting in game
 		return redirect('login')
 	return render(request, 'tournament_pong.html')
 
-def round_robin_concurrent(num_players):
-  pairings = []
-  for i in range(num_players):
-    partner = (i + num_players // 2) % num_players
-    pairings.append([i, partner])
+def generate_round_robin_matches(tournament):
+	participants = list(tournament.tournamentparticipant_set.all())
+	num_participants = len(participants)
+	
+	matches = []
+	for i in range(num_participants):
+		for j in range(i + 1, num_participants):
+			matches.append(MatchTournament(
+                tournament=tournament,
+                player1=participants[i].user,
+                player2=participants[j].user
+            ))
 
-  return pairings
+    # Bulk create matches for efficiency
+	MatchTournament.objects.bulk_create(matches)
 

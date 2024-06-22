@@ -64,3 +64,36 @@ class TournamentParticipant(models.Model):
     
     def __str__(self):
         return f"{self.nickname} in {self.tournament.name}"
+	
+class MatchTournament(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    player1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player1_matches')
+    player2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player2_matches')
+    winner = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='won_matches')
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
+    match_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('tournament', 'player1', 'player2')
+        indexes = [
+            models.Index(fields=['tournament', 'player1']),
+            models.Index(fields=['tournament', 'player2']),
+        ]
+        ordering = ['match_date']
+        verbose_name = 'Match Tournament'
+        verbose_name_plural = 'Match Tournaments'
+
+    def __str__(self):
+        return f"Match between {self.player1.username} and {self.player2.username} in {self.tournament.name}"
+
+    def set_winner(self, winner, score1, score2):
+        """
+        Set the winner of the match and update the scores.
+        """
+        if winner not in [self.player1, self.player2]:
+            raise ValueError("Winner must be one of the match participants")
+        self.winner = winner
+        self.player1_score = score1
+        self.player2_score = score2
+        self.save()
