@@ -47,7 +47,20 @@ class Tournament(models.Model):
 	name = models.CharField(max_length=100)
 	status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="open")
 	start_date = models.DateTimeField(auto_now_add=True)
-	participants = models.ManyToManyField(CustomUser, related_name='tournaments')
 
 	def __str__(self) -> str:
 		return f"{self.name}"
+	
+	def is_full(self):
+		return self.participants.count() >= 4
+	
+class TournamentParticipant(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=100)
+
+    class Meta:
+        unique_together = ('tournament', 'user')
+    
+    def __str__(self):
+        return f"{self.nickname} in {self.tournament.name}"

@@ -28,59 +28,28 @@
 
 					<!-- user -->
 					<div class="col-3 wrapper justify-content-center">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+						<img src="{% if participants|length > 0 %}{{ participants.0.user.profile_image.url }}{% else %}https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c{% endif %}"
 							class="rounded-circle player-image mx-2">
-						<h4>{{ username }}</h4>
-					</div>
-
-					<!-- dummy -->
-
-					<!-- for player in players -->
-					<div class="col-3 wrapper justify-content-center">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
-							class="rounded-circle player-image mx-2">
-						<h4 id="player">???</h4>
+						<h4 id="player0">{% if participants|length > 0 %}{{ participants.0.nickname }}{% else %}???{% endif %}</h4>
 					</div>
 
 					<div class="col-3 wrapper justify-content-center">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+						<img src="{% if participants|length > 1 %}{{ participants.1.user.profile_image.url }}{% else %}https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c{% endif %}"
 							class="rounded-circle player-image mx-2">
-						<h4 id="player">???</h4>
+						<h4 id="player1">{% if participants|length > 1 %}{{ participants.1.nickname }}{% else %}???{% endif %}</h4>
 					</div>
 
 					<div class="col-3 wrapper justify-content-center">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+						<img src="{% if participants|length > 2 %}{{ participants.2.user.profile_image.url }}{% else %}https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c{% endif %}"
 							class="rounded-circle player-image mx-2">
-						<h4 id="player">???</h4>
-					</div>
-
-					<!-- another row -->
-
-					{% if num_players == 8 %}
-					<div class="col-3 wrapper justify-content-center">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
-							class="rounded-circle player-image mx-2">
-						<h4 id="player">???</h4>
+						<h4 id="player2">{% if participants|length > 2 %}{{ participants.2.nickname }}{% else %}???{% endif %}</h4>
 					</div>
 
 					<div class="col-3 wrapper justify-content-center">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+						<img src="{% if participants|length > 3 %}{{ participants.3.user.profile_image.url }}{% else %}https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c{% endif %}"
 							class="rounded-circle player-image mx-2">
-						<h4 id="player">???</h4>
+						<h4 id="player3">{% if participants|length > 3 %}{{ participants.3.nickname }}{% else %}???{% endif %}</h4>
 					</div>
-
-					<div class="col-3 wrapper justify-content-center">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
-							class="rounded-circle player-image mx-2">
-						<h4 id="player">???</h4>
-					</div>
-
-					<div class="col-3 wrapper justify-content-center">
-						<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
-							class="rounded-circle player-image mx-2">
-						<h4 id="player">???</h4>
-					</div>
-					{% endif %}
 
 				</div>
 			</div>
@@ -93,7 +62,7 @@
 					cancel
 				</button>
 			</a> -->
-				<a style="text-decoration: none; color: black;" href="javascript:void(0);" onclick="doneWaiting()">
+				<a style="text-decoration: none; color: black;" href="javascript:void(0);">
 					<button type="button" class="btn btn-light card-x-btn mb-4">
 						cancel
 					</button>
@@ -181,6 +150,7 @@
 {% block body-script %}
 <script>
 	var mode = "{{num_players}}";
+	let tournament_name = "{{ tournament.name }}";
 
 	window.onload = function () {
 		if (mode == 4) {
@@ -189,6 +159,45 @@
 			document.getElementById("flex-box").style.height = '10vh';
 		}
 	}
+
+	tournamentSocket = new WebSocket("wss://" + window.location.host + "/ws/game/tournament/" + tournament_name + "/");
+	tournamentSocket.onopen = function (e) {
+		console.log("tournament socket connected");
+	};
+
+	tournamentSocket.onclose = function (e) {
+		console.log("tournament socket disconnect");
+	};
+
+	tournamentSocket.onmessage = function (e) {
+		const data = JSON.parse(e.data);
+		if (data.action === "message") {
+			console.log(data.message);
+		}
+		else if (data.action === "player_in_out") {
+			updatePlayerList(data.player_list);
+		}
+	};
+
+	function updatePlayerList(players) {
+		const playerElements1 = document.querySelectorAll("#all-player-w h4");
+		playerElements1.forEach((el, index) => {
+			if (index < players.length) {
+				el.textContent = players[index].username;
+			} else {
+				el.textContent = "???";
+			}
+		});
+		const playerElements2 = document.querySelectorAll("#all-player-w img");
+		playerElements2.forEach((el, index) => {
+			if (index < players.length) {
+				el.src = players[index].image;
+			} else {
+				el.src = "https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c";
+			}
+		});
+	}
+
 	function doneWaiting() {
 		document.getElementById("flex-box").style.height = '0';
 		document.getElementById("waiting-start").style.display = 'none';

@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import PongGame
+from .models import PongGame, Tournament, TournamentParticipant
 from users.models import CustomUser, MatchHistory
 import random
 import json
@@ -59,48 +59,6 @@ def pong_local(request):
 	context = {}
 	return render(request, 'pong-local.html', context)
 
-@login_required
-def tournament(request):
-	if not request.user.is_authenticated:
-		return redirect('login')
-	return render(request, 'tournament.html')
-
-@login_required
-def tournament_waiting(request): # Waiting room
-	# if not request.user.is_authenticated:
-	# 	return redirect('login')
-	# if request.method != 'POST':
-	# 	return render(request, 'tournament.html')
-	context = {}
-	# num_players = int(request.POST.get('num_players'))
-	num_players = 4
-	context['num_players'] = num_players
-	context['range_num_players'] = range(num_players)
-	# context['username'] = request.POST.get('aka') or request.user.username
-	context['username'] = "Dummy"
-	return render(request, 'tournament_waiting.html', context) 
-	# return render(request, 'tournament_waiting.html', context) # original
-
-@login_required
-def tournament_pong(request): # Pong Game
-	if not request.user.is_authenticated:
-		return redirect('login')
-	return render(request, 'tournament_pong.html')
-
-@login_required
-def tournament_game(request): # Waiting in game
-	if not request.user.is_authenticated:
-		return redirect('login')
-	return render(request, 'tournament_pong.html')
-
-def round_robin_concurrent(num_players):
-  pairings = []
-  for i in range(num_players):
-    partner = (i + num_players // 2) % num_players
-    pairings.append([i, partner])
-
-  return pairings
-
 def match_record(request):
 	if request.method == "POST":
 		print("post method")
@@ -139,3 +97,73 @@ def match_record(request):
 		except Exception as e:
 			return JsonResponse({'error': str(e)}, status=400)
 	return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+### ***** TOURNAMENT ***** ###
+
+@login_required
+def tournament(request):
+	if not request.user.is_authenticated:
+		return redirect('login')
+	return render(request, 'tournament.html')
+
+@login_required
+def tournament_waiting(request): # waiting room
+	if request.method != 'POST':
+		return render(request, 'tournament.html')
+	
+	nickname = request.POST.get('aka') or request.user.username
+	user = request.user
+	num_players = 4
+    
+    # Find an open tournament with less than 4 participants
+	open_tournament = None
+	for tournament in Tournament.objects.filter(status='open'):
+		if tournament.tournamentparticipant_set.count() < num_players:
+			# Check if nickname is already used in this tournament
+			if not TournamentParticipant.objects.filter(tournament=tournament, nickname=nickname).exists():
+				open_tournament = tournament
+				break
+
+	if not open_tournament:
+		# Create a new tournament if no open tournament is available
+		open_tournament = Tournament.objects.create(name=f"Tournament_{Tournament.objects.count() + 1}")
+    
+    # Add user to the tournament
+	TournamentParticipant.objects.create(tournament=open_tournament, user=user, nickname=nickname)
+
+	# Check if the tournament is now full
+	if open_tournament.tournamentparticipant_set.count() == num_players:
+		open_tournament.status = 'started'
+		open_tournament.save()
+		
+	participants = open_tournament.tournamentparticipant_set.all()
+	
+	context = {
+        'num_players': num_players,
+        'range_num_players': range(num_players),
+        'nickname': nickname,
+        'tournament': open_tournament,
+		'participants': participants,
+    }
+	return render(request, 'tournament_waiting.html', context)
+
+@login_required
+def tournament_pong(request): # Pong Game
+	if not request.user.is_authenticated:
+		return redirect('login')
+	return render(request, 'tournament_pong.html')
+
+@login_required
+def tournament_game(request): # Waiting in game
+	if not request.user.is_authenticated:
+		return redirect('login')
+	return render(request, 'tournament_pong.html')
+
+def round_robin_concurrent(num_players):
+  pairings = []
+  for i in range(num_players):
+    partner = (i + num_players // 2) % num_players
+    pairings.append([i, partner])
+
+  return pairings
+

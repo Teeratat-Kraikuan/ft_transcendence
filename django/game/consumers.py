@@ -3,7 +3,7 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from users.models import CustomUser
-from .models import PongGame
+from .models import PongGame, Tournament, TournamentParticipant
 
 class PongConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -18,7 +18,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.user2Down = False
 
 		await self.update_room_incr(self.room_code)
-		print('player added')
 
 		await self.channel_layer.group_add(
 			self.roomGroupName,
@@ -221,3 +220,118 @@ class PongConsumer(AsyncWebsocketConsumer):
 	def get_room_user(self, room_code):
 		room = PongGame.objects.get(room_code=room_code)
 		return room.player_in_room
+	
+class TournamentConsumer(AsyncWebsocketConsumer):
+	async def connect(self):
+		self.tournament_name = self.scope['url_route']['kwargs']['tournament_name']
+		self.tournament_group_name = f'tournament_{self.tournament_name}'
+
+        # Join tournament group
+		await self.channel_layer.group_add(
+            self.tournament_group_name,
+            self.channel_name
+        )
+		
+		await self.accept()
+
+        # Notify group about the new connection
+		await self.channel_layer.group_send(
+            self.tournament_group_name,
+            {
+                'type': 'tournament.message',
+                'message': f'{self.scope["user"].username} joined the tournament.'
+            }
+        )
+
+		await self.channel_layer.group_send(
+			self.tournament_group_name,
+			{
+				'type': 'player_in_out'
+			}
+		)
+		
+	async def disconnect(self, close_code):
+        # Leave tournament group
+		await self.channel_layer.group_discard(
+            self.tournament_group_name,
+            self.channel_name
+        )
+
+        # Notify group about the disconnection
+		await self.channel_layer.group_send(
+            self.tournament_group_name,
+            {
+                'type': 'tournament.message',
+                'message': f'{self.scope["user"].username} left the tournament.'
+            }
+        )
+
+		# Remove player from tournament if it's still open
+		await self.remove_player_from_tournament()
+
+		await self.channel_layer.group_send(
+			self.tournament_group_name,
+			{
+				'type': 'player_in_out'
+			}
+		)
+
+    # Receive message from WebSocket
+	async def receive(self, text_data):
+		text_data_json = json.loads(text_data)
+		message = text_data_json['message']
+
+        # Send message to tournament group
+		await self.channel_layer.group_send(
+            self.tournament_group_name,
+            {
+                'type': 'tournament.message',
+                'message': message
+            }
+        )
+
+    # Receive message from tournament group
+	async def tournament_message(self, event):
+		message = event['message']
+
+        # Send message to WebSocket
+		await self.send(text_data=json.dumps({
+			'action': 'message',
+            'message': message
+        }))
+
+	async def player_in_out(self, event):
+		player_list = await self.get_player_list()
+		await self.send(text_data=json.dumps({
+			'action': 'player_in_out',
+			'player_list': player_list,
+		}))
+
+	@sync_to_async
+	def get_player_list(self):
+		try:
+			tournament = Tournament.objects.get(name=self.tournament_name)
+			players = tournament.tournamentparticipant_set.all()
+			player_list = [{'username': player.nickname, 'image': player.user.profile_image.url} for player in players]
+			return player_list
+		except Tournament.DoesNotExist:
+			return []
+
+	@sync_to_async
+	def remove_player_from_tournament(self):
+		user = self.scope["user"]
+		try:
+			tournament = Tournament.objects.get(name=self.tournament_name)
+			if tournament.status == 'open':
+				participant = TournamentParticipant.objects.get(tournament=tournament, user=user)
+				participant.delete()
+
+				# If there are no more participants, delete the tournament
+				if tournament.tournamentparticipant_set.count() == 0:
+					tournament.delete()
+				else:
+					tournament.save()
+		except Tournament.DoesNotExist:
+			pass
+		except TournamentParticipant.DoesNotExist:
+			pass

@@ -1,5 +1,6 @@
 let chatSocket;
 let pongSocket;
+let tournamentSocket;
 
 document.addEventListener('DOMContentLoaded', function() {
 	updateApp(window.location.pathname);
@@ -13,14 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function updateApp(path) {
 	if (chatSocket) {
-		console.log("closing chat socket")
 		chatSocket.close();
 		chatSocket = null;
 	}
 	if (pongSocket) {
-		console.log("closing pong socket")
 		pongSocket.close();
 		pongSocket = null;
+	}
+	if (tournamentSocket) {
+		tournamentSocket.close();
+		tournamentSocket = null;
 	}
 
 	fetch(path, { headers: { "X-Requested-With": "XMLHttpRequest" } })
@@ -84,6 +87,9 @@ function loadScripts(path) {
 	}
 	else if (path === '/game/tournament/') {
 		loadScriptBody('/static/js/tournament.js');
+	}
+	else if (path === '/game/tournament_waiting/') {
+		executeInlineScripts();
 	}
 }
 
