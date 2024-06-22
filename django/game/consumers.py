@@ -333,7 +333,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	def get_player_stats(self, tournament, player):
 		matches_played = MatchTournament.objects.filter(
-			Q(tournament=tournament) & (Q(player1=player) | Q(player2=player))
+			Q(tournament=tournament) & (Q(player1=player) | Q(player2=player)) & Q(completed=True)
 		).count()
 		
 		matches_won = MatchTournament.objects.filter(
@@ -344,7 +344,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		matches_lost = matches_played - matches_won
 
 		points = MatchTournament.objects.filter(
-			Q(tournament=tournament) & Q(player1=player) | Q(player2=player)
+			Q(tournament=tournament) & (Q(player1=player) | Q(player2=player)) & Q(completed=True)
 		).aggregate(
 			player1_points=Sum('player1_score', filter=Q(player1=player)),
 			player2_points=Sum('player2_score', filter=Q(player2=player)),
