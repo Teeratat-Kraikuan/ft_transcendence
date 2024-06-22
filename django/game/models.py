@@ -38,21 +38,20 @@ class PongGame(models.Model):
 		return json.dumps(game_state)
 	
 class Tournament(models.Model):
-	STATUS_CHOICES = (
+    STATUS_CHOICES = (
         ("open", "Opened"),
         ("started", "Started"),
         ("ended", "Ended")
     )
-	
-	name = models.CharField(max_length=100)
-	status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="open")
-	start_date = models.DateTimeField(auto_now_add=True)
-
-	def __str__(self) -> str:
-		return f"{self.name}"
-	
-	def is_full(self):
-		return self.participants.count() >= 4
+    name = models.CharField(max_length=100)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="open")
+    start_date = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self) -> str:
+        return f"{self.name}"
+    
+    def is_full(self):
+         return self.participants.count() >= 4
 	
 class TournamentParticipant(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)

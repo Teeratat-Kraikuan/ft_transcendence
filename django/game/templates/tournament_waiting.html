@@ -112,11 +112,11 @@
 			<div class="col-4  text-center">
 				<div class="row justify-content-center">
 					<div class="column content-solid card-main  mx-2" style="width: 20vw; background-color: #212529;">
-						<h2 class="my-3" style="text-shadow: 0 5px 10px #ffffffb4;">Round x</h2>
+						<h2 id="roundId" class="my-3" style="text-shadow: 0 5px 10px #ffffffb4;">Round x</h2>
 						<div class="mt-5">
-							<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
+							<img id="opponentImage" src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c"
 								class="rounded-circle user_img mx-2">
-							<h4 id="player">???</h4>
+							<h4 id="opponentPlayer">???</h4>
 							<div id="opponentReadyText" style="display: none;">
 								I'm Ready
 								<i class="bi bi-emoji-grin-fill"></i>
@@ -133,7 +133,7 @@
 				<div class="row justify-content-center mt-3">
 					<div class="column content-solid card-main py-4 mx-2" style="width: 20vw; background-color: #212529;">
 						Are you Ready ?
-						<button id="readyButton" type="button" class="btn btn-outline-light card-x-btn my-2" onclick="ready()" >
+						<button id="readyButton" type="button" class="btn btn-outline-light card-x-btn my-2">
 							Ready
 						</button>
 					</div>
@@ -151,6 +151,7 @@
 <script>
 	var mode = "{{num_players}}";
 	let tournament_name = "{{ tournament.name }}";
+	let schedule = "{{ schedule }}"
 
 	window.onload = function () {
 		if (mode == 4) {
@@ -171,11 +172,15 @@
 
 	tournamentSocket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
+		console.log(data.action);
 		if (data.action === "message") {
 			console.log(data.message);
 		}
 		else if (data.action === "player_in_out") {
 			updatePlayerList(data.player_list);
+		}
+		else if (data.action === "send_opponent") {
+			showOpponent(data.round, data.opponent);
 		}
 	};
 
@@ -196,9 +201,11 @@
 				el.src = "https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c";
 			}
 		});
-		if (players.length == 4)
+		if (players.length == 4) {
 			doneWaiting();
 			updatePlayerScores(players);
+			tournamentSocket.send(JSON.stringify({'action': 'get_opponent'}));
+		}
 	}
 	
 	function updatePlayerScores(players) {
@@ -240,7 +247,19 @@
 		document.getElementById("all-player-h").style.height = '15vh';
 		document.getElementById("all-player-h").style.marginBottom = '';
 	}
+
+	function showOpponent(round, opponent) {
+		document.getElementById("roundId").innerHTML = "round " + round;
+		document.getElementById("opponentImage").src = opponent.image;
+		document.getElementById("opponentPlayer").innerHTML = opponent.username;
+	}
+
+	document.getElementById("readyButton").addEventListener("click", ready);
 	function ready() {
+		tournamentSocket.send(JSON.stringify({
+            'action': 'ready',
+            'player': '{{ request.user.username }}'
+        }));
 		document.getElementById("readyButton").classList.toggle('btn-light');
 		document.getElementById("readyButton").classList.toggle('btn-outline-light');
 	}

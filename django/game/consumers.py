@@ -226,6 +226,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		self.tournament_group_name = f'tournament_{self.tournament_name}'
+		self.user = self.scope['user']
 
         # Join tournament group
 		await self.channel_layer.group_add(
@@ -234,15 +235,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         )
 		
 		await self.accept()
-
-        # Notify group about the new connection
-		await self.channel_layer.group_send(
-            self.tournament_group_name,
-            {
-                'type': 'tournament.message',
-                'message': f'{self.scope["user"].username} joined the tournament.'
-            }
-        )
 
 		await self.channel_layer.group_send(
 			self.tournament_group_name,
@@ -258,15 +250,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-        # Notify group about the disconnection
-		await self.channel_layer.group_send(
-            self.tournament_group_name,
-            {
-                'type': 'tournament.message',
-                'message': f'{self.scope["user"].username} left the tournament.'
-            }
-        )
-
 		# Remove player from tournament if it's still open
 		await self.remove_player_from_tournament()
 
@@ -280,22 +263,30 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
-		message = text_data_json['message']
-
-        # Send message to tournament group
-		await self.channel_layer.group_send(
-            self.tournament_group_name,
-            {
-                'type': 'tournament.message',
-                'message': message
-            }
-        )
+		action = text_data_json['action']
+		if action == 'ready':
+			pass
+		if action == 'get_opponent':
+			user = self.user
+			round_num = await sync_to_async(
+            	MatchTournament.objects.filter(Q(player1=user) | Q(player2=user), completed=True).count
+        	)() + 1
+			schedule = {0:[1,2,3], 1:[0,3,2], 2:[3,0,1], 3:[2,1,0]}
+			player_list = await self.get_player_list()
+			user_index = -1
+			for i, player in enumerate(player_list):
+				if player['username'] == self.user.username:
+					user_index = i
+			opponent_index = schedule[user_index][round_num-1]
+			await self.send(text_data=json.dumps({
+					'action': 'send_opponent',
+					'round': round_num,
+					'opponent': player_list[opponent_index],
+				}))
 
     # Receive message from tournament group
 	async def tournament_message(self, event):
 		message = event['message']
-
-        # Send message to WebSocket
 		await self.send(text_data=json.dumps({
 			'action': 'message',
             'message': message

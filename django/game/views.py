@@ -150,7 +150,7 @@ def tournament_waiting(request): # waiting room
 		open_tournament.status = 'started'
 		open_tournament.save()
 		generate_round_robin_matches(open_tournament)
-		
+			
 	participants = open_tournament.tournamentparticipant_set.all()
 	
 	context = {
@@ -169,10 +169,12 @@ def generate_round_robin_matches(tournament):
 	matches = []
 	for i in range(num_participants):
 		for j in range(i + 1, num_participants):
+			player1 = participants[i].user
+			player2 = participants[j].user
 			matches.append(MatchTournament(
                 tournament=tournament,
-                player1=participants[i].user,
-                player2=participants[j].user
+                player1=player1,
+                player2=player2
             ))
 
     # Bulk create matches for efficiency
