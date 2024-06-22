@@ -149,7 +149,6 @@ def tournament_waiting(request): # waiting room
 	if open_tournament.tournamentparticipant_set.count() == num_players:
 		open_tournament.status = 'started'
 		open_tournament.save()
-		generate_round_robin_matches(open_tournament)
 		
 	participants = open_tournament.tournamentparticipant_set.all()
 	
@@ -173,20 +172,3 @@ def tournament_game(request): # Waiting in game
 	if not request.user.is_authenticated:
 		return redirect('login')
 	return render(request, 'tournament_pong.html')
-
-def generate_round_robin_matches(tournament):
-	participants = list(tournament.tournamentparticipant_set.all())
-	num_participants = len(participants)
-	
-	matches = []
-	for i in range(num_participants):
-		for j in range(i + 1, num_participants):
-			matches.append(MatchTournament(
-                tournament=tournament,
-                player1=participants[i].user,
-                player2=participants[j].user
-            ))
-
-    # Bulk create matches for efficiency
-	MatchTournament.objects.bulk_create(matches)
-
