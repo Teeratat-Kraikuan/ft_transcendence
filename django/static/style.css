@@ -6,9 +6,10 @@
 
 body {
     background-image: radial-gradient(#1a1a1a 5%,#131313 95%);
-    background-size: 100vh 100vw;
+    background-size: 100vh 100vh;
     background-position-x: center;
-    background-origin: content-box;
+    /* background-origin: content-box; */
+    object-fit: cover;
 }
 
 .wrapper{

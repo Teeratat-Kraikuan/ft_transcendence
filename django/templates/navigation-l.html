@@ -32,12 +32,12 @@
     </a>
 </li>
 
-{% comment %} <li class="nav-item nav-btn mx-auto {% if request.path == '/setting/' %}active{% endif %}">
-    <a class="nav-link nav-btn" onclick="swapApp('/setting/')">
+<li class="nav-item nav-btn mx-auto {% if request.path == '/404/' %}active{% endif %}">
+    <a class="nav-link nav-btn" onclick="swapApp('/404/')">
         <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
-        <br><span>Setting</span>
+        <br><span>404</span>
     </a>
-</li> {% endcomment %}
+</li>
 <li class="nav-item nav-btn mx-auto {% if request.path == '/logout/' %}active{% endif %}">
     <a class="nav-link nav-btn" onclick="swapApp('/logout/')">
         <i class="bi bi-box-arrow-left" style="font-size: 1.2rem;"></i>
