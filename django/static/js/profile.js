@@ -91,6 +91,38 @@ if (document.querySelector(".my-chart")) {
         data: [wins, losses],
         cdata: [wins, losses, nothing],
     };
+
+    const textAround = {
+        id: 'textAround',
+        beforeDatasetsDraw(chart, args, plugins) {
+            const { ctx, data} = chart;
+            const sum = data.datasets[0].data.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+
+            const xCenter = chart.getDatasetMeta(0).data[0].x;
+            const yCenter = chart.getDatasetMeta(0).data[0].y;
+            const win = data.datasets[0].data[0];
+            const lose = data.datasets[0].data[1];
+            const percentage = ((data.datasets[0].data[0] / sum) * 100).toFixed(0);
+
+            ctx.save()
+            ctx.font = "400 16px Poppins";
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Win rate`, xCenter, yCenter - 40);
+            ctx.save()
+            ctx.font = "400 40px Poppins";
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${percentage}%`, xCenter, yCenter + 5);
+            ctx.save()
+            ctx.font = "400 14px Poppins";
+            ctx.fillStyle = '#c0c0c0';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Wins    ${win}`, xCenter, yCenter + 38);
+            ctx.fillText(`Losses  ${lose}`, xCenter, yCenter + 58);
+        }
+    }
+
     new Chart(document.querySelector(".my-chart"), {
         type: "doughnut",
         data: {
@@ -99,7 +131,8 @@ if (document.querySelector(".my-chart")) {
                 {
                     label: "Game Stat",
                     data: chartData.cdata,
-                    backgroundColor: ['#3ea7ed', '#ef5d7f', '#ffffff']
+                    backgroundColor: ['#3ea7ed', '#ef5d7f', '#ffffff'],
+                    cutout: '75%'
                 },
             ],
         },
@@ -107,21 +140,17 @@ if (document.querySelector(".my-chart")) {
             borderWidth: 2,
             borderRadius: 2,
             hoverBorderWidth: 0,
+            layout : {
+                padding: 20
+            },
             plugins: {
                 legend: {
                     display: false,
                 },
             },
         },
+        plugins: [textAround],
     });
-    const gameStatUl = () => {
-        chartData.labels.forEach((label, i) => {
-            let li = document.createElement("li");
-            li.innerHTML = `${label}: <span class='percentage'>${chartData.data[i]}</span>`;
-            document.querySelector(".game-stats .details ul").appendChild(li);
-        });
-    };
-    gameStatUl();
 } else {
     console.error("Chart element not found");
 }
