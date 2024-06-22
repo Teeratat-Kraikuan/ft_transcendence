@@ -2,8 +2,9 @@ import json
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
+from django.db.models import Q, Sum
 from users.models import CustomUser
-from .models import PongGame, Tournament, TournamentParticipant
+from .models import PongGame, Tournament, TournamentParticipant, MatchTournament
 
 class PongConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -312,10 +313,58 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		try:
 			tournament = Tournament.objects.get(name=self.tournament_name)
 			players = tournament.tournamentparticipant_set.all()
-			player_list = [{'username': player.nickname, 'image': player.user.profile_image.url} for player in players]
+			player_list = []
+
+			for player in players:
+				stats = self.get_player_stats(tournament, player.user)
+				player_info = {
+					'username': player.nickname,
+					'image': player.user.profile_image.url,
+					'matches_played': stats['matches_played'],
+					'matches_won': stats['matches_won'],
+					'matches_lost': stats['matches_lost'],
+					'total_scores': stats['total_scores'],
+					'total_points': stats['total_points']
+				}
+				player_list.append(player_info)
 			return player_list
 		except Tournament.DoesNotExist:
 			return []
+
+	def get_player_stats(self, tournament, player):
+		matches_played = MatchTournament.objects.filter(
+			Q(tournament=tournament) & (Q(player1=player) | Q(player2=player))
+		).count()
+		
+		matches_won = MatchTournament.objects.filter(
+			tournament=tournament,
+			winner=player
+		).count()
+
+		matches_lost = matches_played - matches_won
+
+		points = MatchTournament.objects.filter(
+			Q(tournament=tournament) & Q(player1=player) | Q(player2=player)
+		).aggregate(
+			player1_points=Sum('player1_score', filter=Q(player1=player)),
+			player2_points=Sum('player2_score', filter=Q(player2=player)),
+			player1_lost_points=Sum('player2_score', filter=Q(player1=player)),
+			player2_lost_points=Sum('player1_score', filter=Q(player2=player))
+		)
+
+		total_points = (points['player1_points'] or 0) + (points['player2_points'] or 0)
+		total_points_lost = (points['player1_lost_points'] or 0) + (points['player2_lost_points'] or 0)
+
+		total_scores = total_points - total_points_lost
+		total_points = matches_won * 3 + matches_lost
+
+		return {
+			'matches_played': matches_played,
+			'matches_won': matches_won,
+			'matches_lost': matches_lost,
+			'total_scores': total_scores,
+			'total_points': total_points,
+		}
 
 	@sync_to_async
 	def remove_player_from_tournament(self):

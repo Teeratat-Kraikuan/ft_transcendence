@@ -81,8 +81,6 @@ class MatchTournament(models.Model):
             models.Index(fields=['tournament', 'player2']),
         ]
         ordering = ['match_date']
-        verbose_name = 'Match Tournament'
-        verbose_name_plural = 'Match Tournaments'
 
     def __str__(self):
         return f"Match between {self.player1.username} and {self.player2.username} in {self.tournament.name}"

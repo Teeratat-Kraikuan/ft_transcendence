@@ -90,7 +90,7 @@
 								<th scope="col">Points</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="playerScores">
 							{% for i in range_num_players %}
 							<tr>
 								<th scope="row">{{i}}</th>
@@ -198,6 +198,36 @@
 		});
 		if (players.length == 4)
 			doneWaiting();
+			updatePlayerScores(players);
+	}
+	
+	function updatePlayerScores(players) {
+		const playerScoresTable = document.getElementById("playerScores");
+		playerScoresTable.innerHTML = ""; // Clear existing rows
+
+		players.sort((a, b) => {
+			if (b.total_points !== a.total_points) {
+				return b.total_points - a.total_points;
+			}
+			return b.total_scores - a.total_scores;
+		});
+
+		players.forEach((player, index) => {
+			const row = document.createElement('tr');
+
+			row.innerHTML = `
+				<th scope="row">${index + 1}</th>
+				<td>${player.username}</td>
+				<td>${player.matches_played}</td> <!-- play -->
+				<td>${player.matches_won}</td> <!-- win -->
+				<td>0</td> <!-- draw, if applicable -->
+				<td>${player.matches_lost}</td> <!-- lose -->
+				<td>${player.total_scores}</td> <!-- + - -->
+				<td>${player.total_points}</td> <!-- point -->
+			`;
+
+			playerScoresTable.appendChild(row);
+		});
 	}
 
 	function doneWaiting() {
