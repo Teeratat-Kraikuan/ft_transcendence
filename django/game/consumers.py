@@ -265,7 +265,14 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		action = text_data_json['action']
 		if action == 'ready':
-			pass
+			print('ready sending...')
+			await self.channel_layer.group_send(
+				self.tournament_group_name,
+				{
+					'type': 'send_ready',
+					'nickname': text_data_json['nickname']
+				}
+			)
 		if action == 'get_opponent':
 			user = self.user
 			round_num = await sync_to_async(
@@ -274,8 +281,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			schedule = {0:[1,2,3], 1:[0,3,2], 2:[3,0,1], 3:[2,1,0]}
 			player_list = await self.get_player_list()
 			user_index = -1
+			tournament = await sync_to_async(Tournament.objects.get)(name=self.tournament_name)
+			participant = await sync_to_async(TournamentParticipant.objects.get)(tournament=tournament, user=user)
+			my_nickname = participant.nickname
 			for i, player in enumerate(player_list):
-				if player['username'] == self.user.username:
+				if player['username'] == my_nickname:
 					user_index = i
 			opponent_index = schedule[user_index][round_num-1]
 			await self.send(text_data=json.dumps({
@@ -299,6 +309,13 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'player_list': player_list,
 		}))
 
+	async def send_ready(self, event):
+		nickname = event['nickname']
+		await self.send(text_data=json.dumps({
+			'action': 'send_ready',
+			'nickname': nickname
+		}))
+
 	@sync_to_async
 	def get_player_list(self):
 		try:
@@ -309,6 +326,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			for player in players:
 				stats = self.get_player_stats(tournament, player.user)
 				player_info = {
+					'real_username': player.user.username,
 					'username': player.nickname,
 					'image': player.user.profile_image.url,
 					'matches_played': stats['matches_played'],

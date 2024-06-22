@@ -14,4 +14,9 @@ function connectWebSocket() {
 	onlineSocket.onerror = function (e) {
 		console.error("WebSocket error:", e);
 	};
+
+	onlineSocket.onmessage = function (e) {
+		const data = JSON.parse(e.data);
+		alert(data.message);
+	}
 }

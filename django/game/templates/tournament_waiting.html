@@ -151,7 +151,8 @@
 <script>
 	var mode = "{{num_players}}";
 	let tournament_name = "{{ tournament.name }}";
-	let schedule = "{{ schedule }}"
+	let nickname = "{{ nickname }}";
+	let opponent;
 
 	window.onload = function () {
 		if (mode == 4) {
@@ -180,7 +181,11 @@
 			updatePlayerList(data.player_list);
 		}
 		else if (data.action === "send_opponent") {
+			opponent = data.opponent;
 			showOpponent(data.round, data.opponent);
+		}
+		else if (data.action === "send_ready") {
+			opponentReady(data.nickname);
 		}
 	};
 
@@ -258,13 +263,22 @@
 	function ready() {
 		tournamentSocket.send(JSON.stringify({
             'action': 'ready',
-            'player': '{{ request.user.username }}'
+            'nickname': nickname,
         }));
+		onlineSocket.send(JSON.stringify({
+			'action': 'ready',
+			'receiver': opponent.real_username,
+			'message': nickname + " is ready, please come back to tournament",
+		}))
 		document.getElementById("readyButton").classList.toggle('btn-light');
 		document.getElementById("readyButton").classList.toggle('btn-outline-light');
 	}
 
-	function opponentReady() {
+	function opponentReady(nickname) {
+		if (nickname === opponent.username) {
+			document.getElementById("opponentReadyText").style = "display: block;"
+			document.getElementById("opponentNotReadyText").style = "display: none;"
+		}
 	}
 </script>
 

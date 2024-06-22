@@ -71,6 +71,8 @@ class MatchTournament(models.Model):
     winner = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='won_matches')
     player1_score = models.IntegerField(default=0)
     player2_score = models.IntegerField(default=0)
+    player1_ready = models.BooleanField(default=False)
+    player2_ready = models.BooleanField(default=False)
     completed = models.BooleanField(default=False)
     match_date = models.DateTimeField(auto_now_add=True)
 
