@@ -6,9 +6,13 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from users.models import CustomUser, FriendRequest
 from .models import *
+from dotenv import load_dotenv
+import os
 import re
 
-authorize_uri = "https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6d5edcad7b55ae9cff9a4cdc5d1b9e70c11fcbf7fa394e2c403c1d86f60d6625&redirect_uri=http%3A%2F%2F42pong.com%3A8000%2Fusers%2Fcallback&response_type=code"
+load_dotenv()
+
+authorize_uri = os.getenv('AUTHORIZE_URI')
 
 # Create your views here.
 def home(request):
