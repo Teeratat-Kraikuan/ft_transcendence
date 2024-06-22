@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import CustomUser
 import json
 
 # Create your models here.
@@ -35,3 +36,18 @@ class PongGame(models.Model):
             "player2_score": self.player2_score,
         }
 		return json.dumps(game_state)
+	
+class Tournament(models.Model):
+	STATUS_CHOICES = (
+        ("open", "Opened"),
+        ("started", "Started"),
+        ("ended", "Ended")
+    )
+	
+	name = models.CharField(max_length=100)
+	status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="open")
+	start_date = models.DateTimeField(auto_now_add=True)
+	participants = models.ManyToManyField(CustomUser, related_name='tournaments')
+
+	def __str__(self) -> str:
+		return f"{self.name}"

@@ -82,6 +82,9 @@ function loadScripts(path) {
 	else if (path === '/game/pong/') {
 		executeInlineScripts();
 	}
+	else if (path === '/game/tournament/') {
+		loadScriptBody('/static/js/tournament.js');
+	}
 }
 
 function normalizePath(path) {

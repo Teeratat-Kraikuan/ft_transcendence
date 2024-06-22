@@ -14,72 +14,23 @@
 		<div class="column content-solid card-main  mx-2">
 			<img style="margin-top: 25px; width: 168px;"  src="{% static 'pongpong.png' %}">
 			<br><span style="font-family:monospace; font-size:larger;">Tournament!!</span>
-			<form class="mt-4" method="post">
+			<form id="joinTournamentForm" class="mt-4" method="post">
 				<input class="input-box" name="aka" type="text" placeholder="Name" style="height: 42px; text-align: center;">
 				{% csrf_token %}
 				<div class="column mb-3">
 					<div class="justify-content-between">
 						<input type="radio" class="btn-check" name="num_players" id="btn-np-1" value="4" autocomplete="off" checked>
 						<label class="btn btn-outline-dark" for="btn-np-1" style="width: 38%">4</label>
-						<input type="radio" class="btn-check" name="num_players" id="btn-np-2" value="8" autocomplete="off">
-						<label class="btn btn-outline-dark" for="btn-np-2" style="width: 38%">8</label>
+						{% comment %} <input type="radio" class="btn-check" name="num_players" id="btn-np-2" value="8" autocomplete="off">
+						<label class="btn btn-outline-dark" for="btn-np-2" style="width: 38%">8</label> {% endcomment %}
 						<div class="mt-1" style="font-size: small;">Number of Player</div>
 					</div>
 				</div>
 				<button type="submit" class="btn btn-dark card-x-btn mb-4" onclick="swapApp('/game/tournament_waiting/')">
 					Join
 				</button>
-			</form>
-			<!-- <button id="scoreButton" type="button" class="btn btn-light card-x-btn my-2">
-				Score board
-			</button>
-			<button id="settingButton" type="button" class="btn btn-light card-x-btn my-2">
-				<i class="bi bi-gear-fill" style="width: 14px;"></i>
-				Setting
-			</button> -->
 		</div>
-		<!-- Setting game -->
-		<!-- <div class="column content-solid card-side mx-2" id="settingCard">
-			<div class="card-topic">Game Setting</div>
-			<div class="column mb-2 mt-5">
-				<div class="justify-content-between">
-					<div class="card-content">Perspective</div>
-					<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-						<input type="radio" class="btn-check" name="btnpsp" id="btnpsp1" autocomplete="off" checked>
-						<label class="btn btn-light" for="btnpsp1">2D</label>
-					  
-						<input type="radio" class="btn-check" name="btnpsp" id="btnpsp2" autocomplete="off">
-						<label class="btn btn-light" for="btnpsp2">3D</label>
-					</div>
-				</div>
-			</div>
-			<div class="card-content mt-3">Theme</div>
-			<div class="btn-group-vertical" role="group" aria-label="Basic radio toggle button group">
-				<input type="radio" class="btn-check" name="btntheme" id="btntheme1" autocomplete="off" checked>
-				<label class="btn btn-light" for="btntheme1">Theme 1</label>
-			  
-				<input type="radio" class="btn-check" name="btntheme" id="btntheme2" autocomplete="off">
-				<label class="btn btn-light" for="btntheme2">Theme 2</label>
-			  
-				<input type="radio" class="btn-check" name="btntheme" id="btntheme3" autocomplete="off">
-				<label class="btn btn-light" for="btntheme3">Theme 3</label>
-			  </div>
-		</div> -->
 	</div>
 </div>
-
-<!-- <script>
-	window.onload = function() {
-		var scoreCard = document.getElementById('scoreCard');
-		var settingCard = document.getElementById('settingCard');
-	
-		document.getElementById('scoreButton').addEventListener('click', function() {
-			document.getElementById('scoreCard').classList.toggle('active');
-		});
-		document.getElementById('settingButton').addEventListener('click', function() {
-			document.getElementById('settingCard').classList.toggle('active');
-		});
-	};
-</script> -->
 
 {% endblock %}s
