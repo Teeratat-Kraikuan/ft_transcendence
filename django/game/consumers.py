@@ -269,6 +269,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			to_nickname = text_data_json['to']
 
 			both_ready = await self.save_ready_state(from_nickname, to_nickname)
+			match_id = await self.get_match_id(from_nickname, to_nickname)
 
 			await self.channel_layer.group_send(
 				self.tournament_group_name,
@@ -277,17 +278,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					'from': from_nickname,
 					'to': to_nickname,
 					'both_ready': both_ready,
+					'tournament_name': self.tournament_name,
+					'match_id': match_id,
 				}
 			)
 		if action == 'get_opponent':
 			user = self.user
+			tournament = await sync_to_async(Tournament.objects.get)(name=self.tournament_name)
 			round_num = await sync_to_async(
-            	MatchTournament.objects.filter(Q(player1=user) | Q(player2=user), completed=True).count
+            	MatchTournament.objects.filter(Q(tournament=tournament) & (Q(player1=user) | Q(player2=user)), completed=True).count
         	)() + 1
 			schedule = {0:[1,2,3], 1:[0,3,2], 2:[3,0,1], 3:[2,1,0]}
 			player_list = await self.get_player_list()
 			user_index = -1
-			tournament = await sync_to_async(Tournament.objects.get)(name=self.tournament_name)
 			participant = await sync_to_async(TournamentParticipant.objects.get)(tournament=tournament, user=user)
 			my_nickname = participant.nickname
 			for i, player in enumerate(player_list):
@@ -329,17 +332,53 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		from_nickname = event['from']
 		to_nickname = event['to']
 		both_ready = event['both_ready']
+		tournament_name = event['tournament_name']
+		match_id = event['match_id']
 		await self.send(text_data=json.dumps({
 			'action': 'send_ready',
 			'from': from_nickname,
 			'to': to_nickname,
 			'both_ready': both_ready,
+			'tournament_name': tournament_name,
+			'match_id': match_id,
 		}))
 
 	@sync_to_async
+	def get_match_id(self, my_nickname, opponent_nickname):
+		try:
+			participant1 = TournamentParticipant.objects.get(
+				tournament__name=self.tournament_name,
+				nickname=my_nickname
+			)
+			participant2 = TournamentParticipant.objects.get(
+				tournament__name=self.tournament_name,
+				nickname=opponent_nickname
+			)
+			user1 = participant1.user
+			user2 = participant2.user
+		except TournamentParticipant.DoesNotExist:
+			pass
+
+		match = None
+		try:
+			match = MatchTournament.objects.get(
+				tournament__name=self.tournament_name,
+				player1=user1,
+				player2=user2
+			)
+		except MatchTournament.DoesNotExist:
+			try:
+				match = MatchTournament.objects.get(
+					tournament__name=self.tournament_name,
+					player1=user2,
+					player2=user1
+				)
+			except MatchTournament.DoesNotExist:
+				pass
+		return match.id
+
+	@sync_to_async
 	def is_opponent_ready(self, my_nickname, opponent_nickname):
-		user1 = None
-		user2 = None
 		try:
 			participant1 = TournamentParticipant.objects.get(
 				tournament__name=self.tournament_name,
@@ -499,3 +538,42 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			pass
 		except TournamentParticipant.DoesNotExist:
 			pass
+
+class TournamentPongConsumer(AsyncWebsocketConsumer):
+	async def connect(self):
+		self.tournament_name = self.scope['url_route']['kwargs']['tournament_name']
+		self.match_id = self.scope['url_route']['kwargs']['match_id']
+		self.group_name = f'tournament_{self.tournament_name}_{self.match_id}'
+
+		await self.channel_layer.group_add(
+			self.group_name,
+			self.channel_name
+		)
+
+		await self.accept()
+
+	async def disconnect(self, close_code):
+		await self.channel_layer.group_discard(
+			self.group_name,
+			self.channel_name
+		)
+
+	async def receive(self, text_data):
+		text_data_json = json.loads(text_data)
+		action = text_data_json['action']
+
+		if action == 'message':
+			message = text_data_json['message']
+			await self.channel_layer.group_send(
+				self.group_name,
+				{
+					'type': 'chat_message',
+					'message': message
+				}
+			)
+
+	async def chat_message(self, event):
+		message = event['message']
+		await self.send(text_data=json.dumps({
+			'message': message
+		}))

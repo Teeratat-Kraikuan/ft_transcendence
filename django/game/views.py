@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from .models import PongGame, Tournament, TournamentParticipant, MatchTournament
@@ -191,7 +191,21 @@ def generate_round_robin_matches(tournament):
 def tournament_pong(request): # Pong Game
 	if not request.user.is_authenticated:
 		return redirect('login')
-	return render(request, 'tournament_pong.html')
+	if request.method != 'POST':
+		return redirect('home')
+	tournament_name = request.POST.get('tournament_name')
+	match_id = request.POST.get('match_id')
+	match = get_object_or_404(MatchTournament, id=match_id)
+	tournament = match.tournament
+	player1 = get_object_or_404(TournamentParticipant, tournament=tournament, user=match.player1)
+	player2 = get_object_or_404(TournamentParticipant, tournament=tournament, user=match.player2)
+	context = {
+		'tournament_name': tournament_name,
+		'match_id': match_id,
+		'player1': player1,
+		'player2': player2,
+	}
+	return render(request, 'tournament_pong.html', context)
 
 @login_required
 def tournament_game(request): # Waiting in game

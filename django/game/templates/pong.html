@@ -388,7 +388,7 @@
 			 	method: 'POST',
 			 	body: formData,
 			 	headers: {
-			 		'X-CSRFToken': getCookie('csrftoken')  // Include CSRF token for security
+			 		'X-CSRFToken': getCookie('csrftoken')
 				}
 			})
 			.then(response => response.json())

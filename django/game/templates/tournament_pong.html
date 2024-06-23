@@ -9,14 +9,10 @@
 	<div style="display: block;" id="game-content">
 		<div class="wrapper justify-content-center">
 			<div class="content-solid rounded mt-4 px-3 py-2 wrapper justify-content-around align-items-center" style="width: 60vw;">
-				<div>
-					<h1 class="display-2 fw-bolder">{{ room_code }}</h1>
-					<small> Game Pin :</small>
-				</div>
 				<div class="wrapper align-items-center">
-					<h3>{{ username }}</h3>
+					<h3>{{ player1.nickname }}</h3>
 					<h2 class="fw-bolde mx-3">VS</h2>
-					<h3 id="opponentNameTop">???</h3>
+					<h3>{{ player2.nickname }}</h3>
 				</div>
 	
 			</div>
@@ -24,10 +20,10 @@
 		<div class="wrapper justify-content-center" style="width: 100%">
 			<div class="col-2 p-3 mt-4 justify-content-center text-center">
 				<div class="user-image">
-					<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					<img src="{{ player1.user.profile_image.url }}" class="rounded-circle user_img">
 				</div>
-				<h4>{{ username }}</h4>
-				<h1 class="mt-5" id="userScore">0</h1>
+				<h4>{{ player1.nickname }}</h4>
+				<h1 class="mt-5" id="player1_score">0</h1>
 	
 				<button onclick="increaseScore()">Click</button>
 			</div>
@@ -48,10 +44,10 @@
 			</div>
 			<div class="col-2 p-3 mt-4 justify-content-center text-center">
 				<div class="user-image">
-					<img src="https://img.freepik.com/free-psd/portrait-teenage-boy-white-hoodie-gray-background_1142-60290.jpg?w=1380&t=st=1714908991~exp=1714909591~hmac=4ec5e60aa745cb307b99286ad267b22f9caf2aa29bc752612cc5d53402e9476c" class="rounded-circle user_img">
+					<img src="{{ player2.user.profile_image.url }}" class="rounded-circle user_img">
 				</div>
-				<h4 id="opponentName">???</h4>
-				<h1 class="mt-5" id="opponentScore">0</h1>
+				<h4>{{ player2.nickname }}</h4>
+				<h1 class="mt-5" id="player2_score">0</h1>
 			</div>
 		</div>
 	</div>
@@ -62,78 +58,29 @@
 </div>
 {% endblock %}
 
-{% comment %} {% block body-script %}
+{% block body-script %}
 <script>
-	let userScore = parseInt(document.getElementById("userScore").textContent);
-	let opponentScore = parseInt(document.getElementById("opponentScore").textContent);
-	const roomCode = "{{ num_players }}";
-	const username = "{{ username }}";
-	const playerNo = "player1";
-	const pongSocket = new WebSocket("ws://" + window.location.host + "/ws/game/" + roomCode + "/" + username + "/");
 
-	pongSocket.onopen = function (e) {
-		console.log("The connection was setup successfully !");
-		// Send message requesting username of other player
-		pongSocket.send(JSON.stringify({ score: 0, start_point: true }));
-	};
-	pongSocket.onclose = function (e) {
-		console.log("Something unexpected happened !");
-	};
-	pongSocket.error = function (e) {
-		console.log("error !");
-	};
-	pongSocket.onmessage = function (e) {
-		const data = JSON.parse(e.data);
-		if (userScore < 10 && opponentScore < 10 && data.exit)
-			opponentLeave();
-		else if (!data.exit && data.username != username) {
-			document.getElementById("opponentNameTop").innerHTML = data.username;
-			document.getElementById("opponentName").innerHTML = data.username;
-			document.getElementById("opponentScorePopUp").innerHTML = data.score;
-			document.getElementById("opponentScore").innerHTML = data.score;
-			document.getElementById("waiting-content").style.display = 'none';
-			document.getElementById("game-content").style.display = 'block';
-			opponentScore = data.score;
-			changeScale();
-			if (data.start_point)
-				pongSocket.send(JSON.stringify({ score: 0, start_point: false }));
-		}
-		checkWinLose();
-	};
-	
-	function changeScale() {
-		document.getElementById("opponentScale").style.width = opponentScore * 5 + "%";
-		document.getElementById("userScale").style.width = userScore * 5 + "%";
-		document.getElementById("blankScale").style.width = (20 - userScore - opponentScore) * 5 + "%";
-	}
+	let tournament_name = "{{ tournament_name }}";
+	let match_id = "{{ match_id }}";
 
-	function increaseScore() {
-		userScore++;
-		document.getElementById("userScore").innerHTML = userScore;
-		document.getElementById("userScorePopUp").innerHTML = userScore;
-		changeScale();
-		pongSocket.send(JSON.stringify({ score: userScore, start_point: false }));
-	}
-	function checkWinLose() {
-		const gameStatus = document.getElementById("gameStatus");
-		if (userScore >= 10) {
-			showPopUp("YOU WIN!!")
-		} else if (opponentScore >= 10) {
-			showPopUp("YOU LOSE!!")
-		}
-	}
-	function showPopUp(str) {
-		document.getElementById("popUp").style.display = 'block';
-		document.getElementById("popUpStatus").innerHTML = str;
-	}
-	function donePopUp() {
-		document.getElementById("popUp").style.display = 'none';
-	}
-	function opponentLeave() {
-		document.getElementById("gameStatus").innerHTML = "<h1>Your opponent LEAVE GAME!!</h1>";
-		document.getElementById("gameStatus").style = 'text-align: center; margin-top: 40vh;';
-	}
+	tournamentPongSocket = new WebSocket("wss://" + window.location.host + "/ws/game/tournament/" + tournament_name + "/" + match_id + "/");
+
+    tournamentPongSocket.onopen = function(e) {
+        console.log("tournamentPongSocket connection opened");
+    };
+
+	tournamentPongSocket.onclose = function(e) {
+		console.log("tournamentPongSocket connection closed");
+	};
+    tournamentPongSocket.onmessage = function(e) {
+        let data = JSON.parse(e.data);
+        console.log("Message received:", data);
+    };
+    tournamentPongSocket.onerror = function(e) {
+        console.error("tournamentPongSocket error:", e);
+    };
 
 </script>
 
-{% endblock %}s {% endcomment %}
+{% endblock %}

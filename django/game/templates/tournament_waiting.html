@@ -181,8 +181,8 @@
 			updatePlayerList(data.player_list);
 		}
 		else if (data.action === "send_opponent") {
-			console.log(data.round);
 			if (data.round < 4){
+				opponent = data.opponent;
 				showOpponent(data.round, data.opponent);
 				if (data.is_ready)
 					opponentReady(data.opponent.username);
@@ -194,9 +194,17 @@
 		else if (data.action === "send_ready") {
 			opponentReady(data.from);
 			if (data.both_ready && (data.from == nickname || data.to == nickname))
-				swapApp('/game/tournament_pong/');
+				goToGame(data.tournament_name, data.match_id);
 		}
 	};
+
+	function goToGame(tournament_name, match_id) {
+		const formData = new FormData();
+		// Tournament_name and Match id
+		formData.append('tournament_name', tournament_name);
+		formData.append('match_id', match_id);
+		updateAppPost('/game/tournament_pong/', formData);
+	}
 
 	function updatePlayerList(players) {
 		const playerElements1 = document.querySelectorAll("#all-player-w h4");
