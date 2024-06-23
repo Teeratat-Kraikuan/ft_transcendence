@@ -41,7 +41,22 @@ function updateApp(path) {
 }
 
 function updateAppPost(path, formData) {
-	// const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+	if (chatSocket) {
+		chatSocket.close();
+		chatSocket = null;
+	}
+	if (pongSocket) {
+		pongSocket.close();
+		pongSocket = null;
+	}
+	if (tournamentSocket) {
+		tournamentSocket.close();
+		tournamentSocket = null;
+	}
+	if (tournamentPongSocket) {
+		tournamentPongSocket.close();
+		tournamentPongSocket = null;
+	}
     fetch(path, {
         method: 'POST',
         headers: {
