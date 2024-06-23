@@ -1,8 +1,69 @@
 {% extends 'base.html' %}
 {% load static %}
+
+{% load static %}
+
+{% block head %}
+	<link rel="stylesheet" href="{% static 'css/pong.css' %}">
+{% endblock %}
+
+{% block style %}
+<style>
+	body {
+		color: white;
+	}
+	.own-message {
+		background-color: #343435;
+		text-align: right;
+	}
+	.other-message {
+		background-color: #6601FE;
+		text-align: left;
+	}
+	canvas {
+		border: 1px solid black;
+		display: block;
+		margin: auto;
+	}
+</style>
+{% endblock %}
+
 {% block content %}
 
-<div id="gameStatus" style="z-index: 2; color: white;">
+<div id="flex-box"></div>
+
+<div class="justify-content-center popup-menu" id="popUpEdit">
+	<div class="wrapper justify-content-center" style="margin-top: 21vh;">
+		<div class="d-flex row content-solid card-main mx-2" style="width: 350px">
+			<div id="winner" class="card-topic"></div>
+			<a>
+				<button id="doneBtn" type="button" class="btn btn-light mt" style="width: 120px; font-size: 1rem;">
+					Done
+				</button>
+			</a>
+		</div>
+
+	</div>
+</div>
+
+<div class="justify-content-center popup-menu" id="popUp">
+	<div class="wrapper justify-content-center" style="margin-top: 30vh; margin-left: 100px;">
+		<div class="d-flex row content-solid card-main mx-2 pt-5" style="width:  30%;">
+			<h1 id="popUpStatus"></h1>
+			<div class="wrapper justify-content-center">
+				<h4 id="player1ScorePopUp">0</h4>
+				<h4> : </h4>
+				<h4 id="player2ScorePopUp">0</h4>
+			</div>
+			<a>
+				<button type="button" class="btn btn-light mt-3" style="width: 35%; font-size: 1rem;">
+					Done
+				</button>
+			</a>
+		</div>
+		
+	</div>
+</div>
 
 	<!-- GAME -->
 
@@ -10,9 +71,9 @@
 		<div class="wrapper justify-content-center">
 			<div class="content-solid rounded mt-4 px-3 py-2 wrapper justify-content-around align-items-center" style="width: 60vw;">
 				<div class="wrapper align-items-center">
-					<h3>{{ player1.nickname }}</h3>
+					<h3 id="player1Top">{{ player1.nickname }}</h3>
 					<h2 class="fw-bolde mx-3">VS</h2>
-					<h3>{{ player2.nickname }}</h3>
+					<h3 id="player2Top">{{ player2.nickname }}</h3>
 				</div>
 	
 			</div>
@@ -20,39 +81,35 @@
 		<div class="wrapper justify-content-center" style="width: 100%">
 			<div class="col-2 p-3 mt-4 justify-content-center text-center">
 				<div class="user-image">
-					<img src="{{ player1.user.profile_image.url }}" class="rounded-circle user_img">
+					<img id="img_player1" src="{{ player1.user.profile_image.url }}" class="rounded-circle user_img">
 				</div>
-				<h4>{{ player1.nickname }}</h4>
-				<h1 class="mt-5" id="player1_score">0</h1>
-	
-				<button onclick="increaseScore()">Click</button>
+				<h4 id="player1">{{ player1.nickname }}</h4>
+				<h1 class="mt-5" id="player1Score">0</h1>
 			</div>
 			<div class="justify-content-center wrapper" style="width: 100%;">
 				<div class="col-12 p-3 profile-solid mt-4 mx-3 rounded justify-content-center">
-					<div class="game-panel" style="padding-top: 56.25%;">
-	
+					<div class="game-panel">
+						<canvas id="pongCanvas" width="800" height="400"></canvas>
 					</div>
 					<div class="my-2">
 						<div class="progress" style="border: 2px solid #b3b3b3;">
 							<div ></div>
-							<div id="userScale" class="progress-bar-striped progress-bar-animated progress-bar bg-primary" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+							<div id="player1Scale" class="progress-bar-striped progress-bar-animated progress-bar bg-primary" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
 							<div id="blankScale" class="progress-bar bg-dark" role="progressbar" style="width: 100%" aria-valuemin="0" aria-valuemax="100"></div>
-							<div id="opponentScale" class="progress-bar-striped progress-bar-animated progress-bar bg-danger" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+							<div id="player2Scale" class="progress-bar-striped progress-bar-animated progress-bar bg-danger" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="col-2 p-3 mt-4 justify-content-center text-center">
 				<div class="user-image">
-					<img src="{{ player2.user.profile_image.url }}" class="rounded-circle user_img">
+					<img id="img_player2" src="{{ player2.user.profile_image.url }}" class="rounded-circle user_img">
 				</div>
-				<h4>{{ player2.nickname }}</h4>
-				<h1 class="mt-5" id="player2_score">0</h1>
+				<h4 id="player2">{{ player2.nickname }}</h4>
+				<h1 class="mt-5" id="player2Score">0</h1>
 			</div>
 		</div>
 	</div>
-
-
 
 
 </div>
@@ -63,6 +120,12 @@
 
 	let tournament_name = "{{ tournament_name }}";
 	let match_id = "{{ match_id }}";
+	let username = "{{ username }}"
+	let player1 = "{{ player1.nickname }}";
+	let player2 = "{{ player2.nickname }}";
+	let player1_realname = "{{ player1.user.username }}"
+	let player2_realname = "{{ player2.user.username }}"
+	let winner;
 
 	tournamentPongSocket = new WebSocket("wss://" + window.location.host + "/ws/game/tournament/" + tournament_name + "/" + match_id + "/");
 
@@ -72,14 +135,184 @@
 
 	tournamentPongSocket.onclose = function(e) {
 		console.log("tournamentPongSocket connection closed");
+		cleanupGameTournament();
 	};
     tournamentPongSocket.onmessage = function(e) {
         let data = JSON.parse(e.data);
-        console.log("Message received:", data);
+		if (data.action == "game_update") {
+			console.log('data receive');
+			player1Score = data.player1score;
+			player2Score = data.player2score;
+			ballX = data.ball_x;
+			ballY = data.ball_y;
+			paddle1Y = data.paddle1_y;
+			paddle2Y = data.paddle2_y;
+			updateScore();
+		}
     };
     tournamentPongSocket.onerror = function(e) {
         console.error("tournamentPongSocket error:", e);
     };
+
+
+	// pong game
+	// game variable
+	let gameLoopIdTournament;
+
+	const canvas = document.getElementById("pongCanvas");
+	const context = canvas.getContext("2d");
+
+	// Ball properties
+	let ballX = canvas.width / 2;
+	let ballY = canvas.height / 2;
+	let ballSpeedX = 5;
+	let ballSpeedY = 5;
+	const ballSize = 10;
+
+	// Paddle properties
+	const paddleWidth = 10;
+	const paddleHeight = 100;
+	let paddle1Y = 150;
+	let paddle2Y = 150;
+	const paddleSpeed = 10;
+
+	// Scores
+	let player1Score = 0;
+	let player2Score = 0;
+	const winningScore = 10;
+
+	// Keyboard controls
+	let upPressed = false;
+	let downPressed = false;
+	let wPressed = false;
+	let sPressed = false;
+
+	// Game over state
+	let gameOver = false;
+
+	document.addEventListener("keydown", keyDownHandler);
+	document.addEventListener("keyup", keyUpHandler);
+	function keyDownHandler(event) {
+        if (event.key === "ArrowUp" || event.key === "w") {
+			if (username === player1_realname)
+				tournamentPongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown',  direction: 'up', player: 1}));
+			else if (username === player2_realname)
+				tournamentPongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown',  direction: 'up', player: 2}));
+			upPressed = true;
+		} else if (event.key === "ArrowDown" || event.key === "s") {
+			if (username === player1_realname)
+				tournamentPongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown',  direction: 'down', player: 1}));
+			else if (username === player2_realname)
+				tournamentPongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keydown',  direction: 'down', player: 2}));
+			downPressed = true;
+		}
+	}
+	function keyUpHandler(event) {
+		if (event.key === "ArrowUp" || event.key === "w") {
+			if (username === player1_realname)
+				tournamentPongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keyup',  direction: 'up', player: 1}));
+			else if (username === player2_realname)
+				tournamentPongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keyup',  direction: 'up', player: 2}));
+			upPressed = false;
+		} else if (event.key === "ArrowDown" || event.key === "s") {
+			if (username === player1_realname)
+				tournamentPongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keyup',  direction: 'down', player: 1}));
+			else if (username === player2_realname)
+				tournamentPongSocket.send(JSON.stringify({action: 'move_paddle', type: 'keyup',  direction: 'down', player: 2}));
+			downPressed = false;
+		}
+    }
+
+	function draw() {
+        // Clear canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw paddles
+        context.fillStyle = "white";
+        context.fillRect(0, paddle1Y, paddleWidth, paddleHeight);
+        context.fillRect(canvas.width - paddleWidth, paddle2Y, paddleWidth, paddleHeight);
+
+        // Draw ball
+        context.beginPath();
+        context.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
+        context.fillStyle = "white";
+        context.fill();
+        context.closePath();
+    }
+	function gameLoopTournament() {
+		draw();
+        if (gameOver)
+            return;
+        gameLoopIdTournament = requestAnimationFrame(gameLoopTournament);	
+	}
+	window.cleanupGameTournament = function() {
+        cancelAnimationFrame(gameLoopIdTournament);
+        document.removeEventListener("keydown", keyDownHandler);
+        document.removeEventListener("keyup", keyUpHandler);
+        console.log("Cleaned up tournamet game script");
+    };
+	gameLoopTournament();
+
+	function updateScore() {
+		document.getElementById("player1Score").innerHTML = player1Score;
+		document.getElementById("player1ScorePopUp").innerHTML = player1Score;
+		document.getElementById("player2Score").innerHTML = player2Score;
+		document.getElementById("player2ScorePopUp").innerHTML = player2Score;
+		
+		document.getElementById("player1Scale").style.width = player1Score * 5 + "%";
+		document.getElementById("blankScale").style.width = (20 - player1Score - player2Score) * 5 + "%";
+		document.getElementById("player2Scale").style.width = player2Score * 5 + "%";
+		checkWinLose();
+	}
+	function checkWinLose() {
+		if (player1Score >= 10) {
+			winner = player1_realname;
+			document.getElementById("winner").innerHTML = 'The winner is ' + player1;
+			showEdit();
+		}
+		else if (player2Score >= 10) {
+			winner = player2_realname;
+			document.getElementById("winner").innerHTML = 'The winner is ' + player2;
+			showEdit();
+		}
+	}
+	function showEdit() {
+		document.getElementById("popUpEdit").style.display = 'block';
+	}
+	document.getElementById("doneBtn").addEventListener("click", doneEdit);
+	function doneEdit() {
+		recordGame();
+		document.getElementById("popUpEdit").style.display = 'none';
+	}
+	function recordGame() {
+		if (winner === username) {
+			const formData = new FormData();
+			formData.append('match_id', match_id);
+			formData.append('player1', player1_realname);
+			formData.append('player2', player2_realname);
+			formData.append('winner', winner);
+			formData.append('player1score', player1Score);
+			formData.append('player2score', player2Score);
+
+			fetch('/game/tournament_match_record/', {
+			 	method: 'POST',
+			 	body: formData,
+			 	headers: {
+			 		'X-CSRFToken': getCookie('csrftoken')
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Response from server:', data);
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
+		const formData = new FormData();
+		formData.append('aka', "");
+		updateAppPost('/game/tournament_waiting/', formData);
+	}
 
 </script>
 

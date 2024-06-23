@@ -97,3 +97,21 @@ class MatchTournament(models.Model):
         self.player1_score = score1
         self.player2_score = score2
         self.save()
+
+class TournamentPongGame(models.Model):
+    match = models.OneToOneField(MatchTournament, on_delete=models.CASCADE, unique=True)
+    ball_x = models.FloatField(default=400)
+    ball_y = models.FloatField(default=200)
+    ballSpeedX = models.IntegerField(default=5)
+    ballSpeedY = models.IntegerField(default=5)
+    ballSize = models.IntegerField(default=5)
+    paddle1_y = models.FloatField(default=150)
+    paddle2_y = models.FloatField(default=150)
+    paddleWidth = models.IntegerField(default=10)
+    paddleHeight = models.IntegerField(default=100)
+    paddleSpeed = models.IntegerField(default=10)
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Game for match {self.match.id} between {self.match.player1.username} and {self.match.player2.username}"

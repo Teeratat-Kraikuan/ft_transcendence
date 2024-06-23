@@ -10,4 +10,5 @@ urlpatterns = [
     path('tournament_waiting/', views.tournament_waiting, name='tournament_waiting'),
     path('tournament_pong/', views.tournament_pong, name='tournament_pong'),
 	path('match_record/', views.match_record, name='match_record'),
+	path('tournament_match_record/', views.tournament_match_record, name='tournament_match_record'),
 ]

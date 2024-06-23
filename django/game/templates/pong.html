@@ -268,10 +268,6 @@
 		updateScore();
 	};
 
-	function decodeHtmlEntities(str) {
-		return str.replace(/&quot;/g, '"');
-	}
-
 	// pong game javascript
 
 	function keyDownHandler(event) {
@@ -356,11 +352,11 @@
         }
     }
 
-	function gameLoop() {
+	function gameLoopRps() {
 		draw();
         if (gameOver)
             return;
-        gameLoopIdRps = requestAnimationFrame(gameLoop);	
+        gameLoopIdRps = requestAnimationFrame(gameLoopRps);	
 	}
 
 	window.cleanupGameRps = function() {
@@ -370,7 +366,7 @@
         console.log("Cleaned up game script");
     };
 
-	gameLoop();
+	gameLoopRps();
 
 	// record game
 	function recordGame() {

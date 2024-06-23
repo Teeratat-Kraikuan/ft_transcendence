@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.db.models import Q, Sum
 from users.models import CustomUser
-from .models import PongGame, Tournament, TournamentParticipant, MatchTournament
+from .models import PongGame, Tournament, TournamentParticipant, MatchTournament, TournamentPongGame
 
 class PongConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -545,12 +545,21 @@ class TournamentPongConsumer(AsyncWebsocketConsumer):
 		self.match_id = self.scope['url_route']['kwargs']['match_id']
 		self.group_name = f'tournament_{self.tournament_name}_{self.match_id}'
 
+		self.match = await sync_to_async(MatchTournament.objects.get)(id=self.match_id)
+
+		self.user1Up = False
+		self.user1Down = False
+		self.user2Up = False
+		self.user2Down = False
+
 		await self.channel_layer.group_add(
 			self.group_name,
 			self.channel_name
 		)
 
 		await self.accept()
+
+		await self.game_start()
 
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(
@@ -571,9 +580,127 @@ class TournamentPongConsumer(AsyncWebsocketConsumer):
 					'message': message
 				}
 			)
+		if action == 'move_paddle':
+			action_type = text_data_json['type']
+			direction = text_data_json['direction']
+			player = text_data_json['player']
+			if player == 1:
+				if action_type == 'keydown' and direction == 'up':
+					self.user1Up = True
+				elif action_type == 'keydown' and direction == 'down':
+					self.user1Down = True
+				elif action_type == 'keyup' and direction == 'up':
+					self.user1Up = False
+				elif action_type == 'keyup' and direction == 'down':
+					self.user1Down = False
+			elif player == 2:
+				if action_type == 'keydown' and direction == 'up':
+					self.user2Up = True
+				elif action_type == 'keydown' and direction == 'down':
+					self.user2Down = True
+				elif action_type == 'keyup' and direction == 'up':
+					self.user2Up = False
+				elif action_type == 'keyup' and direction == 'down':
+					self.user2Down = False
 
 	async def chat_message(self, event):
 		message = event['message']
 		await self.send(text_data=json.dumps({
 			'message': message
 		}))
+
+	async def game_start(self):
+		self.game_loop_task = asyncio.create_task(self.game_loop())
+
+	async def game_loop(self):
+		try:
+			while True:
+				pongGame, created = await sync_to_async(TournamentPongGame.objects.get_or_create)(match=self.match)
+				if pongGame.player1_score >= 10 or pongGame.player2_score >= 10:
+					break
+				await self.update_game_state(pongGame)
+				await asyncio.sleep(1/60)
+		except asyncio.CancelledError:
+			print("Game loop task cancelled")
+		except Exception as e:
+			print(f"Error in game loop: {e}")
+
+	async def update_game_state(self, pongGame):
+		await self.update_paddle_positions(pongGame)
+		await self.update_ball_position(pongGame)
+		await self.send_game_state_to_clients(pongGame)
+
+	@sync_to_async
+	def update_paddle_positions(self, pongGame):
+		if self.user1Up and pongGame.paddle1_y > 0:
+			pongGame.paddle1_y -= pongGame.paddleSpeed
+		elif self.user1Down and pongGame.paddle1_y < 300:
+			pongGame.paddle1_y += pongGame.paddleSpeed
+
+		if self.user2Up and pongGame.paddle2_y > 0:
+			pongGame.paddle2_y -= pongGame.paddleSpeed
+		elif self.user2Down and pongGame.paddle2_y < 300:
+			pongGame.paddle2_y += pongGame.paddleSpeed
+
+		pongGame.save()
+
+	@sync_to_async
+	def update_ball_position(self, pongGame):
+		pongGame.ball_x += pongGame.ballSpeedX
+		pongGame.ball_y += pongGame.ballSpeedY
+
+		# Collision detection with walls
+		if pongGame.ball_y - pongGame.ballSize < 0 or pongGame.ball_y + pongGame.ballSize > 400:
+			pongGame.ballSpeedY = -pongGame.ballSpeedY
+
+		# Collision detection with paddles
+		if pongGame.ball_x - pongGame.ballSize < pongGame.paddleWidth:
+			if pongGame.ball_y > pongGame.paddle1_y and pongGame.ball_y < pongGame.paddle1_y + pongGame.paddleHeight:
+				pongGame.ballSpeedX = -pongGame.ballSpeedX
+			else:
+				pongGame.player2_score += 1
+				self.resetBall(pongGame)
+		if pongGame.ball_x + pongGame.ballSize > 800 - pongGame.paddleWidth:
+			if pongGame.ball_y > pongGame.paddle2_y and pongGame.ball_y < pongGame.paddle2_y + pongGame.paddleHeight:
+				pongGame.ballSpeedX = -pongGame.ballSpeedX
+			else:
+				pongGame.player1_score += 1
+				self.resetBall(pongGame)
+
+		pongGame.save()
+
+	async def send_game_state_to_clients(self, pongGame):
+		await self.channel_layer.group_send(
+			self.group_name,
+			{
+				'type': 'game_update',
+				'ball_x': pongGame.ball_x,
+				'ball_y': pongGame.ball_y,
+				'paddle1_y': pongGame.paddle1_y,
+				'paddle2_y': pongGame.paddle2_y,
+				'player1score': pongGame.player1_score,
+				'player2score': pongGame.player2_score,
+			}
+		)
+
+	async def game_update(self, event):
+		ball_x = event['ball_x']
+		ball_y = event['ball_y']
+		paddle1_y = event['paddle1_y']
+		paddle2_y = event['paddle2_y']
+		player1score = event['player1score']
+		player2score = event['player2score']
+		await self.send(text_data = json.dumps({
+			'action': 'game_update',
+			'ball_x': ball_x,
+			'ball_y': ball_y,
+			'paddle1_y': paddle1_y,				  
+			'paddle2_y': paddle2_y,
+			'player1score': player1score,
+			'player2score': player2score,
+		}))
+		
+	def resetBall(self, pongGame):
+		pongGame.ball_x = 400
+		pongGame.ball_y = 200
+		pongGame.ballSpeedX = -pongGame.ballSpeedX

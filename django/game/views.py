@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import PongGame, Tournament, TournamentParticipant, MatchTournament
+from .models import PongGame, Tournament, TournamentParticipant, MatchTournament, TournamentPongGame
 from users.models import CustomUser, MatchHistory
 from django.utils import timezone
 from datetime import timedelta
@@ -199,11 +199,13 @@ def tournament_pong(request): # Pong Game
 	tournament = match.tournament
 	player1 = get_object_or_404(TournamentParticipant, tournament=tournament, user=match.player1)
 	player2 = get_object_or_404(TournamentParticipant, tournament=tournament, user=match.player2)
+	pong_game, created = TournamentPongGame.objects.get_or_create(match=match)
 	context = {
 		'tournament_name': tournament_name,
 		'match_id': match_id,
 		'player1': player1,
 		'player2': player2,
+		'username': request.user.username,
 	}
 	return render(request, 'tournament_pong.html', context)
 
@@ -212,3 +214,25 @@ def tournament_game(request): # Waiting in game
 	if not request.user.is_authenticated:
 		return redirect('login')
 	return render(request, 'tournament_pong.html')
+
+def tournament_match_record(request):
+	try:
+		match_id = int(request.POST['match_id'])
+		winner = request.POST['winner']
+		player1_score = int(request.POST['player1score'])
+		player2_score = int(request.POST['player2score'])
+
+		match = MatchTournament.objects.get(id=match_id)
+		winner = CustomUser.objects.get(username=winner)
+
+		match.winner = winner
+		match.player1_score = player1_score
+		match.player2_score = player2_score
+		match.completed = True
+		match.save()
+
+		return JsonResponse({'status': 'success', 'message': 'Match recorded successfully'})
+
+	except Exception as e:
+		print(f"Error recording match: {e}")
+		return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
