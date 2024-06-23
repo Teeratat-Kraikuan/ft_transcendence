@@ -130,7 +130,7 @@
 					</div>
 				</div>
 
-				<div class="row justify-content-center mt-3">
+				<div id='isReadyBlock' class="row justify-content-center mt-3">
 					<div class="column content-solid card-main py-4 mx-2" style="width: 20vw; background-color: #212529;">
 						Are you Ready ?
 						<button id="readyButton" type="button" class="btn btn-outline-light card-x-btn my-2">
@@ -181,10 +181,15 @@
 			updatePlayerList(data.player_list);
 		}
 		else if (data.action === "send_opponent") {
-			opponent = data.opponent;
-			showOpponent(data.round, data.opponent);
-			if (data.is_ready)
-				opponentReady(data.opponent.username);
+			console.log(data.round);
+			if (data.round < 4){
+				showOpponent(data.round, data.opponent);
+				if (data.is_ready)
+					opponentReady(data.opponent.username);
+			}
+			else {
+				showEndGame();
+			}
 		}
 		else if (data.action === "send_ready") {
 			opponentReady(data.from);
@@ -261,6 +266,15 @@
 		document.getElementById("roundId").innerHTML = "round " + round;
 		document.getElementById("opponentImage").src = opponent.image;
 		document.getElementById("opponentPlayer").innerHTML = opponent.username;
+	}
+	
+	function showEndGame() {
+		document.getElementById("roundId").innerHTML = "Game Finished";
+		document.getElementById("opponentImage").style.display = "none";
+		document.getElementById("opponentPlayer").innerHTML = "";
+		document.getElementById("opponentReadyText").innerHTML = ""
+		document.getElementById("opponentNotReadyText").innerHTML = ""
+		document.getElementById("isReadyBlock").style.display = "none";
 	}
 
 	document.getElementById("readyButton").addEventListener("click", ready);

@@ -293,14 +293,22 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			for i, player in enumerate(player_list):
 				if player['username'] == my_nickname:
 					user_index = i
-			opponent_index = schedule[user_index][round_num-1]
-			is_ready = await self.is_opponent_ready(my_nickname, player_list[opponent_index]['username'])
-			await self.send(text_data=json.dumps({
-					'action': 'send_opponent',
-					'round': round_num,
-					'opponent': player_list[opponent_index],
-					'is_ready': is_ready,
-				}))
+			try:
+				opponent_index = schedule[user_index][round_num-1]
+				is_ready = await self.is_opponent_ready(my_nickname, player_list[opponent_index]['username'])
+				await self.send(text_data=json.dumps({
+						'action': 'send_opponent',
+						'round': round_num,
+						'opponent': player_list[opponent_index],
+						'is_ready': is_ready,
+					}))
+			except:
+				opponent_index = None
+				is_ready = None
+				await self.send(text_data=json.dumps({
+						'action': 'send_opponent',
+						'round': round_num,
+					}))
 
     # Receive message from tournament group
 	async def tournament_message(self, event):

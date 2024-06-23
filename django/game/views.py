@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.contrib import messages
 from .models import PongGame, Tournament, TournamentParticipant, MatchTournament
 from users.models import CustomUser, MatchHistory
+from django.utils import timezone
+from datetime import timedelta
 import random
 import json
 
@@ -119,6 +121,11 @@ def tournament_waiting(request): # waiting room
 	started_tournament_participant = TournamentParticipant.objects.filter(user=user, tournament__status='started').first()
 	if started_tournament_participant:
 		started_tournament = started_tournament_participant.tournament
+
+		if timezone.now() > started_tournament.start_date + timedelta(hours=1):
+			started_tournament.status = 'ended'
+			started_tournament.save()
+
 		participants = started_tournament.tournamentparticipant_set.all()
 		context = {
             'num_players': 4,
