@@ -268,7 +268,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			from_nickname = text_data_json['from']
 			to_nickname = text_data_json['to']
 
-			await self.save_ready_state(from_nickname, to_nickname)
+			both_ready = await self.save_ready_state(from_nickname, to_nickname)
 
 			await self.channel_layer.group_send(
 				self.tournament_group_name,
@@ -276,6 +276,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					'type': 'send_ready',
 					'from': from_nickname,
 					'to': to_nickname,
+					'both_ready': both_ready,
 				}
 			)
 		if action == 'get_opponent':
@@ -293,10 +294,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				if player['username'] == my_nickname:
 					user_index = i
 			opponent_index = schedule[user_index][round_num-1]
+			is_ready = await self.is_opponent_ready(my_nickname, player_list[opponent_index]['username'])
 			await self.send(text_data=json.dumps({
 					'action': 'send_opponent',
 					'round': round_num,
 					'opponent': player_list[opponent_index],
+					'is_ready': is_ready,
 				}))
 
     # Receive message from tournament group
@@ -317,15 +320,58 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	async def send_ready(self, event):
 		from_nickname = event['from']
 		to_nickname = event['to']
+		both_ready = event['both_ready']
 		await self.send(text_data=json.dumps({
 			'action': 'send_ready',
 			'from': from_nickname,
 			'to': to_nickname,
+			'both_ready': both_ready,
 		}))
 
 	@sync_to_async
+	def is_opponent_ready(self, my_nickname, opponent_nickname):
+		user1 = None
+		user2 = None
+		try:
+			participant1 = TournamentParticipant.objects.get(
+				tournament__name=self.tournament_name,
+				nickname=my_nickname
+			)
+			participant2 = TournamentParticipant.objects.get(
+				tournament__name=self.tournament_name,
+				nickname=opponent_nickname
+			)
+			user1 = participant1.user
+			user2 = participant2.user
+		except TournamentParticipant.DoesNotExist:
+			pass
+
+		match = None
+		try:
+			match = MatchTournament.objects.get(
+				tournament__name=self.tournament_name,
+				player1=user1,
+				player2=user2
+			)
+		except MatchTournament.DoesNotExist:
+			try:
+				match = MatchTournament.objects.get(
+					tournament__name=self.tournament_name,
+					player1=user2,
+					player2=user1
+				)
+			except MatchTournament.DoesNotExist:
+				pass
+			
+		if match:
+			if match.player1 == user1:
+				return match.player2_ready
+			else:
+				return match.player1_ready
+		return False
+
+	@sync_to_async
 	def save_ready_state(self, from_nickname, to_nickname):
-		print('in saving state')
 		user1 = None
 		user2 = None
 		try:
@@ -365,6 +411,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			else:
 				match.player2_ready = True
 			match.save()
+
+		return match.player1_ready and match.player2_ready
 
 	@sync_to_async
 	def get_player_list(self):

@@ -183,9 +183,13 @@
 		else if (data.action === "send_opponent") {
 			opponent = data.opponent;
 			showOpponent(data.round, data.opponent);
+			if (data.is_ready)
+				opponentReady(data.opponent.username);
 		}
 		else if (data.action === "send_ready") {
 			opponentReady(data.from);
+			if (data.both_ready && (data.from == nickname || data.to == nickname))
+				swapApp('/game/tournament_pong/');
 		}
 	};
 
