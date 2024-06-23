@@ -185,7 +185,7 @@
 			showOpponent(data.round, data.opponent);
 		}
 		else if (data.action === "send_ready") {
-			opponentReady(data.nickname);
+			opponentReady(data.from);
 		}
 	};
 
@@ -263,18 +263,20 @@
 	function ready() {
 		tournamentSocket.send(JSON.stringify({
             'action': 'ready',
-            'nickname': nickname,
+            'from': nickname,
+			'to': opponent.username,
         }));
 		onlineSocket.send(JSON.stringify({
 			'action': 'ready',
 			'receiver': opponent.real_username,
-			'message': nickname + " is ready, please come back to tournament",
+			'message': nickname + " is ready, please go to tournament",
 		}))
 		document.getElementById("readyButton").classList.toggle('btn-light');
 		document.getElementById("readyButton").classList.toggle('btn-outline-light');
 	}
 
 	function opponentReady(nickname) {
+		console.log(nickname + " " + opponent.username);
 		if (nickname === opponent.username) {
 			document.getElementById("opponentReadyText").style = "display: block;"
 			document.getElementById("opponentNotReadyText").style = "display: none;"

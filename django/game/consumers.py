@@ -265,12 +265,17 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		action = text_data_json['action']
 		if action == 'ready':
-			print('ready sending...')
+			from_nickname = text_data_json['from']
+			to_nickname = text_data_json['to']
+
+			await self.save_ready_state(from_nickname, to_nickname)
+
 			await self.channel_layer.group_send(
 				self.tournament_group_name,
 				{
 					'type': 'send_ready',
-					'nickname': text_data_json['nickname']
+					'from': from_nickname,
+					'to': to_nickname,
 				}
 			)
 		if action == 'get_opponent':
@@ -310,11 +315,56 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		}))
 
 	async def send_ready(self, event):
-		nickname = event['nickname']
+		from_nickname = event['from']
+		to_nickname = event['to']
 		await self.send(text_data=json.dumps({
 			'action': 'send_ready',
-			'nickname': nickname
+			'from': from_nickname,
+			'to': to_nickname,
 		}))
+
+	@sync_to_async
+	def save_ready_state(self, from_nickname, to_nickname):
+		print('in saving state')
+		user1 = None
+		user2 = None
+		try:
+			participant1 = TournamentParticipant.objects.get(
+				tournament__name=self.tournament_name,
+				nickname=from_nickname
+			)
+			participant2 = TournamentParticipant.objects.get(
+				tournament__name=self.tournament_name,
+				nickname=to_nickname
+			)
+			user1 = participant1.user
+			user2 = participant2.user
+		except TournamentParticipant.DoesNotExist:
+			pass
+
+		match = None
+		try:
+			match = MatchTournament.objects.get(
+				tournament__name=self.tournament_name,
+				player1=user1,
+				player2=user2
+			)
+		except MatchTournament.DoesNotExist:
+			try:
+				match = MatchTournament.objects.get(
+					tournament__name=self.tournament_name,
+					player1=user2,
+					player2=user1
+				)
+			except MatchTournament.DoesNotExist:
+				pass
+			
+		if match:
+			if match.player1 == user1:
+				match.player1_ready = True
+			else:
+				match.player2_ready = True
+			match.save()
 
 	@sync_to_async
 	def get_player_list(self):
