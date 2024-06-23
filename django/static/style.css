@@ -259,13 +259,13 @@ form textarea{
 }
 
 .card-side {
-    position: absolute;
+    display: none;
     opacity: 0;
     transition: transform 300ms ease-in-out;
 }
 
 .card-side.active {
-    position: relative;
+    display: block;
     opacity: 1;
     transition: transform 300ms ease-in-out;
 }
