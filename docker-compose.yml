@@ -18,6 +18,8 @@ volumes:
       type: none
       o: bind
       device: ./django
+  staticfiles:
+  media:
 
 services:
   postgres:
@@ -43,6 +45,8 @@ services:
       - .env
     volumes:
       - django:/home/django/ft_transcendence
+      - staticfiles:/home/django/ft_transcendence/staticfiles
+      - media:/home/django/ft_transcendence/media
     networks:
       - trans-networks
     depends_on:
@@ -56,6 +60,9 @@ services:
     ports:
       - "8000:8000"
       - "8443:8443"
+    volumes:
+      - staticfiles:/home/django/ft_transcendence/staticfiles
+      - media:/home/django/ft_transcendence/media
     networks:
       - trans-networks
     depends_on:

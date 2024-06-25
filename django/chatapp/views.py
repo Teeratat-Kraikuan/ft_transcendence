@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.core import serializers
 from .models import Room, Message
 from game.models import PongGame
@@ -33,11 +33,11 @@ def chat(request):
 def room(request, slug):
 	context = {}
 	try:
-		room = Room.objects.get(slug=slug)
+		room = get_object_or_404(Room, slug=slug)
 	except:
-		return redirect('home')
+		raise Http404()
 	if not room or (request.user != room.user1 and request.user != room.user2):
-		return redirect('home')
+		raise Http404()
 	messages = Message.objects.filter(room=room)
 	rooms = Room.objects.all()
 	selected_room = []

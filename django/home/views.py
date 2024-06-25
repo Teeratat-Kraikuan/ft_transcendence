@@ -101,6 +101,6 @@ def logout(request):
 def setting(request):
     return render(request, 'setting.html')
 
-def nopage(request):
-    return render(request, 'nopage.html')
+def handler404(request, exception):
+    return render(request, '404.html', status=404)
 

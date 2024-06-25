@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse, Http404
 from .models import CustomUser, FriendRequest, MatchHistory
 from chatapp.models import Room
 from django.db.models import Q
@@ -35,7 +35,7 @@ def profile(request, username):
 			return JsonResponse({'success': False, 'errors': 'Invalid submission.'}, status=400)
 
 	try:
-		profile = CustomUser.objects.get(username=username)
+		profile = get_object_or_404(CustomUser, username=username)
 		context['profile'] = profile
 		context['isFriend'] = True if profile.friends.filter(username=request.user).exists() else False
 		context['isBlocked'] = True if request.user.blocked_user.filter(username=profile.username).exists() else False
@@ -71,8 +71,7 @@ def profile(request, username):
 		context['played'] = context['wins'] + context['losses']		
 		context['winrate'] = round(((context['wins'] / (context['played'] if context['played'] != 0 else 1)) * 100), 2)
 	except:
-		messages.error(request, 'user not found')
-		return redirect('home')
+		raise Http404("User not found")
 	return render(request, 'profile.html', context)
 
 @login_required
