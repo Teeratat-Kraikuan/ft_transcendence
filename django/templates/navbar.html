@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="dashed-line-vertical"></div>
+<div class="h-100 d-flex flex-column">
+	<div class="nav w-100 d-flex justify-content-between px-4 py-3 d-none d-lg-flex">
+		<div class="game-title start-50 font-250">
+			<div>42</div>
+			<div class="game-title game">GAME</div>
+		</div>
+		<div class="d-inline-flex justify-content-evenly position-relative">
+			<i class="fa-solid fa-bell font-200 m-auto"></i>
+			<i class="fa-solid fa-message font-200 m-auto mx-4"></i>
+			<div class="pfp-3 m-auto"><span class="status"></span></div>
+			{% include "menu.html" %}
+		</div>
+	</div>
+	{% block navbar %}
+	{% endblock %}
+	<div class="nav w-100 d-flex justify-content-between px-4 py-3 d-lg-none">
+		{% include "menu.html" %}
+		<div class="game-title start-50 font-250">
+			<div>42</div>
+			<div class="game-title game">GAME</div>
+		</div>
+		<div class="d-inline-flex">
+			<i class="fa-solid fa-bell font-200 m-auto"></i>
+			<i class="fa-solid fa-message font-200 m-auto mx-4"></i>
+			<div class="pfp-3 m-auto"><span class="status"></span></div>
+		</div>
+	</div>
+</div>
+{% endblock %}

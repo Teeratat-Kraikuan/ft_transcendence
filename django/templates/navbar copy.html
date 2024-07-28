@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="dashed-line-vertical"></div>
+<div class="h-100 d-flex flex-column">
+	<div class="nav w-100 d-flex justify-content-between px-4 py-3 d-none d-lg-flex">
+		<div class="game-title start-50 font-250">
+			<div>42</div>
+			<div class="game-title game">GAME</div>
+		</div>
+		<div class="d-inline-flex">
+			<p class="font-150 m-auto px-4">Adam</p>
+			<div class="pfp-3 m-auto"><span class="status"></span></div>
+		</div>
+	</div>
+	{% block navbar %}
+	{% endblock %}
+	<div class="nav w-100 d-flex justify-content-between px-4 py-3 d-lg-none">
+		<div class="game-title start-50 font-250">
+			<div>42</div>
+			<div class="game-title game">GAME</div>
+		</div>
+		<div class="d-inline-flex">
+			<!-- <p class="font-150 m-auto px-4">Adam</p> -->
+			<div class="pfp-3 m-auto"><span class="status"></span></div>
+		</div>
+	</div>
+</div>
+{% endblock %}

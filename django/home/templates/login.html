@@ -1,62 +1,29 @@
-{% extends 'base.html' %}
+{% extends "panel.html" %}
 {% load static %}
-{% block content %}
+{% csrf_token %}
 
-
-<div class="justify-content-center" style="text-align: center;"> 
-	<div class="column justify-content-center" style="text-align: center; margin-top: 16vh;">
-		<img src="{% static 'WELCOME TO.png' %}" style="width: 140px; height: 14;"><br>
-		<img src="{% static '42GAME.png' %}" style="width: 70px; height: 52; padding-top: 10px;">
-	</div>
-	<div class="wrapper justify-content-center mt-3">
-		<div class="column content-solid mx-2">
-			<div class="card-topic">Login</div>
-			<form id="loginForm" method="POST">
-			{% csrf_token %}
-				<input class="input-box" type="text" placeholder="Enter Username" name="username" required>
-				<input class="input-box" type="password" placeholder="Enter Password" name="password" required>
-				<button type="submit" value="sign-in" class="btn btn-light" style="width: 80%; font-size: 0.8rem;">Sign in</button>
-			</form>
-				<div style="text-align: center; color: #ffffff;" class="my-3"> Or </div>
-				<a href="{{ authorize_uri }}">
-					<button type="button" class="btn btn-light mb-2" style="width: 80%; font-size: 0.8rem;">
-						<img src="{% static '42Logo.png' %}" style="width: 20px;">
-						Continue with 42
-					</button>
-				</a>
-				<!-- <button type="button" class="btn btn-light mb-2" style="width: 80%; font-size: 0.8rem;">
-					<img src="{% static 'Google.png' %}" style="width: 20px;">
-					Continue with Google
-				</button> -->
-				{% for message in messages %}
-					{% if "sign-in" in message.tags %}
-						<p style="color:white">{{message}}</p>
-					{% endif %}
-				{% endfor %}
+{% block panel %}
+<div class="card-form">
+	<p class="card-form-title">Login</p>
+	<form action="/login" method="POST" onload="alert(this.status);">
+		<div class="form-group mb-3">
+			<label class="form-label visually-hidden" for="user">Username</label>
+			<input class="form-control" type="text" name="username" placeholder="username" required="true"/>
 		</div>
-		<div class="column content-solid mx-2">
-			<div class="card-topic">Register</div>
-			<form id="registerForm" method="POST">
-				{% csrf_token %}
-				<input class="input-box" type="text" placeholder="Enter Username" name="username" required>
-				<input class="input-box" type="email" placeholder="Enter Email" name="email" required>
-				<input class="input-box" type="password" placeholder="Create password" name="password" required>
-				<input class="input-box" type="password" placeholder="Confirm password" name="repeat_password" required>
-				<button type="submit" name="submit" value="sign-up" class="btn btn-light" style="width: 80%; font-size: 0.8rem;">Sign up</button>
-			</form>
-			<div class="text-center">
-				{% for message in messages %}
-					{% if "sign-up" in message.tags %}
-						{% if "success" in message.tags %}
-							<p class="profile-content-text pt-2" style="color:white">! {{message}} !</p>
-						{% elif "error" in message.tags %}
-							<p class="profile-content-text pt-2" style="color:white">! {{message}} !</p>
-						{% endif %}
-					{% endif %}
-				{% endfor %}
-			</div>
+		<div class="form-group">
+			<label class="form-label visually-hidden" for="passwd">Password</label>
+			<input class="form-control" type="password" name="password" placeholder="password" pattern="(?=.*\d)(?=.*[\W_]).{7,}" title="Minimum of 7 characters. Should have at least one special character and one number." required="true"/>
 		</div>
-	</div>
+		<button type="submit" class="btn btn-primary w-100 my-3">Sign in</button>
+		<div class="separator text-secondary">Or</div>
+		<div class="form-group">
+			<button class="btn btn-primary w-100 my-3">Continue with 42</button>
+			<button class="btn btn-primary w-100 mb-3">Continue with Google</button>
+		</div>
+	</form>
 </div>
-
+<a class="m-3 text-secondary fw-bold" href="/signup">
+	Don't have an account?
+	<span class="text-primary pe-none">Register</span>
+</a>
 {% endblock %}

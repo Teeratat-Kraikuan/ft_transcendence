@@ -1,0 +1,32 @@
+{% extends "panel.html" %}
+{% load static %}
+{% csrf_token %}
+
+{% block panel %}
+<div class="card-form">
+	<p class="card-form-title">Signup</p>
+	<form action="/signup" method="POST" onload="alert(this.status);">
+		<div class="form-group mb-3">
+			<label class="form-label visually-hidden" for="user">Username</label>
+			<input class="form-control" name="username" type="text" placeholder="username" required="true">
+		</div>
+		<div class="form-group mb-3">
+			<label class="form-label visually-hidden" for="user">Email</label>
+			<input class="form-control" name="email" type="email" placeholder="email" required="true">
+		</div>
+		<div class="form-group mb-3">
+			<label class="form-label visually-hidden" for="passwd">Password</label>
+			<input class="form-control" name="password" type="password" placeholder="password" required="true">
+		</div>
+		<div class="form-group">
+			<label class="form-label visually-hidden" for="passwd">Confirm Password</label>
+			<input class="form-control" name="repeat_password" type="password" placeholder="confirm password" required="true">
+		</div>
+		<button type="submit" class="btn btn-primary w-100 my-3">Register</button>
+	</form>
+</div>
+<a class="m-3 text-secondary fw-bold" href="/login">
+	Already have an account?
+	<span class="text-primary pe-none">Login</span>
+</a>
+{% endblock %}

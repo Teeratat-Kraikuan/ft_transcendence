@@ -1,1 +1,1 @@
-# ft_transcendence
+# django_transcend

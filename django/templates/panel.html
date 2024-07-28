@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% csrf_token %}
+
+{% block content %}
+<div class="dashed-line-vertical"></div>
+<div class="content-container position-relative d-flex justify-content-center">
+	<div class="d-flex flex-column align-items-center justify-content-center mt-5">
+		<span class="font-pressstart2p font-150 text-light">WELCOME TO</span>
+		<br/>
+		<div class="game-title start-50 font-400">
+			<div>42</div>
+			<div class="game-title game">GAME</div>
+		</div>
+		{% block panel %}{% endblock %}
+	</div>
+</div>
+{% endblock %}

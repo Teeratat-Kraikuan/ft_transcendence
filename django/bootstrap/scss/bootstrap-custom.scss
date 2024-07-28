@@ -1,0 +1,75 @@
+// Custom SCSS for bootstrap.
+
+// $primary: #D4D4D4;
+// $secondary: #A8A8A8;
+// $dark: #232323;
+
+// $primary: #6ad4cd;
+// $secondary: #94a1a0;
+// $dark: #232323;
+
+$primary: #f0ae4c;
+$secondary: #b0aca3;
+$dark: #232323;
+
+// $success:;
+// $info:;
+// $warning:;
+// $danger
+
+.card-ff {
+	min-width: 16rem;
+	max-width: 20rem;
+}
+
+.card {
+	@extend .card-ff;
+}
+
+.start-25 {
+	left: 25% !important;
+}
+
+.start-75 {
+	left: 75% !important;
+}
+
+.end-25 {
+	right: 25% !important;
+}
+
+.end-75 {
+	right: 75% !important;
+}
+
+.fa-gutter {
+	min-width: 1pt;
+}
+
+@for $i from 1 through 20 {
+	// @debug ($i * 25 / 100)em
+	.font-#{$i * 25} {
+		font-size: #{$i*25/100}em;
+	}
+}
+
+@for $i from 1 through 20 {
+	// @debug ($i * 25 / 100)em
+	.font-sm-#{$i * 25} {
+		font-size: #{$i*25/100}em;
+	}
+}
+
+@for $i from 1 through 20 {
+	// @debug ($i * 25 / 100)em
+	.font-md-#{$i * 25} {
+		font-size: #{$i*25/100}em;
+	}
+}
+
+@for $i from 1 through 20 {
+	// @debug ($i * 25 / 100)em
+	.font-sm-#{$i * 25} {
+		font-size: #{$i*25/100}em;
+	}
+}

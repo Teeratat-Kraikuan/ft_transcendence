@@ -1,0 +1,20 @@
+{% extends "panel.html" %}
+{% load static %}
+{% csrf_token %}
+
+{% block panel %}
+<div class="card-form">
+	<p class="card-form-title">Verify that it's you</p>
+	<form action="/api/login" onload="alert(this.status);">
+		<div class="form-group mb-3">
+			<label class="form-label visually-hidden" for="user">OTP Code</label>
+			<input class="form-control" type="text" placeholder="XXXX" required="true"/>
+		</div>
+		<button type="submit" class="btn btn-primary w-100 my-3">Send OTP</button>
+	</form>
+</div>
+<a class="m-3 text-secondary fw-bold">
+	Didn't get the OTP?
+	<span class="text-primary pe-none">Resend the OTP request</span>
+</a>
+{% endblock %}
