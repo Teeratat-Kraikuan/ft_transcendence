@@ -12,37 +12,37 @@
 		</div>
 		<div class="d-inline-flex justify-content-evenly position-relative">
 			<button class="m-auto border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#message_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
-				<i class="fa-solid fa-bell font-200 text-light"></i>
+				<i class="fa-solid fa-bell font-150 text-light"></i>
 			</button>
 			<button class="m-auto mx-4 border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#message_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
-				<i class="fa-solid fa-message font-200 text-light"></i>
+				<i class="fa-solid fa-message font-150 text-light"></i>
 			</button>
-			<button class="navbar-toggler pfp-3 m-auto" type="button" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
+			<button class="navbar-toggler pfp-2 m-auto" type="button" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
 				<span class="status"></span>
 			</button>
-			<div id="user_menu" class="collapse top-100 end-0 position-absolute bg-dark m-2 rounded-3 overflow-y-hidden z-1">
+			<div id="user_menu" class="collapse top-100 end-0 position-absolute bg-dark my-3 rounded-3 overflow-y-hidden z-1">
 				{% include "menu.html" %}
 			</div>
 		</div>
 	</div>
 	{% block navbar %}
 	{% endblock %}
-	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-lg-none position-relative">
-		<div class="game-title start-50 font-250">
+	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-lg-none">
+		<div class="game-title start-50 font-200">
 			<div>42</div>
 			<div class="game-title game">GAME</div>
 		</div>
-		<div class="d-inline-flex">
+		<div class="d-inline-flex position-relative">
 			<button class="m-auto border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#message_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
-				<i class="fa-solid fa-bell font-200 text-light"></i>
+				<i class="fa-solid fa-bell font-150 text-light"></i>
 			</button>
 			<button class="m-auto mx-4 border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#message_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
-				<i class="fa-solid fa-message font-200 text-light"></i>
+				<i class="fa-solid fa-message font-150 text-light"></i>
 			</button>
-			<button class="pfp-3 m-auto navbar-toggler" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
+			<button class="navbar-toggler pfp-2 m-auto" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
 				<span class="status"></span>
 			</button>
-			<div id="user_menu" class="collapse bottom-100 end-0 position-absolute bg-dark m-2 rounded-3 overflow-y-hidden z-1">
+			<div id="user_menu" class="collapse bottom-100 end-0 position-absolute bg-dark my-3 rounded-3 overflow-y-hidden z-1">
 				{% include "menu.html" %}
 			</div>
 		</div>
