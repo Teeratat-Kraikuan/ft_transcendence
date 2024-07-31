@@ -21,11 +21,6 @@ export default (function (){
 			return ;
 		}
 		window.history.pushState({}, "", url);
-		if (typeof window.unload == "function")
-		{
-			window.unload();
-			window.unload = null;
-		}
 		handle_location();
 	};
 
@@ -81,11 +76,21 @@ export default (function (){
 	const handle_location = async () => {
 		const data = await fetch(window.location.pathname);
 		const html = document.createElement("html");
+		// Unload game scripts, etc.
+		if (typeof window.unload == "function")
+		{
+			window.unload();
+			window.unload = null;
+		}
 		html.innerHTML = await data.text();
 		document.body = html.getElementsByTagName("body")[0];
+		// "Unload scripts"
 		document.head.querySelectorAll("script[src]").forEach(el => {
 			el.remove();
 		});
+		// Set head to the new one.
+		document.head.innerHTML = html.getElementsByTagName("head")[0].innerHTML;
+		// Load scripts
 		html.querySelectorAll("script[src]").forEach(el => {
 			if (el.getAttribute("load-once"))
 				return ;
@@ -100,7 +105,7 @@ export default (function (){
 		init_event_handler();
 	};
 
-	window.onpopstate = handle_location;
+	window.addEventListener("popstate", handle_location);
 
 	init_event_handler();
 	// Immutable function output
