@@ -135,11 +135,28 @@ body {
 		width: 1.2em;
 		height: 1.2em;
 		border: solid black;
-		border-width: 3pt;
+		border-width: 0.2em !important;
 		transform: translate(50%, 50%);
 		@extend .rounded-circle;
 	}
 	@extend .rounded-circle;
+}
+
+.notification {
+	position: relative;
+	.notification-status {
+		position: absolute;
+		display: inline-block;
+		background: yellow;
+		bottom: .1em;
+		right: .1em;
+		width: 0.5em;
+		height: 0.5em;
+		border: solid black;
+		border-width: 0.1em !important;
+		transform: translate(50%, 50%);
+		@extend .rounded-circle;
+	}
 }
 
 @for $i from 2 through 5 {

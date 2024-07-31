@@ -87,10 +87,14 @@ export default (function (){
 			el.remove();
 		});
 		html.querySelectorAll("script[src]").forEach(el => {
+			if (el.getAttribute("load-once"))
+				return ;
 			let script = document.createElement('script');
 			script.src = el.src;
-			script.type = el.type;
-			script.defer = el.defer;
+			if (el.type)
+				script.type = el.type;
+			if (el.defer)
+				script.setAttribute("defer", el.defer ? "true" : "false");
 			document.head.append(script);
 		});
 		init_event_handler();
