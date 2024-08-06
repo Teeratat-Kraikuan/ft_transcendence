@@ -1,21 +1,12 @@
-{% extends "base.html" %}
+{% extends "navbar.html" %}
 {% load static %}
 
 {% block header %}
 <script src="{% static 'js/game.js' %}" defer="true"></script>
 {% endblock %}
 
-{% block content %}
-<!-- Centering a DIV, my beloved -->
-<div class="game-title start-50 font-200">
-	<div>42</div>
-	<div class="game-title game">GAME</div>
+{% block navbar %}
+<div class="h-100">
+	<canvas class="game-canvas align-content-center"></canvas>
 </div>
-
-<div class="content-container position-relative d-flex justify-content-center">
-	<canvas class="game-canvas position-fixed align-content-center"></canvas>
-</div>
-
-<a href="/home">test</a>
-
 {% endblock %}

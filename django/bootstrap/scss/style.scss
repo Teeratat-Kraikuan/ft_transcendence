@@ -114,9 +114,10 @@ body {
 }
 
 .game-canvas {
+	display: block;
 	background: darkcyan;
-	width: 98%;
-	width: 75%;
+	width: 100%;
+	height: 100%;
 }
 
 .pfp {
@@ -147,7 +148,7 @@ body {
 	.notification-status {
 		position: absolute;
 		display: inline-block;
-		background: yellow;
+		background: $warning;
 		bottom: .1em;
 		right: .1em;
 		width: 0.5em;

@@ -1,0 +1,39 @@
+{% extends "navbar.html" %}
+{% load static %}
+
+{% block navbar %}
+<div class="w-100 position-relative d-flex flex-grow-1 my-5">
+	<div class="w-100 my-auto d-flex flex-column py-2">
+		<div class="card d-inline-block flex-column align-self-center px-4 py-3 lh-1 font-400">
+			<div class="line-h-1 float-start font-monospace">4P</div>
+			<div class="line-h-1 d-flex flex-column font-50">
+				<span>Tournament</span>
+				<span class="font-50">Round robin</span>
+			</div>
+		</div>
+		<div class="d-flex flex-row align-self-center justify-content-between text-center my-5">
+			<div class="m-2 m-lg-5">
+				<div class="pfp-3 mx-auto"></div>
+				<p>person A</p>
+			</div>
+			<div class="m-2 m-lg-5">
+				<div class="pfp-3 mx-auto"></div>
+				<p>person B</p>
+			</div>
+			<div class="m-2 m-lg-5">
+				<div class="pfp-3 mx-auto"></div>
+				<p>person C</p>
+			</div>
+			<div class="m-2 m-lg-5">
+				<div class="pfp-3 mx-auto"></div>
+				<p>person D</p>
+			</div>
+		</div>
+		<div class="card-ff align-self-center">
+			<p class="text-center">Waiting...</p>
+			<button class="btn btn-secondary w-100">cancel</button>
+		</div>
+	</div>
+</div>
+{% endblock %}
+

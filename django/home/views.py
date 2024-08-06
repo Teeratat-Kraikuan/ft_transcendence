@@ -24,3 +24,6 @@ def online(req):
 
 def tournament(req):
 	return render(req, 'tournament.html')
+
+def tournament_queue(req):
+	return render(req, 'tournament_queue.html')
