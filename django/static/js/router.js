@@ -106,8 +106,10 @@ export default (function (){
 	};
 
 	window.addEventListener("popstate", handle_location);
-
-	init_event_handler();
+	window.addEventListener('DOMContentLoaded', () => {
+		init_event_handler();
+		console.info("router: Event handler initialized.")
+	});
 	// Immutable function output
 	// HMMMMMM FUNKSUNAL PRO-GAMING
 	return Object.freeze({ redirect, handle_location });

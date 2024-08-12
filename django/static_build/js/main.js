@@ -1,9 +1,6 @@
-import router from "./router.js";
-
+(function(){
 "use strict";
 
-router.handle_location(function(){
-	
-	console.log('%c %c %c Welcome to ft_transcendance!', "background:#00ffff", "background:#00aaff", "background:#0077ff");
-	// Bruh
-});
+console.log('%c %c %c Welcome to ft_transcendance!', "background:#00ffff", "background:#00aaff", "background:#0077ff");
+
+})();

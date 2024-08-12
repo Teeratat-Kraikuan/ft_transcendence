@@ -7,20 +7,23 @@ lock:
 install: lock
 	pipenv install
 
-requirements: install
+requirements: requirements.txt
+requirements.txt: install
 	pipenv requirements > requirements.txt
 
 shell: requirements
 	@ pipenv shell
 
+# pipenv run reloadium run manage.py runserver $(IP_ADDR) --noreload
 dev:
 	@ cd django; \
 	pipenv run reloadium run manage.py runserver $(IP_ADDR) --noreload
 
+# pipenv run reloadium run manage.py runserver $(IP_ADDR) --noreload;
 dev-nix:
 	@ nix-shell --run "\
 	cd django; \
-	pipenv run reloadium run manage.py runserver $(IP_ADDR) --noreload; \
+	pipenv run reloadium run manage.py runserver $(IP_ADDR) --noreload \
 	"
 
 scss:

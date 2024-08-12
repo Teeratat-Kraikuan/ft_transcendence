@@ -6,17 +6,17 @@
 <div class="h-100 d-flex flex-column position-relative vh-100-min">
 	<div class="dashed-line-vertical h-100"></div>
 	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-none d-lg-flex">
-		<div class="game-title start-50 font-250">
-			<div>42</div>
-			<div class="game-title game">GAME</div>
-		</div>
+		<a class="game-title start-50 font-200 text-decoration-none" href="/home">
+			<div class="pe-none">42</div>
+			<div class="game-title game pe-none">GAME</div>
+		</a>
 		<div class="d-inline-flex justify-content-evenly position-relative">
 			<button class="m-auto border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#notification_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
 				<i class="notification fa-solid fa-bell font-150 text-light">
 					<span class="notification-status"></span>
 				</i>
 			</button>
-			<a class="m-auto mx-4 border-0 bg-transparent" href="#">
+			<a class="m-auto mx-4 border-0 bg-transparent" href="/chat">
 				<i class="fa-solid fa-message font-150 text-light pe-none"></i>
 			</a>
 			<button class="navbar-toggler pfp-2 m-auto" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
@@ -33,10 +33,10 @@
 	{% block navbar %}
 	{% endblock %}
 	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-lg-none">
-		<div class="game-title start-50 font-200">
-			<div>42</div>
-			<div class="game-title game">GAME</div>
-		</div>
+		<a class="game-title start-50 font-200 text-decoration-none" href="/home">
+			<div class="pe-none">42</div>
+			<div class="game-title game pe-none">GAME</div>
+		</a>
 		<div class="d-inline-flex position-relative">
 			<button class="m-auto border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#notification_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
 				<i class="notification fa-solid fa-bell font-150 text-light">

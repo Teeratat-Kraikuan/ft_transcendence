@@ -1,8 +1,8 @@
-FROM python:3.12-bookworm
+FROM python:3.11-bookworm
 
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update -y && apt-get upgrade -y
+RUN apt update -y && apt upgrade -y
 
 RUN pip install --upgrade pip
 COPY ./requirements.txt .

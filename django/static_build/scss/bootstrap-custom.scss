@@ -42,6 +42,10 @@ $dark: #232323;
 	right: 75% !important;
 }
 
+.fa-gutter {
+	min-width: 2em;
+}
+
 @for $i from 1 through 20 {
 	// @debug ($i * 25 / 100)em
 	.font-#{$i * 25} {

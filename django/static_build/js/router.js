@@ -10,6 +10,7 @@ export default (function (){
 	 * Redirects to a page without refreshing.
 	 * @param {string} url URL to be re-directed to within the SPA. If diffrent domain was passed, then it will re-direct to it instead.
 	 */
+
 	const redirect = (url) => {
 		console.log(`Routing to ${url} ...`);
 		if (new URL(url, document.location).hostname != location.hostname)
@@ -39,14 +40,14 @@ export default (function (){
 		// Forms (login, signup, 2FA)
 		else if (target.action)
 		{
-			const csrftoken = /csrftoken=(.[^;]*)/ig.exec(document.cookie)[1];
-			alert(csrftoken);
+			const csrftoken = /csrftoken=(.[^;]*)/ig.exec(document.cookie);
 			if (!target.checkValidity())
 				return target.reportValidity();
 			console.log(`Submitting to ${url}...`);
 			var xhttp = new XMLHttpRequest();
 			xhttp.open(target.method || "POST", url, true);
-			xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+			if (csrftoken)
+				xhttp.setRequestHeader("X-CSRFToken", csrftoken[1]);
 			xhttp.setRequestHeader("Accept", "application/json");
 			xhttp.onreadystatechange = target.onreadystatechange;
 			xhttp.onload = target.onload;
@@ -55,15 +56,9 @@ export default (function (){
 	};
 
 	/**
-	 * Handles location changes, fetches data, and add event listeners to links, and forms.
-	 * @param {Function} fn Callback after location was handled.
+	 * Initializes event listeners to links, and forms.
 	 */
-	const handle_location = async (fn) => {
-		let new_body = document.createElement("body");
-		new_body.innerHTML = await fetch(window.location.pathname).then( data => data.text() );
-		document.body.remove();
-		document.getElementsByTagName("html")[0].append(new_body);
-		document.body = new_body;
+	const init_event_handler = () => {
 		// Why use addEventListener? It's there to prevent override of event click listener,
 		// because it can't be erased without a reference to the event listener object.
 		document.querySelectorAll("a:not([no-route])")
@@ -73,12 +68,46 @@ export default (function (){
 		// For redirecting a custom element
 		document.querySelectorAll("*[class='redirect_spa']")
 				.forEach( el => el.addEventListener('click', router) );
-		if (typeof fn == "function")
-			fn();
+	};
+	
+	/**
+	 * Handles location changes, fetches data.
+	 */
+	const handle_location = async () => {
+		const data = await fetch(window.location.pathname);
+		const html = document.createElement("html");
+		// Unload game scripts, etc.
+		if (typeof window.unload == "function")
+		{
+			window.unload();
+			window.unload = null;
+		}
+		html.innerHTML = await data.text();
+		document.body = html.getElementsByTagName("body")[0];
+		// "Unload scripts"
+		document.head.querySelectorAll("script[src]").forEach(el => {
+			el.remove();
+		});
+		// Set head to the new one.
+		document.head.innerHTML = html.getElementsByTagName("head")[0].innerHTML;
+		// Load scripts
+		html.querySelectorAll("script[src]").forEach(el => {
+			if (el.getAttribute("load-once"))
+				return ;
+			let script = document.createElement('script');
+			script.src = el.src;
+			if (el.type)
+				script.type = el.type;
+			if (el.defer)
+				script.setAttribute("defer", el.defer ? "true" : "false");
+			document.head.append(script);
+		});
+		init_event_handler();
 	};
 
-	window.onpopstate = handle_location;
+	window.addEventListener("popstate", handle_location);
 
+	init_event_handler();
 	// Immutable function output
 	// HMMMMMM FUNKSUNAL PRO-GAMING
 	return Object.freeze({ redirect, handle_location });

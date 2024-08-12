@@ -23,7 +23,7 @@ Pillow = "10.4.0"
 requests = "2.32.3"
 daphne = "4.1.2"
 
-[dev-packages]
+# [dev-packages]
 reloadium = "1.5.1"
 
 [requires]

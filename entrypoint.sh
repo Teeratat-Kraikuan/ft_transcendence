@@ -10,10 +10,8 @@ then
 	python ./manage.py makemigrations
 	python ./manage.py migrate
 	python ./manage.py collectstatic --no-input
-	# python /home/django/ft_transcendence/manage.py runserver 0.0.0.0:8001
-	# python /home/django/ft_transcendence/manage.py runserver_plus --cert-file /home/django/ft_transcendence/https/cert.pem --key-file /home/django/ft_transcendence/https/key.pem 0.0.0.0:8000
-	daphne -b 0.0.0.0 -p 8001 main.asgi:application
-	# daphne -b 0.0.0.0 -p 8001 -e ssl:8443:privateKey=/home/django/ft_transcendence/https/key.pem:certKey=/home/django/ft_transcendence/https/cert.pem project.asgi:application --proxy-headers
+	python ./manage.py runserver 0.0.0.0:8001 --noreload
+	# reloadium run manage.py runserver 0.0.0.0:8001 --noreload
 fi
 
 exec "$@"
