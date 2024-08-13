@@ -47,11 +47,23 @@ $dark: #232323;
 }
 
 .h-max-100 {
-	max-height: 100%;
+	max-height: 100% !important;
+}
+
+// .w-max-25 {
+// 	max-width: 25% !important;
+// }
+
+.w-max-50 {
+	max-width: 50% !important;
+}
+
+.w-max-75 {
+	max-width: 75% !important;
 }
 
 .w-max-none {
-	max-width: none;
+	max-width: none !important;
 }
 
 @for $i from 1 through 20 {

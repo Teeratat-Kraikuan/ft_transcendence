@@ -41,7 +41,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8001:8001"
-      - "12513:12513"
     env_file:
       - .env
     volumes:
