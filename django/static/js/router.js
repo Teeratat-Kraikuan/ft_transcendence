@@ -68,6 +68,26 @@ export default (function (){
 		// For redirecting a custom element
 		document.querySelectorAll("*[class='redirect_spa']")
 				.forEach( el => el.addEventListener('click', router) );
+		document.querySelectorAll("*[data-bs-toggle]").forEach(el => {
+			const menus = document.querySelectorAll(el.getAttribute("data-bs-target"));
+			el.addEventListener("click", ev => {
+				menus.forEach(menu => {
+					menu.tabIndex = 0;
+					menu.focus();
+				});
+			});
+			menus.forEach(menu => menu.addEventListener("focusout", ev => {
+				let within = menu.matches(':focus-within');
+				if (within)
+					return ;
+				document.querySelectorAll(".collapse.show").forEach(
+					el => {
+						menu.removeAttribute("tabindex");
+						bootstrap.Collapse.getInstance(el).hide();
+					}
+				);
+			}));
+		});
 	};
 	
 	/**
@@ -108,7 +128,7 @@ export default (function (){
 	window.addEventListener("popstate", handle_location);
 	window.addEventListener('DOMContentLoaded', () => {
 		init_event_handler();
-		console.info("router: Event handler initialized.")
+		console.info("router: Event handler initialized.");
 	});
 	// Immutable function output
 	// HMMMMMM FUNKSUNAL PRO-GAMING

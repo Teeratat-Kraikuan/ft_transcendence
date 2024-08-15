@@ -46,13 +46,38 @@ $dark: #232323;
 	min-width: 2em;
 }
 
+.h-0 {
+	height: 0;
+}
+
+.h-min-100 {
+	min-height: 100% !important;
+}
+
 .h-max-100 {
 	max-height: 100% !important;
 }
 
-// .w-max-25 {
-// 	max-width: 25% !important;
-// }
+.w-min-25 {
+	min-width: 25% !important;
+}
+
+.w-min-35 {
+	min-width: 35% !important;
+}
+
+.w-min-50 {
+	min-width: 50% !important;
+}
+
+.w-min-75 {
+	min-width: 75% !important;
+}
+
+
+.w-max-25 {
+	max-width: 25% !important;
+}
 
 .w-max-50 {
 	max-width: 50% !important;

@@ -46,10 +46,6 @@ body {
 // 	--color_fill: $bs-text-primary;
 // }
 
-.vh-100-min {
-	min-height: 100vh;
-}
-
 .font-pressstart2p {
 	font-family: PressStart2P;
 }
@@ -180,3 +176,11 @@ body {
 	max-width: 4em;
 }
 
+.inset-shadow {
+	position: absolute;
+	box-shadow: inset 0px 0px 5px 2px red;
+	width: auto;
+	height: auto;
+	pointer-events: none;
+	z-index: 1;
+}
