@@ -4,14 +4,14 @@
 {% block navbar %}
 <div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-01">
 	<div class="w-100 my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2">
-		<div class="d-flex flex-column line-h-1 align-self-center my-5 my-lg-auto font-pressstart2p font-300">
+		<div class="d-flex flex-column line-h-1 align-self-center my-5 my-lg-auto font-pressstart2p font-300 user-select-none">
 			<span>PONG</span>
 			<span>PONG</span>
 			<img class="d-flex icon-sm m-auto" src="{% static 'assets/icon.svg' %}">
 		</div>
 		<div class="col-1 card-ff align-self-center text-center">
-			<input class="btn btn-primary w-100 my-3" type="button" value="1 Player">
-			<input class="btn btn-primary w-100 my-3" type="button" value="2 Player">
+			<input class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" type="button" value="1 Player">
+			<input class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:2" type="button" value="2 Player">
 			<a class="text-light text-decoration-none fw-bold" href="./home">
 				<i class="fa-solid fa-chevron-left"></i>
 				Back

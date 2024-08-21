@@ -91,6 +91,16 @@ $dark: #232323;
 	max-width: none !important;
 }
 
+.min-content {
+	width: min-content !important;
+	height: min-content !important;
+}
+
+.fit-content {
+	width: fit-content;
+	height: fit-content;
+}
+
 @for $i from 1 through 20 {
 	// @debug ($i * 25 / 100)em
 	.font-#{$i * 25} {

@@ -27,3 +27,6 @@ def tournament(req):
 
 def tournament_queue(req):
 	return render(req, 'tournament_queue.html')
+
+def community(req):
+	return render(req, 'community.html')

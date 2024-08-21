@@ -1,0 +1,75 @@
+{% extends "navbar.html" %}
+{% load static %}
+
+{% block navbar %}
+<div class="w-100 position-relative d-flex flex-grow-1">
+	<div class="container-lg justify-content-center align-items-center w-100 h-100">
+		<!-- <div class="container"></div> -->
+		<div class="d-flex flex-column w-100 h-100">
+			<div class="card-ff w-auto position-relative py-2">
+				<span class="fa-solid fa-search position-absolute end-0 mx-3 d-block line-h-2 my-1"></span>
+				<input class="form-control" type="text" placeholder="Search">
+			</div>
+			<div class="flex-grow-1 w-100 h-0 px-4 overflow-auto z-0">
+				<div class="position-relative overflow-hidden fit-content rounded-2 m-2 min-content float-start">
+					<img src="/static/assets/500x500-pfp.jpg" class="position-absolute h-100 start-50 top-50" style="filter: brightness(0.45) blur(1.5px); transform: translate(-50%, -50%);">
+					<div class="d-flex align-items-center flex-column w-100 h-100 p-3">
+						<div class="pfp m-4"></div>
+						<div class="d-inline-flex w-100 align-items-center flex-column z-1">
+							<h4>Dummy</h4>
+							<span>Dummy Smith</span>
+							<p>I am the winner.</p>
+						</div>
+						<div class="d-inline-flex w-100 justify-content-evenly">
+							<a class="border-0 bg-transparent text-decoration-none" href="#1">
+								<i class="notification fa-solid fa-gamepad pe-none font-150 text-light"></i>
+							</a>
+							<a class="border-0 bg-transparent text-decoration-none" href="#2">
+								<i class="notification fa-solid fa-person-circle-plus pe-none font-150 text-light"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="position-relative overflow-hidden fit-content rounded-2 m-2 min-content float-start">
+					<img src="/static/assets/500x500-pfp.jpg" class="position-absolute h-100 start-50 top-50" style="filter: brightness(0.45) blur(1.5px); transform: translate(-50%, -50%);">
+					<div class="d-flex align-items-center flex-column w-100 h-100 p-3">
+						<div class="pfp m-4"></div>
+						<div class="d-inline-flex w-100 align-items-center flex-column z-1">
+							<h4>Dummy</h4>
+							<span>Dummy Smith</span>
+							<span>I am the winner.</p>
+						</div>
+						<div class="d-inline-flex w-100 justify-content-evenly">
+							<a class="border-0 bg-transparent text-decoration-none" href="#1">
+								<i class="notification fa-solid fa-gamepad pe-none font-150 text-light"></i>
+							</a>
+							<a class="border-0 bg-transparent text-decoration-none" href="#2">
+								<i class="notification fa-solid fa-message pe-none font-150 text-light"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="position-relative overflow-hidden fit-content rounded-2 m-2 min-content float-start">
+					<img src="/static/assets/500x500-pfp.jpg" class="position-absolute h-100 start-50 top-50" style="filter: brightness(0.45) blur(1.5px); transform: translate(-50%, -50%);">
+					<div class="d-flex align-items-center flex-column w-100 h-100 p-3">
+						<div class="pfp m-4"></div>
+						<div class="d-inline-flex w-100 align-items-center flex-column z-1">
+							<h4>Dummy</h4>
+							<span>Dummy Smith</span>
+							<p>I am the winner.</p>
+						</div>
+						<div class="d-inline-flex w-100 justify-content-evenly">
+							<a class="border-0 bg-transparent text-decoration-none" href="#1">
+								<i class="notification fa-solid fa-gamepad pe-none font-150 text-light"></i>
+							</a>
+							<a class="border-0 bg-transparent text-decoration-none" href="#2">
+								<i class="notification fa-solid fa-message pe-none font-150 text-light"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
