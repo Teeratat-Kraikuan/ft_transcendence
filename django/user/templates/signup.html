@@ -1,11 +1,15 @@
 {% extends "panel.html" %}
 {% load static %}
-{% csrf_token %}
+
+{% block header %}
+<script src="{% static 'js/form_validation.js' %}" defer="true"></script>
+{% endblock %}
 
 {% block panel %}
 <div class="card-form">
 	<p class="card-form-title">Signup</p>
-	<form action="/signup" method="POST" onload="alert(this.status);">
+	<form action="/signup" method="POST" redirect="/login">
+		{% csrf_token %}
 		<div class="form-group mb-3">
 			<label class="form-label visually-hidden" for="user">Username</label>
 			<input class="form-control" name="username" type="text" placeholder="username" required="true">

@@ -1,6 +1,10 @@
 {% extends "panel.html" %}
 {% load static %}
 
+{% block header %}
+<script src="{% static 'js/form_validation.js' %}" defer="true"></script>
+{% endblock %}
+
 {% block panel %}
 <div class="card-form">
 	<p class="card-form-title">Login</p>
@@ -12,7 +16,7 @@
 		</div>
 		<div class="form-group">
 			<label class="form-label visually-hidden" for="passwd">Password</label>
-			<input class="form-control" type="password" name="password" placeholder="password" pattern="(?=.*\d)(?=.*[\W_]).{7,}" title="Minimum of 7 characters. Should have at least one special character and one number." required="true"/>
+			<input class="form-control" type="password" name="password" placeholder="password" required="true"/>
 		</div>
 		<button type="submit" class="btn btn-primary w-100 my-3">Sign in</button>
 		<div class="separator text-secondary">Or</div>
