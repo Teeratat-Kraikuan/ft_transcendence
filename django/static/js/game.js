@@ -1,7 +1,7 @@
 (function() {
 
 	"use strict";
-	
+
 	class Canvas {
 		constructor (selector) {
 			this.el = document.querySelector(selector);

@@ -79,7 +79,7 @@ Temporary Items
 
 # database
 data/
-staticfiles
+django/static_build/
 
 # python
 __pycache__/

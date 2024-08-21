@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 	'home',
 	'game',
 	'chat',
+	'menu'
 ]
 
 MIDDLEWARE = [
@@ -75,7 +76,7 @@ ROOT_URLCONF = 'main.urls'
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [ BASE_DIR.joinpath('templates') ],
+		'DIRS': [ BASE_DIR.joinpath('templates'), BASE_DIR.joinpath('menu') ],
 		'APP_DIRS': True,
 		'OPTIONS': {
 			'context_processors': [
