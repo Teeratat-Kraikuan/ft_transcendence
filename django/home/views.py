@@ -5,11 +5,9 @@ from django.template import loader
 import random
 
 # Create your views here.
-@login_required()
 def home(req):
 	return render(req, 'home.html')
 
-@login_required
 def offline(req):
 	return render(req, 'offline.html')
 
@@ -25,6 +23,5 @@ def tournament(req):
 def tournament_queue(req):
 	return render(req, 'tournament_queue.html')
 
-@login_required
 def community(req):
 	return render(req, 'community.html')

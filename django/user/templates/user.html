@@ -1,1 +1,15 @@
-{{ username }}
+{% extends "navbar.html" %}
+{% load static %}
+
+{% block navbar %}
+<div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-0">
+	<div class="w-100 my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2">
+		<!-- {% if username == request.user %}
+			YOU
+		{% else %}
+			PEOPLE I GUESS
+		{% endif %} -->
+		
+	</div>
+</div>
+{% endblock %}

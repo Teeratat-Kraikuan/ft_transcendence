@@ -131,7 +131,7 @@ export default (function (){
 	};
 
 	window.addEventListener("popstate", handle_location);
-	window.addEventListener('DOMContentLoaded', () => {
+	window.addEventListener("DOMContentLoaded", () => {
 		init_event_handler();
 		console.info("router: Event handler initialized.");
 	});

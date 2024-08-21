@@ -14,7 +14,6 @@ def login_2fa(req):
 def signup(req):
 	return render(req, 'signup.html')
 
-# @login_required
 def user(req, username):
 	return render(req, 'user.html', {
 		"username": username

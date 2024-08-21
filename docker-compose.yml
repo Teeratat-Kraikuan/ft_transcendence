@@ -45,7 +45,7 @@ services:
       - .env
     volumes:
       - django:/home/django/ft_transcendence
-      - static:/home/django/ft_transcendence/static
+      - static:/home/django/ft_transcendence/static_build
       - media:/home/django/ft_transcendence/media
     networks:
       - trans-networks
@@ -61,7 +61,7 @@ services:
       - "8000:8000"
       - "8443:8443"
     volumes:
-      - static:/home/django/ft_transcendence/static
+      - static:/home/django/ft_transcendence/static_build
       - media:/home/django/ft_transcendence/media
     networks:
       - trans-networks

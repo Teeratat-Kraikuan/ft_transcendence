@@ -12,8 +12,8 @@ def login(req):
 		# if user is not None:
 		# 	auth.login(req, user)
 		# 	html_content = render_to_string('home.html', {'user': user})
-		return JsonResponse({'success': True, 'success': 'login successful'}, status=200)
-	return JsonResponse({'success': False, 'error': 'invalid input'}, status=400)
+		return JsonResponse({'message': 'login successful'}, status=200)
+	return JsonResponse({'message': 'invalid input'}, status=400)
 
 def register(req):
 	return
