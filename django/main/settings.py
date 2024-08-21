@@ -54,10 +54,12 @@ INSTALLED_APPS = [
 	'corsheaders',
 	'django_sass',
 	# Apps
+	'menu',
 	'home',
 	'game',
 	'chat',
-	'menu'
+	'user',
+	'setting'
 ]
 
 MIDDLEWARE = [
@@ -76,7 +78,10 @@ ROOT_URLCONF = 'main.urls'
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [ BASE_DIR.joinpath('templates'), BASE_DIR.joinpath('menu') ],
+		'DIRS': [
+			BASE_DIR.joinpath('templates'),
+			BASE_DIR.joinpath('menu')
+		],
 		'APP_DIRS': True,
 		'OPTIONS': {
 			'context_processors': [
