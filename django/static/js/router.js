@@ -50,7 +50,12 @@ export default (function (){
 				xhttp.setRequestHeader("X-CSRFToken", csrftoken[1]);
 			xhttp.setRequestHeader("Accept", "application/json");
 			xhttp.onreadystatechange = target.onreadystatechange;
-			xhttp.onload = target.onload;
+			xhttp.onload = (ev) => {
+				if (target.onload)
+					target.onload.bind(xhttp)();
+				if (xhttp.status == 200 && target.getAttribute('redirect'))
+					redirect(target.getAttribute('redirect'));
+			};
 			xhttp.send(new FormData(target));
 		}
 	};

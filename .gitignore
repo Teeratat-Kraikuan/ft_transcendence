@@ -79,11 +79,12 @@ Temporary Items
 
 # database
 data/
-django/static_build/
+
 
 # python
 __pycache__/
 *.pyc
 
-profile_pics
-banner_pics
+# django
+django/static_build/
+django/media/

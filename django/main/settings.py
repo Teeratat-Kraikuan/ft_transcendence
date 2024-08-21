@@ -40,6 +40,9 @@ CSRF_TRUSTED_ORIGINS = [
 
 CSRF_COOKIE_SECURE = True
 
+LOGIN_URL = "/login"
+REDIRECT_FIELD_NAME = ""
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -59,7 +62,8 @@ INSTALLED_APPS = [
 	'game',
 	'chat',
 	'user',
-	'setting'
+	'setting',
+	'api'
 ]
 
 MIDDLEWARE = [
