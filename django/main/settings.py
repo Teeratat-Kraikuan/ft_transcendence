@@ -43,7 +43,10 @@ CSRF_TRUSTED_ORIGINS = [
 CSRF_COOKIE_SECURE = True
 
 LOGIN_URL = "/login"
+LOGIN_REDIRECT_URL = "/home"
 REDIRECT_FIELD_NAME = ""
+
+AUTHENTICATION_BACKENDS = ('user.backends.EmailBackend', )
 
 # Application definition
 

@@ -55,6 +55,10 @@ export default (function (){
 					target.onload.bind(xhttp)();
 				if (xhttp.status == 200 && target.getAttribute('redirect'))
 					redirect(target.getAttribute('redirect'));
+				else if (xhttp.status != 200 && target.getAttribute('redirect')){
+					var response = JSON.parse(xhttp.responseText);
+        			alert(response.message);
+				}
 			};
 			xhttp.send(new FormData(target));
 		}
