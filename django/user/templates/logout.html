@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block header %}
+<script src="{% static 'js/logout.js' %}" type="module" defer></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center h-100 h-min-100vh">
+	<p class="align-self-center font-pressstart2p">Logging out...</p>
+</div>
+
+{% endblock %}

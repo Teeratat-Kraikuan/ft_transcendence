@@ -18,6 +18,11 @@ def signup(req):
 		return redirect('home')
 	return render(req, 'signup.html')
 
+def logout(req):
+	if not req.user.is_authenticated:
+		return redirect('home')
+	return render(req, 'logout.html')
+
 def user(req, username):
 	return render(req, 'user.html', {
 		"username": username

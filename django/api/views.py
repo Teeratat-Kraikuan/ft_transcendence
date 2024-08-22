@@ -28,7 +28,7 @@ def login(req):
 def logout(req):
 	if req.user.is_authenticated:
 		auth_logout(req)
-		return redirect('login')
+		return JsonResponse({'message': 'Logout successful'}, status=200)
 	return JsonResponse({'message': 'Logout unsuccess'}, status=400)
 
 def register(req):

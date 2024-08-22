@@ -19,8 +19,9 @@
 				inputs.email.setCustomValidity("Invalid Email!");
 			else if (inputs.passwd.value.match(/(?=.*\d)(?=.*[\W_]).{7,}/) == null)
 				inputs.passwd.setCustomValidity("Password Invalid! Requirement: Minimum of 7 characters. Should have at least one special character and one number.");
-			else if (inputs.rep_passwd != null || inputs.passwd.value !== inputs.rep_passwd.value)
+			else if (inputs.rep_passwd && inputs.passwd.value !== inputs.rep_passwd.value)
 				inputs.rep_passwd.setCustomValidity("Password mismatch!");
+			form.reportValidity();
 		});
 	});
 	window.unload = function () {

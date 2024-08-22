@@ -51,7 +51,7 @@ AUTHENTICATION_BACKENDS = ('user.backends.EmailBackend', )
 # Application definition
 
 INSTALLED_APPS = [
-	# 'daphne',
+	'daphne',
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
@@ -104,21 +104,21 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'main.wsgi.application'
-# ASGI_APPLICATION = "main.asgi.application"
+ASGI_APPLICATION = "main.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-# 	'default': {
-# 		'ENGINE': 'django.db.backends.postgresql',
-# 		'NAME': environ.get('POSTGRES_DB'),
-# 		'USER': environ.get('POSTGRES_USER'),
-# 		'PASSWORD': environ.get('POSTGRES_PASSWORD'),
-# 		'HOST': 'postgres',
-# 		'PORT': 5432,
-# 	}
-# }
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.postgresql',
+		'NAME': environ.get('POSTGRES_DB'),
+		'USER': environ.get('POSTGRES_USER'),
+		'PASSWORD': environ.get('POSTGRES_PASSWORD'),
+		'HOST': 'postgres',
+		'PORT': 5432,
+	}
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
