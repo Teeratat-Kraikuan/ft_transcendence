@@ -8,7 +8,7 @@
 {% block panel %}
 <div class="card-form">
 	<p class="card-form-title">Signup</p>
-	<form action="/signup" method="POST" redirect="/login">
+	<form action="/api/v1/register/" method="POST" redirect="/login">
 		{% csrf_token %}
 		<div class="form-group mb-3">
 			<label class="form-label visually-hidden" for="user">Username</label>
@@ -20,7 +20,7 @@
 		</div>
 		<div class="form-group mb-3">
 			<label class="form-label visually-hidden" for="passwd">Password</label>
-			<input class="form-control" name="password" type="password" placeholder="password" required="true">
+			<input class="form-control" name="password" type="password" title="Minimum of 7 characters. Should have at least one special character and one number." placeholder="password" required="true">
 		</div>
 		<div class="form-group">
 			<label class="form-label visually-hidden" for="passwd">Confirm Password</label>

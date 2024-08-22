@@ -9,9 +9,13 @@ def login(req):
 	return render(req, 'login.html')
 
 def login_2fa(req):
+	if req.user.is_authenticated:
+		return redirect('home')
 	return render(req, 'login_2fa.html')
 
 def signup(req):
+	if req.user.is_authenticated:
+		return redirect('home')
 	return render(req, 'signup.html')
 
 def user(req, username):
