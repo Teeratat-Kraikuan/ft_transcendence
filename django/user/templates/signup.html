@@ -1,6 +1,10 @@
 {% extends "panel.html" %}
 {% load static %}
 
+{% block header %}
+<script src="{% static 'js/form_validation.js' %}" defer="true"></script>
+{% endblock %}
+
 {% block panel %}
 <div class="card-form">
 	<p class="card-form-title">Signup</p>

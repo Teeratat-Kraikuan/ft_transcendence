@@ -23,8 +23,7 @@
 
 	set_canvas();
 	window.unload = function () {
-		// alert("unload");
-		removeEventListener(ev_resize);
+		removeEventListener('resize', ev_resize);
 	}
 
 })();
