@@ -44,7 +44,7 @@ CSRF_COOKIE_SECURE = True
 
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/home"
-REDIRECT_FIELD_NAME = ""
+REDIRECT_FIELD_NAME = "next"
 
 AUTHENTICATION_BACKENDS = ('user.backends.EmailBackend', )
 

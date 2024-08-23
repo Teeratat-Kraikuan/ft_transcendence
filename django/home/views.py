@@ -23,5 +23,6 @@ def tournament(req):
 def tournament_queue(req):
 	return render(req, 'tournament_queue.html')
 
+@login_required
 def community(req):
 	return render(req, 'community.html')
