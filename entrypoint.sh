@@ -10,6 +10,7 @@ then
 	python ./manage.py makemigrations
 	python ./manage.py migrate
 	python ./manage.py collectstatic --no-input
+	python ./manage.py sass bootstrap/scss/style.scss static/css/style.css --watch -t compressed &
 	python ./manage.py runserver 0.0.0.0:8001
 	# reloadium run manage.py runserver 0.0.0.0:8001 --noreload
 fi
