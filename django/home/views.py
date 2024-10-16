@@ -5,9 +5,11 @@ from django.template import loader
 import random
 
 # Create your views here.
+# @login_required()
 def home(req):
 	return render(req, 'home.html')
 
+@login_required
 def offline(req):
 	return render(req, 'offline.html')
 

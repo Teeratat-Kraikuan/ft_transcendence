@@ -1,0 +1,61 @@
+{% extends "navbar.html" %}
+{% load static %}
+
+{% block navbar %}
+
+<div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-0">
+    <div class="w-100 my-auto d-flex flex-column py-2">
+        <div class="d-flex flex-column align-items-center justify-content-center my-auto">
+            <div class="card-my-lg">
+                <p class="card-my-title-lg">Setting</p>
+                <div class="separator" style="color: var(--bs-border-color-translucent);;"></div>
+                <div class="py-4">
+                    <p class="card-my-title-sm">General</p>
+                    <div class="ps-4 mb-4">
+                        <label for="soundVolume" class="form-label">Game volume</label>
+                        <div class="d-flex flex-row align-items-center justify-content-between">
+                            <input type="range" min="0" max="10" step="1" value="5" class="form-range form-range-color"
+                                id="soundVolume">
+                            <i class="ms-3 fa-solid fa-volume-high"></i>
+                        </div>
+                        <label for="language" class="form-label">Language</label>
+                        <select class="form-select form-select-sm w-25" aria-label="selectLanguage">
+                            <option value="1">English</option>
+                            <option value="2">Thai</option>
+                        </select>
+                    </div>
+                    <p class="card-my-title-sm">Account</p>
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item list-menu list-menu-hover" onclick="location.href='/settings/audience_visibility'">
+                            <span>Audience and visibility</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </li>
+                        <li class="list-group-item list-menu list-menu-hover" onclick="location.href='/settings/change_username'">
+                            <span>Change username</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </li>
+                    </ul>
+                    <p class="card-my-title-sm">Password and Security</p>
+                    <ul class="list-group">
+                        <li class="list-group-item list-menu list-menu-hover" onclick="location.href='/settings/change_password'">
+                            <span>Change password</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </li>
+                        <li class="list-group-item list-menu list-menu-hover" onclick="location.href='/settings/2fa_auth'">
+                            <span>Two-factor authentication (2FA)</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </li>
+                        <li class="list-group-item list-menu list-menu-hover" onclick="location.href='/settings/delete_account'">
+                            <span>Delete Account</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

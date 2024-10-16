@@ -1,0 +1,30 @@
+{% extends "navbar.html" %}
+{% load static %}
+
+{% block navbar %}
+
+<div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-0">
+	<div class="w-100 my-auto d-flex flex-column py-2">
+        <div class="d-flex flex-column align-items-center justify-content-center my-auto">
+            <div class="card-my">
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn" onclick="javascript:history.back()">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button type="button" class="btn" onclick="location.href='/settings'">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <p class="card-my-title py-4">Two-Factor authentication email setup</p>
+                <form action="#">
+                    <div class="form-group mb-3">
+                        <input class="form-control" type="email" name="email" placeholder="Enter email address" required="true"/>
+                    </div>
+                </form>
+                <button class="btn btn-primary mb-4" onclick="location.href='/settings/2fa_auth/email_confirm_otp'">Next</button>
+            </div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

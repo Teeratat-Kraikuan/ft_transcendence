@@ -1,0 +1,37 @@
+{% extends "navbar.html" %}
+{% load static %}
+
+{% block navbar %}
+
+<div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-0">
+	<div class="w-100 my-auto d-flex flex-column py-2">
+        <div class="d-flex flex-column align-items-center justify-content-center my-auto">
+            <div class="card-my">
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn" onclick="javascript:history.back()">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button type="button" class="btn" onclick="location.href='/settings'">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <p class="card-my-title py-4">Two-Factor authentication app setup</p>
+                <p>Scan this QR code or copy the key</p>
+                <div class="d-flex flex-row justify-content-between">
+                    <div class="rounded me-2 w-50" style="max-width: 180px; height: 180px; background-color: antiquewhite;"></div>
+                    <div class="d-flex flex-column w-50">
+                        <div class="border rounded p-3 mb-3">
+                            <span class="text-start">ABC DEF GHI JKL MNO PQR STU VWX YZ</span>
+                        </div>
+                        <button class="btn btn-outline-light btn-sm">
+                            <i class="fa-regular fa-clipboard"></i>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
