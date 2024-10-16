@@ -27,7 +27,7 @@ def logout(req):
 		return redirect('home')
 	return render(req, 'logout.html')
 
-def user(req, username):
+def user(req, user_id):
 	return render(req, 'user.html', {
-		"username": username
+		"user_id": user_id
 	})

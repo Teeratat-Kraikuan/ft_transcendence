@@ -57,5 +57,33 @@ def register(req):
 	return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 @login_required
-def profile(req):
-	return JsonResponse({'message': 'Invalid request method'}, status=405)
+def change_password(req):
+	pass
+
+@login_required
+def change_username(req):
+	print(req.user.username)
+	return JsonResponse({'message': 'username changed'}, status=200)
+
+@login_required
+def profile(req, user_id):
+	try:
+		user = User.objects.get(id=user_id)
+		profile, created = Profile.objects.get_or_create(user=user)
+		context = {
+			'user_id': user_id,
+			'username': user.username,
+			'email': user.email,
+			'avatar': profile.avatar.url if profile.avatar else None,
+			'banner': profile.banner.url if profile.banner else None,
+			'description': profile.description,
+			'is_student': profile.is_student,
+			'friends': list(profile.friends.values_list('user__username', flat=True)),
+			'blocked_user': list(profile.blocked_user.values_list('user__username', flat=True)),
+		}
+		return JsonResponse(context, status=200)
+
+	except User.DoesNotExist:
+		return JsonResponse({'message': 'User not found'}, status=404)
+	except Exception as e:
+		return JsonResponse({'message': str(e)}, status=500)
