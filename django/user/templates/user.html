@@ -2,14 +2,223 @@
 {% load static %}
 
 {% block navbar %}
+
+<style>
+	.card-solid {
+		background-color: #2a2a2a;
+	}
+
+	.card-match {
+		background-color: #46575b;
+	}
+
+	.pfp-lg {
+		width: 8em;
+		height: 8em;
+		margin-top: -3.5em;
+		border: 0.3em solid #2a2a2a;
+		background-color: antiquewhite;
+	}
+
+	.chat-contacts {
+		list-style: none;
+		padding: 0;
+	}
+
+	.chart-container {
+		/* position: relative; */
+		/* width: 70%; */
+	}
+	
+</style>
+
 <div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-0">
-	<div class="w-100 my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2">
-		{{ user_id }}
-		<!-- {% if username == request.user %}
-			YOU
-		{% else %}
-			PEOPLE I GUESS
-		{% endif %} -->
+	<div class="w-100 d-flex flex-column flex-lg-row justify-content-lg-evenly py-2">
+		<div class="col-lg-9 col-12">
+			<div class="row justify-content-center">
+				<!-- bg -->
+				<div class="rounded-top"
+					style="background-color:cadetblue; background-size: cover; height: 200px;">
+				</div>
+				<!-- top -->
+				<div class="row rounded-bottom card-solid py-3">
+					<!-- profile pic -->
+					<div class="col-lg-2 col-12 d-flex justify-content-lg-end justify-content-center">
+						<div class="rounded-circle pfp-lg"></div>
+					</div>
+					<!-- profile details -->
+					<div class="col-lg-7 col-12 d-flex justify-content-lg-start justify-content-center">
+						<div>
+							<h5>
+								Profile Username
+							</h5>
+							<span style="opacity: 70%;">
+								Profile Description
+							</span>
+						</div>
+					</div>
+					<!-- Button -->
+					<div class="col-lg-3 col-12 text-end">
+
+						<!-- Own Profile -->
+						<a onclick="">
+							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+								<i class="fa-solid fa-pencil"></i>
+								Edit
+							</button>
+						</a>
+						<a onclick="">
+							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+								<i class="fa-solid fa-user-gear"></i>
+								Manage
+							</button>
+						</a>
+						
+						<!-- Not Friend -->
+						<!-- <a onclick="">
+							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+								<i class="fa-solid fa-user-plus"></i>
+								Add Friend
+							</button>
+						</a> -->
+						
+						<!-- Friend -->
+						<!-- <div>
+							<a onclick="">
+								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+									<i class="fa-solid fa-gamepad"></i>
+									Invite
+								</button>
+							</a>
+							<a onclick="">
+								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+									<i class="fa-solid fa-message"></i>
+									Chat
+								</button>
+							</a>
+							<a onclick="">
+								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+									<i class="fa-solid fa-ban"></i>
+									Block
+								</button>
+							</a>
+						</div>
+						<div class="mt-3 text-light" style=" font-size: 0.7rem;">
+							Your Friend
+							<i class="fa-solid fa-circle-check"></i>
+						</div> -->
+						
+						<!-- Blocked -->
+						<!-- <div>
+							<a onclick="">
+								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+									Unblock
+								</button>
+							</a>
+						</div>
+						<div class="mt-3 text-light" style=" font-size: 0.7rem;">
+							Blocked
+							<i class="fa-solid fa-ban"></i>
+						</div> -->
+					</div>
+				</div>
+			</div>
+
+			<!-- 3-col -->
+			<div class="row justify-content-between">
+				<div class="col-lg-4 mt-4 p-4 card-solid rounded">
+					<h6>Match History</h6>
+					<div class="text-center mt-3" style="overflow-y: auto;">
+						<!-- match card -->
+						<div class="card-match rounded p-2 ps-3 mb-1">
+							<div class="row align-items-center">
+								<div class="col-4 text-start">
+									<div class="font-75">00-00-00</div>
+									<div class="font-75">game type</div>
+								</div>
+								<div class="col-8"  style="align-items: center">
+									<div class="d-flex justify-content-around align-items-center">
+										<div class="font-75">guest</div>
+										<div>0 - 0</div>
+										<div class="font-75">guest</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="col-lg-5 mt-4 p-4 card-solid rounded">
+					<h6>Record</h6>
+					<div class="row mb-3">
+						<div class="d-flex justify-content-center">
+							<div class="chart-container">
+								<canvas class="my-chart" data-wins="4" data-losses="3"></canvas>
+								<!-- <canvas class="my-chart" data-wins="{{ wins }}" data-losses="{{ losses }}"></canvas> -->
+							</div>
+						</div>
+					</div>
+					<div class="text-center mb-1">Played <h2>7</h2></div>
+					<div class="col px-5">
+						<div class="row mb-2">
+							<!-- <div class="col-6 font-75 text-start">Goals Scored {{ goals_scored }}</div>
+							<div class="col-6 font-75 text-end">Goals Conceded {{ goals_conceded }}</div> -->
+							<div class="col-6 font-75 text-start">Goals Scored 14</div>
+							<div class="col-6 font-75 text-end">Goals Conceded 20</div>
+						</div>
+						<!-- <div class="progress" style="border: 2px solid #ffffff; height: 20px;" data-score="{{ goals_scored }}" data-conceded="{{ goals_conceded }}"> -->
+						<div class="progress" style="border: 2px solid #ffffff; height: 20px;" data-score="14" data-conceded="20">
+							<div class="progress-bar" role="progressbar" id="score_bar" style="width: 100%; background-color: #3ea7ed;"></div>
+							<div class="progress-bar" role="progressbar" style="width: 2px; background-color: #ffffff;"></div>
+							<div class="progress-bar" role="progressbar" id="conceded_bar" style="width: 0%; background-color: #ef5d7f;"></div>
+						</div>
+						<!-- <div class="text-center my-3">Difference {{ goals_diff }}</div> -->
+						<div class="text-center my-3">Difference 7</div>
+					</div>
+				</div>
+				<div class="col-lg-2 mt-4 p-4 card-solid rounded">
+					<span>Friend</span>
+					<div style="overflow-y: auto">
+						<!-- Own Profile -->
+						<div class="font-75 mt-3">ONLINE - 00</div>
+						<ul class="chat-contacts">
+							<a onclick="" class="" style="text-decoration: none;">
+								<li style="margin-bottom: 0px;">
+									<div class="d-flex align-items-center py-1 font-75">
+										<div class="pfp-3">
+										</div>
+										<div class="px-2">
+											friend name
+										</div>
+									</div>
+								</li>
+							</a>
+						</ul>
+						<div class="font-75">OFFLINE - 00</div>
+						<ul class="chat-contacts">
+							<a onclick="" class="" style="text-decoration: none;">
+								<li style="margin-bottom: 0px;">
+									<div class="d-flex align-items-center py-1 font-75">
+										<div class="pfp-3">
+										</div>
+										<div class="px-2">
+											friend name
+										</div>
+									</div>
+								</li>
+							</a>
+						</ul>
+						<!-- Other Profile -->
+						<!-- just show the name, no status -->
+
+					</div>
+				</div>
+			</div>
+		</div>
+		
 	</div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}
