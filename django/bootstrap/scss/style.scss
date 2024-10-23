@@ -258,3 +258,24 @@ a{
 .delay-150 {
 	animation-delay: calc(var(--animation-order) * 150ms);
 }
+
+.card-solid {
+	background-color: #2a2a2a;
+}
+
+.card-match {
+	background-color: #46575b;
+}
+
+.pfp-lg {
+	width: 8em;
+	height: 8em;
+	margin-top: -3.5em;
+	border: 0.3em solid #2a2a2a;
+	background-color: antiquewhite;
+}
+
+.chat-contacts {
+	list-style: none;
+	padding: 0;
+}

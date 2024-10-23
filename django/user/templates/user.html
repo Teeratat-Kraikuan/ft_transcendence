@@ -3,35 +3,6 @@
 
 {% block navbar %}
 
-<style>
-	.card-solid {
-		background-color: #2a2a2a;
-	}
-
-	.card-match {
-		background-color: #46575b;
-	}
-
-	.pfp-lg {
-		width: 8em;
-		height: 8em;
-		margin-top: -3.5em;
-		border: 0.3em solid #2a2a2a;
-		background-color: antiquewhite;
-	}
-
-	.chat-contacts {
-		list-style: none;
-		padding: 0;
-	}
-
-	.chart-container {
-		/* position: relative; */
-		/* width: 70%; */
-	}
-	
-</style>
-
 <div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-0">
 	<div class="w-100 d-flex flex-column flex-lg-row justify-content-lg-evenly py-2">
 		<div class="col-lg-9 col-12">
@@ -152,7 +123,7 @@
 					<h6>Record</h6>
 					<div class="row mb-3">
 						<div class="d-flex justify-content-center">
-							<div class="chart-container">
+							<div>
 								<canvas class="my-chart" data-wins="4" data-losses="3"></canvas>
 								<!-- <canvas class="my-chart" data-wins="{{ wins }}" data-losses="{{ losses }}"></canvas> -->
 							</div>
