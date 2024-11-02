@@ -17,10 +17,10 @@
 					<span class="notification-status"></span>
 				</i>
 			</button>
-			<a class="m-auto mx-4 border-0 bg-transparent" href="/login">
+			<a class="m-auto mx-4 border-0 bg-transparent" href="/chat">
 				<i class="fa-solid fa-message font-150 text-light pe-none"></i>
 			</a>
-			<button class="navbar-toggler pfp-2 m-auto" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
+			<button class="navbar-toggler pfp-2 m-auto" style="background-image: url(media/{{ user.profile.avatar }})" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
 				<span class="status"></span>
 			</button>
 			<div id="notification_menu" class="collapse top-100 end-0 position-absolute bg-dark my-3 rounded-3 overflow-y-hidden z-1">
@@ -53,7 +53,7 @@
 			<a class="m-auto mx-4 border-0 bg-transparent" href="/chat">
 				<i class="fa-solid fa-message font-150 text-light pe-none"></i>
 			</a>
-			<button class="navbar-toggler pfp-2 m-auto" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
+			<button class="navbar-toggler pfp-2 m-auto" style="background-image: url(media/{{ user.profile.avatar }})" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
 				<span class="status"></span>
 			</button>
 			<div id="notification_menu" class="collapse bottom-100 end-0 position-absolute bg-dark my-3 rounded-3 overflow-y-hidden z-1">
