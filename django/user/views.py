@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.contrib.auth.models import User
+from api.views import get_user_profile_data
 
 # Create your views here.
 
@@ -27,7 +29,13 @@ def logout(req):
 		return redirect('home')
 	return render(req, 'logout.html')
 
-def user(req, user_id):
-	return render(req, 'user.html', {
-		"user_id": user_id
-	})
+@login_required
+def user(req, username):
+    try:
+        # Reuse the utility function to fetch the profile data
+        context = get_user_profile_data(username)
+        return render(req, 'user.html', context)
+    except User.DoesNotExist:
+        return render(req, 'error.html', {'message': 'User not found'}, status=404)
+    except Exception as e:
+        return render(req, 'error.html', {'message': str(e)}, status=500)

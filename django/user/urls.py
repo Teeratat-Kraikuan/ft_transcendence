@@ -6,5 +6,5 @@ urlpatterns = [
 	path('login_2fa/', views.login_2fa, name='login-2fa'),
 	path('signup/', views.signup, name='signup'),
 	path('logout/', views.logout, name='login'),
-	path('users/<int:user_id>/', views.user, name='user'),
+	path('users/<str:username>/', views.user, name='user'),
 ]

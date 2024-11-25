@@ -43,6 +43,9 @@ def register(req):
 
 		if password != repeat_password:
 			return JsonResponse({'message': 'Passwords do not match.'}, status=400)
+		
+		if User.objects.filter(username=username).exists():
+			return JsonResponse({'message': 'Username already taken.'}, status=400)
 
 		if User.objects.filter(email=email).exists():
 			return JsonResponse({'message': 'Email already registered.'}, status=400)
@@ -50,8 +53,6 @@ def register(req):
 		user = User(username=username, email=email)
 		user.set_password(password)
 		user.save()
-
-		Profile.objects.create(user=user)
 
 		return JsonResponse({'message': 'Register successful'}, status=200)
 	return JsonResponse({'message': 'Invalid request method'}, status=405)
@@ -66,24 +67,32 @@ def change_username(req):
 	return JsonResponse({'message': 'username changed'}, status=200)
 
 @login_required
-def profile(req, user_id):
+def profile(req, username):
 	try:
-		user = User.objects.get(id=user_id)
-		profile, created = Profile.objects.get_or_create(user=user)
-		context = {
-			'user_id': user_id,
-			'username': user.username,
-			'email': user.email,
-			'avatar': profile.avatar.url if profile.avatar else None,
-			'banner': profile.banner.url if profile.banner else None,
-			'description': profile.description,
-			'is_student': profile.is_student,
-			'friends': list(profile.friends.values_list('user__username', flat=True)),
-			'blocked_user': list(profile.blocked_user.values_list('user__username', flat=True)),
-		}
+		context = get_user_profile_data(username)
 		return JsonResponse(context, status=200)
-
 	except User.DoesNotExist:
 		return JsonResponse({'message': 'User not found'}, status=404)
 	except Exception as e:
 		return JsonResponse({'message': str(e)}, status=500)
+	
+
+def get_user_profile_data(username):
+    """
+    Utility function to fetch user and profile data.
+    Returns a dictionary with the user's profile information.
+    Raises `User.DoesNotExist` if the user is not found.
+    """
+    user = User.objects.get(username=username)
+    profile, created = Profile.objects.get_or_create(user=user)
+    return {
+        'user_id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'avatar': profile.avatar.url if profile.avatar else None,
+        'banner': profile.banner.url if profile.banner else None,
+        'description': profile.description,
+        'is_student': profile.is_student,
+        'friends': list(profile.friends.values_list('user__username', flat=True)),
+        'blocked_user': list(profile.blocked_user.values_list('user__username', flat=True)),
+    }

@@ -10,5 +10,5 @@ urlpatterns = [
 	path('v1/change-username/', views.change_username),
 
 	# Profile Management
-	path('v1/profile/<int:user_id>/', views.profile),
+	path('v1/profile/<str:username>/', views.profile),
 ]
