@@ -1,0 +1,51 @@
+{% extends "navbar.html" %}
+{% load static %}
+
+{% block navbar %}
+
+<div class="w-100 position-relative d-flex flex-grow-1 flex-column">
+	<div class="d-flex justify-content-center mt-lg-0 mt-5">
+		<div class="bg-dark rounded px-3 py-2 d-flex justify-content-center align-items-center" style="width: 60vw;">
+			<div class="me-4">
+				<h1 class="display-1 fw-bolder">4P</h1>
+			</div>
+			<div>
+				<h2 class="fw-bold">Tournament</h2>
+				<h4>Round Robbin</h4>
+			</div>
+		</div>
+	</div>
+	<div class="my-auto">
+		<div class="d-flex justify-content-center align-items-center row">
+			<div class="col-lg-6 d-flex justify-content-lg-end justify-content-sm-center justify-content-evenly">
+				<div class="pfp-n-name mx-2">
+					<div class="pfp-4 mb-3"></div>
+					<h4 id="player1">xxx xxx</h4>
+				</div>
+				<div class="pfp-n-name mx-2">
+					<div class="pfp-4 mb-3"></div>
+					<h4 id="player2">xxx xxx</h4>
+				</div>
+			</div>
+			<div class="col-lg-6 d-flex justify-content-lg-start justify-content-sm-center justify-content-evenly">
+				<div class="pfp-n-name mx-2">
+					<div class="pfp-4 mb-3"></div>
+					<h4 id="player3">xxx xxx</h4>
+				</div>
+				<div class="pfp-n-name mx-2">
+					<div class="pfp-4 mb-3"></div>
+					<h4 id="player4">xxx xxx</h4>
+				</div>
+			</div>
+		</div>
+		<div class="d-flex justify-content-center mt-5">
+			<div class="text-center col-1 card-ff align-self-center animate-slide-1 delay-150">
+				<span>Waiting . . . </span>
+				<a type="submit" class="btn btn-secondary my-3 w-100" href="/tournament_room">Cancel</a>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+{% endblock %}

@@ -279,3 +279,7 @@ a{
 	list-style: none;
 	padding: 0;
 }
+
+.pfp-n-name {
+	@extend .col-2, .d-flex, .flex-column, .text-center, .align-items-center
+}
