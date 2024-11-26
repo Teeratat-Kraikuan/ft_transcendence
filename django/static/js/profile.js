@@ -1,11 +1,11 @@
 
 
-// function showEdit() {
-// 	document.getElementById("popUpEdit").style.display = 'block';
-// }
-// function doneEdit() {
-// 	document.getElementById("popUpEdit").style.display = 'none';
-// }
+function showEdit() {
+	document.getElementById("popUpEdit").style.display = 'block';
+}
+function doneEdit() {
+	document.getElementById("popUpEdit").style.display = 'none';
+}
 // function showFriendManage() {
 // 	document.getElementById("popUpFriend").style.display = 'block';
 // }
