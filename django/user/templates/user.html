@@ -101,21 +101,23 @@
 					<h6>Match History</h6>
 					<div class="text-center mt-3" style="overflow-y: auto;">
 						<!-- match card -->
+						{% for match in match_history %}
 						<div class="card-match rounded p-2 ps-3 mb-1">
 							<div class="row align-items-center w-100">
 								<div class="col-4 text-start">
-									<div class="font-75">00-00-00</div>
+									<div class="font-75">{{ match.start_time }}</div>
 									<div class="font-75">game type</div>
 								</div>
 								<div class="col-8"  style="align-items: center">
 									<div class="d-flex justify-content-around align-items-center">
-										<div class="font-75">guest</div>
-										<div>0 - 0</div>
-										<div class="font-75">guest</div>
+										<div class="font-75">{{ match.player1 }}</div>
+										<div>{{ match.player1_score }} - {{ match.player2_score }}</div>
+										<div class="font-75">{{ match.player2 }}</div>
 									</div>
 								</div>
 							</div>
 						</div>
+						{% endfor %}
 
 					</div>
 				</div>
@@ -124,61 +126,65 @@
 					<div class="row mb-3">
 						<div class="d-flex justify-content-center">
 							<div>
-								<canvas class="my-chart" data-wins="4" data-losses="3"></canvas>
-								<!-- <canvas class="my-chart" data-wins="{{ wins }}" data-losses="{{ losses }}"></canvas> -->
+								{% comment %} <canvas class="my-chart" data-wins="4" data-losses="3"></canvas> {% endcomment %}
+								<canvas class="my-chart" data-wins="{{ wins }}" data-losses="{{ losses }}"></canvas>
 							</div>
 						</div>
 					</div>
-					<div class="text-center mb-1">Played <h2>7</h2></div>
+					<div class="text-center mb-1">Played <h2>{{ total_matches }}</h2></div>
 					<div class="col px-5">
 						<div class="row mb-2">
-							<!-- <div class="col-6 font-75 text-start">Goals Scored {{ goals_scored }}</div>
-							<div class="col-6 font-75 text-end">Goals Conceded {{ goals_conceded }}</div> -->
-							<div class="col-6 font-75 text-start">Goals Scored 14</div>
-							<div class="col-6 font-75 text-end">Goals Conceded 20</div>
+							<div class="col-6 font-75 text-start">Goals Scored {{ goals_scored }}</div>
+							<div class="col-6 font-75 text-end">Goals Conceded {{ goals_conceded }}</div>
+							{% comment %} <div class="col-6 font-75 text-start">Goals Scored 14</div>
+							<div class="col-6 font-75 text-end">Goals Conceded 20</div> {% endcomment %}
 						</div>
-						<!-- <div class="progress" style="border: 2px solid #ffffff; height: 20px;" data-score="{{ goals_scored }}" data-conceded="{{ goals_conceded }}"> -->
-						<div class="progress" style="border: 2px solid #ffffff; height: 20px;" data-score="14" data-conceded="20">
+						<div class="progress" style="border: 2px solid #ffffff; height: 20px;" data-score="{{ goals_scored }}" data-conceded="{{ goals_conceded }}">
+						{% comment %} <div class="progress" style="border: 2px solid #ffffff; height: 20px;" data-score="14" data-conceded="20"> {% endcomment %}
 							<div class="progress-bar" role="progressbar" id="score_bar" style="width: 100%; background-color: #3ea7ed;"></div>
 							<div class="progress-bar" role="progressbar" style="width: 2px; background-color: #ffffff;"></div>
 							<div class="progress-bar" role="progressbar" id="conceded_bar" style="width: 0%; background-color: #ef5d7f;"></div>
 						</div>
-						<!-- <div class="text-center my-3">Difference {{ goals_diff }}</div> -->
-						<div class="text-center my-3">Difference 7</div>
+						<div class="text-center my-3">Difference {{ goals_diff }}</div>
+						{% comment %} <div class="text-center my-3">Difference 7</div> {% endcomment %}
 					</div>
 				</div>
 				<div class="col mt-4 p-4 card-solid rounded">
 					<span>Friend</span>
 					<div style="overflow-y: auto">
 						<!-- Own Profile -->
-						<div class="font-75 mt-3">ONLINE - 00</div>
+						<div class="font-75 mt-3">ONLINE - {{ online_friends|length }}</div>
+						{% for friend in online_friends %}
 						<ul class="chat-contacts">
 							<a onclick="" class="" style="text-decoration: none;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center py-1 font-75">
-										<div class="pfp-3">
+										<div class="pfp-3" style="background-image: url({{ friend.profile.avatar.url }})">
 										</div>
 										<div class="px-2">
-											friend name
+											{{ friend.username }}
 										</div>
 									</div>
 								</li>
 							</a>
 						</ul>
-						<div class="font-75">OFFLINE - 00</div>
+						{% endfor %}
+						<div class="font-75">OFFLINE - {{ offline_friends|length }}</div>
+						{% for friend in offline_friends %}
 						<ul class="chat-contacts">
 							<a onclick="" class="" style="text-decoration: none;">
 								<li style="margin-bottom: 0px;">
 									<div class="d-flex align-items-center py-1 font-75">
-										<div class="pfp-3">
+										<div class="pfp-3" style="background-image: url({{ friend.profile.avatar.url }})">
 										</div>
 										<div class="px-2">
-											friend name
+											{{ friend.username }}
 										</div>
 									</div>
 								</li>
 							</a>
 						</ul>
+						{% endfor %}
 						<!-- Other Profile -->
 						<!-- just show the name, no status -->
 

@@ -10,8 +10,8 @@ class Profile(models.Model):
 	banner = models.ImageField(default='banner_pics/default_banner.png', upload_to='banner')
 	description = models.TextField('Description', max_length=600, default="I am the winner")
 	friends = models.ManyToManyField('self', blank=True)
-	blocked_user = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='blocked_by')
 	is_student = models.BooleanField(default=False)
+	last_activity = models.DateTimeField(null=True, blank=True)
 
 	def __str__(self):
 		return self.user.username
@@ -25,6 +25,11 @@ class Profile(models.Model):
 			if user.check_password(password):
 				return user
 		return None
+	
+	def update_online_status(self, status: bool):
+		"""Update the online status of the profile."""
+		self.is_online = status
+		self.save()
 	
 	# Signal trigger when creating user it will create profile automatically
 	@receiver(post_save, sender=User)

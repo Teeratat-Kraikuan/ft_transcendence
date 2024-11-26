@@ -4,7 +4,11 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from user.models import Profile
+from game.models import MatchHistory
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.db.models import Q, Sum, Count
+from django.utils.timezone import now
+from datetime import timedelta
 
 # Create your views here.
 
@@ -77,6 +81,8 @@ def profile(req, username):
 		return JsonResponse({'message': str(e)}, status=500)
 	
 
+# Utilize functions
+
 def get_user_profile_data(username):
     """
     Utility function to fetch user and profile data.
@@ -94,5 +100,90 @@ def get_user_profile_data(username):
         'description': profile.description,
         'is_student': profile.is_student,
         'friends': list(profile.friends.values_list('user__username', flat=True)),
-        'blocked_user': list(profile.blocked_user.values_list('user__username', flat=True)),
     }
+
+def get_user_match_history(username):
+    """
+    Utility function to fetch match history related to a specific user.
+    Returns a list of dictionaries, each representing a match.
+    Raises `User.DoesNotExist` if the user is not found.
+    """
+    user = User.objects.get(username=username)
+
+    # Fetch matches where the user is player1 or player2
+    matches = MatchHistory.objects.filter(Q(player1=user) | Q(player2=user)).order_by('-start_time')
+
+    # Serialize match data
+    match_history = []
+    for match in matches:
+        match_history.append({
+            'id': match.id,
+            'player1': match.player1.username,
+            'player2': match.player2.username,
+            'player1_score': match.player1_score,
+            'player2_score': match.player2_score,
+            'winner': match.winner.username if match.winner else None,
+            'is_draw': match.is_draw,
+            'start_time': match.start_time.strftime('%d-%m-%Y') if match.start_time else None,
+            'end_time': match.end_time.strftime('%d-%m-%Y') if match.end_time else None,
+            'match_duration': str(match.match_duration) if match.match_duration else None,
+        })
+
+    return {
+        'user_id': user.id,
+        'username': user.username,
+        'match_history': match_history,
+    }
+
+def get_user_match_summary(username):
+    """
+    Utility function to fetch the match summary for a specific user.
+    Returns a dictionary containing the user's wins, losses, total matches played, 
+    goals scored, goals conceded, win rate, and goal difference.
+    Raises `User.DoesNotExist` if the user is not found.
+    """
+    user = User.objects.get(username=username)
+
+    # Fetch matches where the user participated
+    matches = MatchHistory.objects.filter(Q(player1=user) | Q(player2=user))
+
+    # Wins
+    wins = matches.filter(winner=user).count()
+
+    # Losses (total matches played - wins - draws)
+    total_matches = matches.count()
+    draws = matches.filter(is_draw=True).count()
+    losses = total_matches - wins - draws
+
+    # Goals Scored and Conceded
+    goals_scored_as_player1 = matches.filter(player1=user).aggregate(total=Sum('player1_score'))['total'] or 0
+    goals_scored_as_player2 = matches.filter(player2=user).aggregate(total=Sum('player2_score'))['total'] or 0
+    goals_scored = goals_scored_as_player1 + goals_scored_as_player2
+
+    goals_conceded_as_player1 = matches.filter(player1=user).aggregate(total=Sum('player2_score'))['total'] or 0
+    goals_conceded_as_player2 = matches.filter(player2=user).aggregate(total=Sum('player1_score'))['total'] or 0
+    goals_conceded = goals_conceded_as_player1 + goals_conceded_as_player2
+
+    # Win Rate
+    win_rate = (wins / total_matches * 100) if total_matches > 0 else 0
+
+    # Goal Difference
+    goal_difference = goals_scored - goals_conceded
+
+    return {
+        'wins': wins,
+        'losses': losses,
+        'draws': draws,
+        'total_matches': total_matches,
+        'goals_scored': goals_scored,
+        'goals_conceded': goals_conceded,
+        'win_rate': round(win_rate, 2),  # Rounded to 2 decimal places
+        'goal_diff': goal_difference,
+    }
+
+def is_user_online(user):
+    last_activity = user.profile.last_activity
+    if last_activity:
+        timeout_period = timedelta(seconds=300)  # Match SESSION_COOKIE_AGE
+        return now() - last_activity < timeout_period
+    return False

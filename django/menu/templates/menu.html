@@ -1,7 +1,7 @@
 {% block menu_content %}
 
 <div class="d-inline-block card-ff mx-4 mt-3">
-	<div class="pfp-3 my-auto me-2 float-start" style="background-image: url(media/{{ user.profile.avatar }})"></div>
+	<div class="pfp-3 my-auto me-2 float-start" style="background-image: url({{ user.profile.avatar.url }})"></div>
 	<div>
 		<span class="d-block">{{ user.username }}</span>
 		<span class="d-block">{{ user.email }}</span>

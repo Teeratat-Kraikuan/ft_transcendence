@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.contrib.auth.models import User
-from api.views import get_user_profile_data
+from api.views import get_user_profile_data, get_user_match_history, get_user_match_summary, is_user_online
 
 # Create your views here.
 
@@ -31,11 +31,31 @@ def logout(req):
 
 @login_required
 def user(req, username):
-    try:
-        # Reuse the utility function to fetch the profile data
-        context = get_user_profile_data(username)
-        return render(req, 'user.html', context)
-    except User.DoesNotExist:
-        return render(req, 'error.html', {'message': 'User not found'}, status=404)
-    except Exception as e:
-        return render(req, 'error.html', {'message': str(e)}, status=500)
+	try:
+		profile_data = get_user_profile_data(username)
+		friends = profile_data.get('friends', [])  # Assuming 'friends' contains usernames
+
+		online_friends = []
+		offline_friends = []
+
+		for friend_username in friends:
+			friend_user = User.objects.get(username=friend_username)
+			if is_user_online(friend_user):
+				online_friends.append(friend_user)
+			else:
+				offline_friends.append(friend_user)
+
+		profile_data['online_friends'] = online_friends
+		profile_data['offline_friends'] = offline_friends
+		del profile_data['friends']
+
+		match_history_data = get_user_match_history(username)
+		match_summary_data = get_user_match_summary(username)
+
+		# Merge all data into a single context dictionary
+		context = {**profile_data, **match_history_data, **match_summary_data}
+		return render(req, 'user.html', context)
+	except User.DoesNotExist:
+		return render(req, '404.html', {'message': 'User not found'}, status=404)
+	except Exception as e:
+		return render(req, '404.html', {'message': str(e)}, status=500)
