@@ -17,14 +17,22 @@
                 </div>
                 <p class="card-my-title py-4">Two-factor Authentication</p>
                 <ul class="list-group pb-4">
-                    <li class="list-group-item list-menu list-menu-hover" onclick="location.href='/settings/2fa_auth/2fa_set_app'">
-                        <span>Authentication app</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </li>
-                    <li class="list-group-item list-menu list-menu-hover" onclick="location.href='/settings/2fa_auth/2fa_set_email'">
-                        <span>Text message</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </li>
+                    <a href="/settings/2fa_auth/2fa_set_app">
+                        <div class="pe-none">
+                            <li class="list-group-item list-menu list-menu-hover">
+                                <span>Authentication app</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </li>
+                        </div>
+                    </a>
+                    <a href="/settings/2fa_auth/2fa_set_email">
+                        <div class="pe-none">
+                            <li class="list-group-item list-menu list-menu-hover">
+                                <span>Text message</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </li>
+                        </div>
+                    </a>
                 </ul>
             </div>
 		</div>
