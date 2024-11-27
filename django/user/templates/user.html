@@ -155,33 +155,37 @@
 						<!-- Own Profile -->
 						<div class="font-75 mt-3">ONLINE - {{ online_friends|length }}</div>
 						{% for friend in online_friends %}
-						<ul class="chat-contacts">
-							<a onclick="" class="" style="text-decoration: none;">
-								<li style="margin-bottom: 0px;">
-									<div class="d-flex align-items-center py-1 font-75">
-										<div class="pfp-3" style="background-image: url({{ friend.profile.avatar.url }})">
+						<ul class="chat-contacts mb-1">
+							<a href="/users/{{ friend.username }}" class="" style="text-decoration: none;">
+								<div class="pe-none">
+									<li style="mb-0">
+										<div class="d-flex align-items-center py-1 font-75">
+											<div class="pfp-3" style="background-image: url({{ friend.profile.avatar.url }})">
+											</div>
+											<div class="px-2">
+												{{ friend.username }}
+											</div>
 										</div>
-										<div class="px-2">
-											{{ friend.username }}
-										</div>
-									</div>
-								</li>
+									</li>
+								</div>
 							</a>
 						</ul>
 						{% endfor %}
-						<div class="font-75">OFFLINE - {{ offline_friends|length }}</div>
+						<div class="font-75 mt-3">OFFLINE - {{ offline_friends|length }}</div>
 						{% for friend in offline_friends %}
-						<ul class="chat-contacts">
-							<a onclick="" class="" style="text-decoration: none;">
-								<li style="margin-bottom: 0px;">
-									<div class="d-flex align-items-center py-1 font-75">
-										<div class="pfp-3" style="background-image: url({{ friend.profile.avatar.url }})">
+						<ul class="chat-contacts mb-1">
+							<a href="/users/{{ friend.username }}" class="" style="text-decoration: none;">
+								<div class="pe-none">
+									<li style="mb-0">
+										<div class="d-flex align-items-center py-1 font-75">
+											<div class="pfp-3" style="background-image: url({{ friend.profile.avatar.url }})">
+											</div>
+											<div class="px-2">
+												{{ friend.username }}
+											</div>
 										</div>
-										<div class="px-2">
-											{{ friend.username }}
-										</div>
-									</div>
-								</li>
+									</li>
+								</div>
 							</a>
 						</ul>
 						{% endfor %}
