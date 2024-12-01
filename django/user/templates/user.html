@@ -3,6 +3,11 @@
 
 {% block navbar %}
 
+{% block header %}
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
+
 <div class="vw-100 vh-100 z-2 sticky-top" id="popUpEdit" style="
 		background-color: #00000091;
 		position: absolute;
@@ -173,7 +178,7 @@
 						<div class="font-75 mt-3">ONLINE - {{ online_friends|length }}</div>
 						{% for friend in online_friends %}
 						<ul class="chat-contacts mb-1">
-							<a href="/users/{{ friend.username }}" class="" style="text-decoration: none;">
+							<a href="/users/{{ friend.username }}" class="text-decoration-none">
 								<div class="pe-none">
 									<li style="mb-0">
 										<div class="d-flex align-items-center py-1 font-75">
@@ -191,7 +196,7 @@
 						<div class="font-75 mt-3">OFFLINE - {{ offline_friends|length }}</div>
 						{% for friend in offline_friends %}
 						<ul class="chat-contacts mb-1">
-							<a href="/users/{{ friend.username }}" class="" style="text-decoration: none;">
+							<a href="/users/{{ friend.username }}" class="text-decoration-none">
 								<div class="pe-none">
 									<li style="mb-0">
 										<div class="d-flex align-items-center py-1 font-75">
@@ -217,6 +222,5 @@
 	</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{% static 'js/profile.js' %}"></script>
+
 {% endblock %}
