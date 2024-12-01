@@ -5,7 +5,7 @@
 
 <div class="h-100 d-flex flex-column position-relative min-vh-100">
 	<div class="dashed-line-vertical h-100"></div>
-	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-none d-lg-flex">
+	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-none d-lg-flex sticky-top z-1 position-absolute">
 		<a class="game-title start-50 font-200 text-decoration-none" href="/home">
 			<div class="pe-none">42</div>
 			<div class="game-title game pe-none">GAME</div>
@@ -38,7 +38,7 @@
 	</div>
 	{% block navbar %}
 	{% endblock %}
-	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-lg-none">
+	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-lg-none sticky-bottom z-1">
 		<a class="game-title start-50 font-200 text-decoration-none" href="/home">
 			<div class="pe-none">42</div>
 			<div class="game-title game pe-none">GAME</div>
