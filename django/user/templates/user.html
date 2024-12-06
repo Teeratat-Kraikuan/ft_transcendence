@@ -8,26 +8,29 @@
 	<script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}
 
-<div class="vw-100 vh-100 z-2 sticky-top" id="popUpEdit" style="
-		background-color: #00000091;
-		position: absolute;
-		display: none;
-	">
-	<div class="h-100 d-flex justify-content-center align-items-center">
-		<div class="row text-center card-solid p-4 justify-content-center rounded" style="width: 350px">
-			<h3>Edit</h3>
-			<form id="editProfileForm" class="mt-3" enctype="multipart/form-data">
-				{% csrf_token %}
-				<textarea class="w-100" type="text" placeholder="bio" name="description">{{ description }}</textarea>
-				<div class="mt-4 text-start">
-					<label for="formProfilePic" class="form-label">Profile picture</label>
-					<input class="form-control form-control-sm text-center" id="formProfilePic" type="file" name="profile_image">
-
-					<label for="formBgPic" class="form-label pt-3">Background picture</label>
-					<input class="form-control form-control-sm text-center" id="formBgPic" type="file" name="banner_image">
+<div class="sticky-top">
+	<div class="popup-menu" id="popUpEdit">
+		<div class="h-100 d-flex justify-content-center align-items-center my-auto">
+			<div class="card-my-sm h-auto">
+				<div class="d-flex justify-content-end">
+					<button type="button" class="btn" onclick="doneEdit()">
+						<i class="fa-solid fa-xmark"></i>
+					</button>
 				</div>
-				<button type="submit" name="submit" value="edit" class="btn btn-primary my-3 w-100" onclick="doneEdit(); done">Done</button>
-			</form>
+				<p class="card-my-title py-4">Edit</p>
+				<form id="editProfileForm" class="mt-3" enctype="multipart/form-data">
+					{% csrf_token %}
+					<textarea class="w-100" type="text" placeholder="bio" name="description">{{ description }}</textarea>
+					<div class="mt-4 text-start">
+						<label for="formProfilePic" class="form-label">Profile picture</label>
+						<input class="form-control form-control-sm text-center" id="formProfilePic" type="file" name="profile_image">
+	
+						<label for="formBgPic" class="form-label pt-3">Background picture</label>
+						<input class="form-control form-control-sm text-center" id="formBgPic" type="file" name="banner_image">
+					</div>
+					<button type="submit" name="submit" value="edit" class="btn btn-primary my-3 w-100" onclick="submitEditForm('{{ username }}');">Done</button>
+				</form>
+			</div>
 		</div>
 	</div>
 </div>
@@ -40,13 +43,13 @@
 					style="background-image: url({{ banner }});">
 				</div>
 				<!-- top -->
-				<div class="row rounded-bottom card-solid py-3">
+				<div class="row rounded-bottom card flex-row py-3" style="border-radius: 0 0">
 					<!-- profile pic -->
 					<div class="col-lg-auto col-12 d-flex justify-content-lg-end justify-content-center">
 						<div class="rounded-circle pfp-lg" style="background-image: url({{ avatar }});"></div>
 					</div>
 					<!-- profile details -->
-					<div class="col-lg-6 col-12 d-flex justify-content-lg-start justify-content-center">
+					<div class="col-lg-5 col-12 d-flex justify-content-lg-start justify-content-center">
 						<div class="text-center text-lg-start">
 							<h5>
 								{{ username }}
@@ -57,26 +60,18 @@
 						</div>
 					</div>
 					<!-- Button -->
-					<div class="col-lg-3 col-12 ms-auto text-end">
+					<div class="col-lg-4 col-12 ms-auto text-end">
 
 						<!-- Own Profile -->
-						<a onclick="showEdit()">
-							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
-								<i class="fa-solid fa-pencil"></i>
-								Edit
-							</button>
-						</a>
-						
-						<!-- Not Friend -->
-						<!-- <a onclick="">
-							<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
-								<i class="fa-solid fa-user-plus"></i>
-								Add Friend
-							</button>
-						</a> -->
-						
-						<!-- Friend -->
-						<!-- <div>
+						{% if request.user.username == username %}
+							<a onclick="showEdit()">
+								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+									<i class="fa-solid fa-pencil"></i>
+									Edit
+								</button>
+							</a>
+						{% elif is_friend %}
+						<div>
 							<a onclick="">
 								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
 									<i class="fa-solid fa-gamepad"></i>
@@ -99,8 +94,15 @@
 						<div class="mt-3 text-light" style=" font-size: 0.7rem;">
 							Your Friend
 							<i class="fa-solid fa-circle-check"></i>
-						</div> -->
-						
+						</div>
+						{% else %}
+							<a onclick="">
+								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
+									<i class="fa-solid fa-user-plus"></i>
+									Add Friend
+								</button>
+							</a>
+						{% endif %}
 						<!-- Blocked -->
 						<!-- <div>
 							<a onclick="">
@@ -119,7 +121,7 @@
 
 			<!-- 3-col -->
 			<div class="row">
-				<div class="col-lg-4 mt-4 p-4 card-solid rounded">
+				<div class="col-lg-4 mt-4 p-4 card rounded">
 					<h6>Match History</h6>
 					<div class="text-center mt-3" style="overflow-y: auto;">
 						<!-- match card -->
@@ -143,12 +145,11 @@
 
 					</div>
 				</div>
-				<div class="col-lg-5 mt-4 mx-lg-4 p-4 card-solid rounded">
+				<div class="col-lg-5 mt-4 mx-lg-4 p-4 card rounded">
 					<h6>Record</h6>
 					<div class="row mb-3">
 						<div class="d-flex justify-content-center">
 							<div>
-								{% comment %} <canvas class="my-chart" data-wins="4" data-losses="3"></canvas> {% endcomment %}
 								<canvas class="my-chart" data-wins="{{ wins }}" data-losses="{{ losses }}"></canvas>
 							</div>
 						</div>
@@ -167,11 +168,11 @@
 							<div class="progress-bar" role="progressbar" style="width: 2px; background-color: #ffffff;"></div>
 							<div class="progress-bar" role="progressbar" id="conceded_bar" style="width: 0%; background-color: #ef5d7f;"></div>
 						</div>
-						<div class="text-center my-3">Difference {{ goals_diff }}</div>
+						<div class="text-center my-3">Difference {{ goal_diff }}</div>
 						{% comment %} <div class="text-center my-3">Difference 7</div> {% endcomment %}
 					</div>
 				</div>
-				<div class="col mt-4 p-4 card-solid rounded">
+				<div class="col mt-4 p-4 card rounded">
 					<span>Friend</span>
 					<div style="overflow-y: auto">
 						<!-- Own Profile -->

@@ -81,6 +81,31 @@ def profile(req, username):
 		return JsonResponse({'message': str(e)}, status=500)
 	
 
+@login_required
+def edit_user_profile(req):
+    print("----TEST EDIT----") # Debug
+    if req.method == 'POST':
+        username = req.POST.get('username')
+        if req.POST.get('submit') == 'edit' and username:
+
+            profile_image = req.FILES.get('profile_image')
+            banner_image = req.FILES.get('banner_image')
+            description = req.POST.get('description')
+            print(f"TEST EDIT : {description}, {profile_image}, {banner_image}") # Debug
+
+            user = User.objects.get(username=username)
+            profile = Profile.objects.get(user=user)
+
+            if profile_image:
+                profile.avatar = profile_image
+            if banner_image:
+                profile.banner = banner_image
+            if description and description != profile.description:
+                profile.description = description
+            profile.save()
+            return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
+        else:
+            return JsonResponse({'success': False, 'errors': 'Invalid submission.'}, status=400)
 # Utilize functions
 
 def get_user_profile_data(username):

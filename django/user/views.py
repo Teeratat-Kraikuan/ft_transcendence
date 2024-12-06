@@ -34,6 +34,7 @@ def user(req, username):
 	try:
 		profile_data = get_user_profile_data(username)
 		friends = profile_data.get('friends', [])  # Assuming 'friends' contains usernames
+		is_friend = req.user.username in friends
 
 		online_friends = []
 		offline_friends = []
@@ -54,6 +55,7 @@ def user(req, username):
 
 		# Merge all data into a single context dictionary
 		context = {**profile_data, **match_history_data, **match_summary_data}
+		context['is_friend'] = is_friend
 		return render(req, 'user.html', context)
 	except User.DoesNotExist:
 		return render(req, '404.html', {'message': 'User not found'}, status=404)
