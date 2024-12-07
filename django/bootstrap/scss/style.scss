@@ -173,7 +173,7 @@ a{
 	position: relative;
 	background-image: url(../assets/500x500-pfp.jpg);
 	background-position: center;
-	background-size: contain;
+	background-size: cover;
 	width: 4em;
 	height: 4em;
 	.status {
@@ -279,7 +279,6 @@ a{
 }
 
 .banner {
-	background-size: cover;
 	height: 200px;
 	background-color: antiquewhite;
 	background-position: center;
