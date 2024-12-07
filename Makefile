@@ -41,7 +41,6 @@ migrate:
 	./manage.py migrate
 
 docker-shell:
-	$(eval FLAGS := $(shell read -p 'Extra flags: ' FLAGS; echo $$FLAGS))
-	docker run -it --entrypoint /bin/bash -v django --network=trans-networks $(FLAGS) ft_transcendence-django
+	docker compose run --entrypoint /bin/bash --rm django
 
 .PHONY: lock install requirements shell dev dev-nix scss scss-nix migrate

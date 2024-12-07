@@ -2,10 +2,10 @@
 
 	"use strict";
 
-	let ev_domload;
 	let ev_submit;
 
-	ev_domload = document.addEventListener('DOMContentLoaded', () => {
+	window.main = function () {
+		console.log("Account validator started!");
 		const form = document.querySelector('form');
 		ev_submit = form.addEventListener('change', () => {
 			const inputs = {
@@ -23,10 +23,13 @@
 				inputs.rep_passwd.setCustomValidity("Password mismatch!");
 			form.reportValidity();
 		});
-	});
+	};
 	window.unload = function () {
-		removeEventListener('DOMContentLoaded', ev_domload);
+		delete window.main;
 		removeEventListener('change', ev_submit);
 	}
+
+	if (window["main"] != undefined)
+		window.main();
 
 })();
