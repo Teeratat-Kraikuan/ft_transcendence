@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template import loader
+from django.contrib.auth.models import User
+from user.models import FriendRequest
 
 import random
 
@@ -9,7 +11,6 @@ import random
 def home(req):
 	return render(req, 'home.html')
 
-@login_required
 def offline(req):
 	return render(req, 'offline.html')
 
@@ -27,4 +28,23 @@ def tournament_queue(req):
 
 @login_required
 def community(req):
-	return render(req, 'community.html')
+	users = User.objects.select_related('profile').exclude(id=req.user.id)
+
+	friends = req.user.profile.friends.all().values_list('user__username', flat=True)
+
+	print(list(friends))
+
+	user_data = [
+		{
+			'username': user.username,
+			'description': user.profile.description,
+			'avatar_url': user.profile.avatar.url if user.profile.avatar else None,
+		}
+		for user in users
+	]
+
+	context = {
+		'users': user_data,
+		'friends': list(friends),
+	}
+	return render(req, 'community.html', context)

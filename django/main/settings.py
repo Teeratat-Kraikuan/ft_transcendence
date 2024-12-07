@@ -43,7 +43,7 @@ CSRF_TRUSTED_ORIGINS = [
 CSRF_COOKIE_SECURE = True
 
 LOGIN_URL = "/login"
-LOGIN_REDIRECT_URL = "/home"
+LOGIN_REDIRECT_URL = "/home/"
 REDIRECT_FIELD_NAME = "next"
 
 AUTHENTICATION_BACKENDS = ('user.backends.EmailBackend', )
@@ -174,5 +174,5 @@ MEDIA_URL = 'media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Session timeout in seconds (e.g., 300 seconds = 5 minutes)
-SESSION_COOKIE_AGE = 300
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# SESSION_COOKIE_AGE = 300
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True

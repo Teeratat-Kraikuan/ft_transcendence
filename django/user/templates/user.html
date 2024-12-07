@@ -106,7 +106,7 @@
 							<div class="row align-items-center w-100">
 								<div class="col-4 text-start">
 									<div class="font-75">{{ match.start_time }}</div>
-									<div class="font-75">game type</div>
+									<div class="font-75">{{ match.game_type }}</div>
 								</div>
 								<div class="col-8"  style="align-items: center">
 									<div class="d-flex justify-content-around align-items-center">
@@ -145,7 +145,7 @@
 							<div class="progress-bar" role="progressbar" style="width: 2px; background-color: #ffffff;"></div>
 							<div class="progress-bar" role="progressbar" id="conceded_bar" style="width: 0%; background-color: #ef5d7f;"></div>
 						</div>
-						<div class="text-center my-3">Difference {{ goals_diff }}</div>
+						<div class="text-center my-3">Difference {{ goal_diff }}</div>
 						{% comment %} <div class="text-center my-3">Difference 7</div> {% endcomment %}
 					</div>
 				</div>
