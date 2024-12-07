@@ -7,7 +7,7 @@
 	<div class="dashed-line-vertical h-100"></div>
 	<div class="sticky-top z-1">
 		<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-none d-lg-flex position-absolute">
-			<a class="game-title start-50 font-200 text-decoration-none" href="/home">
+			<a class="game-title start-50 font-200 text-decoration-none" href="/home/">
 				<div class="pe-none">42</div>
 				<div class="game-title game pe-none">GAME</div>
 			</a>
@@ -31,7 +31,7 @@
 					{% include "menu.html" %}
 				</div>
 			{% else %}
-				<a class="m-auto mx-4 border-0 bg-transparent" href="/chat">
+				<a class="m-auto mx-4 border-0 bg-transparent" href="/chat/">
 					<i class="fa-solid fa-right-to-bracket font-150 text-light pe-none"></i>
 				</a>
 			{% endif %}
@@ -41,7 +41,7 @@
 	{% block navbar %}
 	{% endblock %}
 	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-lg-none sticky-bottom z-1">
-		<a class="game-title start-50 font-200 text-decoration-none" href="/home">
+		<a class="game-title start-50 font-200 text-decoration-none" href="/home/">
 			<div class="pe-none">42</div>
 			<div class="game-title game pe-none">GAME</div>
 		</a>
@@ -52,7 +52,7 @@
 					<span class="notification-status"></span>
 				</i>
 			</button>
-			<a class="m-auto mx-4 border-0 bg-transparent" href="/chat">
+			<a class="m-auto mx-4 border-0 bg-transparent" href="/chat/">
 				<i class="fa-solid fa-message font-150 text-light pe-none"></i>
 			</a>
 			<button class="navbar-toggler pfp-2 m-auto" style="background-image: url({{ user.profile.avatar.url }})" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
@@ -65,9 +65,9 @@
 				{% include "menu.html" %}
 			</div>
 		{% else %}
-			<a class="m-auto mx-4 border-0 bg-transparent" href="/chat">
+			{% comment %} <a class="m-auto mx-4 border-0 bg-transparent" href="/login/"> {% endcomment %}
 				<i class="fa-solid fa-right-to-bracket font-150 text-light pe-none"></i>
-			</a>
+			{% comment %} </a> {% endcomment %}
 		{% endif %}
 		</div>
 	</div>

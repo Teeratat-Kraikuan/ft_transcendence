@@ -6,6 +6,9 @@ class MatchHistory(models.Model):
     # Players
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='matches_as_player1')
     player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='matches_as_player2')
+
+    # Game Type
+    game_type = models.TextField('Game Type', max_length=20, default="")
     
     # Scores
     player1_score = models.IntegerField(default=0)

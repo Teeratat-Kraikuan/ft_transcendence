@@ -46,7 +46,7 @@
 				document.head.append(script);
 			});
 		};
-		redirect("/home")
+		redirect("/home/")
 	} catch (e) {
 		console.error(e);
 	}

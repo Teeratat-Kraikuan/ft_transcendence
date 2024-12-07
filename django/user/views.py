@@ -9,9 +9,10 @@ from api.views import get_user_profile_data, get_user_match_history, get_user_ma
 def login(req):
 	if req.user.is_authenticated:
 		return redirect('home')
+	print(req.GET.get(settings.REDIRECT_FIELD_NAME))
 	return render(req, 'login.html', {
 		"redirect": req.GET.get(settings.REDIRECT_FIELD_NAME)
-			if req.GET.get(settings.REDIRECT_FIELD_NAME) else '/home'
+			if req.GET.get(settings.REDIRECT_FIELD_NAME) else '/home/'
 	})
 
 def login_2fa(req):
