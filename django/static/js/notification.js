@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 msgSpan.className = 'd-block';
                 msgSpan.textContent = notification.message;
                 messageContainer.appendChild(msgSpan);
+                notifElement.appendChild(messageContainer);
             } else if (notification.notification_type === 'friend_request') {
                 const msgSpan = document.createElement('span');
                 msgSpan.className = 'd-block';
@@ -110,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.error('Error:', error);
                     });
                 });
+                notifElement.appendChild(messageContainer);
                 notifElement.appendChild(acceptButton);
             } else {
                 // Default handling
@@ -117,9 +119,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 msgSpan.className = 'd-block';
                 msgSpan.textContent = notification.message;
                 messageContainer.appendChild(msgSpan);
+                notifElement.appendChild(messageContainer);
             }
 
-            notifElement.appendChild(messageContainer);
             notificationContainer.appendChild(notifElement);
         });
     })

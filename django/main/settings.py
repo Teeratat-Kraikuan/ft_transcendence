@@ -173,6 +173,6 @@ MEDIA_URL = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Session timeout in seconds (e.g., 300 seconds = 5 minutes)
-# SESSION_COOKIE_AGE = 300
+# Session timeout in seconds (e.g., 900 seconds = 15 minutes)
+# SESSION_COOKIE_AGE = 900
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = True
