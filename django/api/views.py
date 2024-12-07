@@ -65,13 +65,39 @@ def register(req):
 	return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 @login_required
-def change_password(req):
-	pass
+def change_username(req):
+    if req.method == 'POST':
+        new_username = req.POST.get('new_username')
+        if not new_username:
+            return JsonResponse({'message': 'New username is required.'}, status=400)
+
+        if User.objects.filter(username=new_username).exists():
+            return JsonResponse({'message': 'Username already taken.'}, status=400)
+
+        req.user.username = new_username
+        req.user.save()
+    return JsonResponse({'message': 'username changed'}, status=200)
 
 @login_required
-def change_username(req):
-	print(req.user.username)
-	return JsonResponse({'message': 'username changed'}, status=200)
+def change_password(req):
+    if req.method == 'POST':
+        old_password = req.POST.get('old_password')
+        new_password = req.POST.get('new_password')
+        repeat_password = req.POST.get('repeat_password')
+
+        if not old_password or not new_password or not repeat_password:
+            return JsonResponse({'message': 'All fields are required.'}, status=400)
+
+        if not req.user.check_password(old_password):
+            return JsonResponse({'message': 'Invalid old password.'}, status=400)
+
+        if new_password != repeat_password:
+            return JsonResponse({'message': 'Passwords do not match.'}, status=400)
+
+        req.user.set_password(new_password)
+        req.user.save()
+        return JsonResponse({'message': 'Password changed'}, status=200)
+    return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 @login_required
 def profile(req, username):
