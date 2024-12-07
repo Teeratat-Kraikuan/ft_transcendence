@@ -147,16 +147,16 @@
 				</div>
 				<div class="col-lg-5 mt-4 mx-lg-4 p-4 card rounded">
 					<h6>Record</h6>
-					<div class="row mb-3">
+					<div class="row">
 						<div class="d-flex justify-content-center">
 							<div>
 								<canvas class="my-chart" data-wins="{{ wins }}" data-losses="{{ losses }}"></canvas>
 							</div>
 						</div>
 					</div>
-					<div class="text-center mb-1">Played <h2>{{ total_matches }}</h2></div>
+					<div class="text-center">Played <h2>{{ total_matches }}</h2></div>
 					<div class="col px-5">
-						<div class="row mb-2">
+						<div class="row">
 							<div class="col-6 font-75 text-start">Goals Scored {{ goals_scored }}</div>
 							<div class="col-6 font-75 text-end">Goals Conceded {{ goals_conceded }}</div>
 							{% comment %} <div class="col-6 font-75 text-start">Goals Scored 14</div>

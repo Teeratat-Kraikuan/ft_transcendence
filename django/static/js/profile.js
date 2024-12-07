@@ -78,44 +78,47 @@ function submitEditForm(username) {
 (function () {
     "use strict";
     function initialize() {
+        if (document.querySelector(".progress")) {
+            const progress = document.querySelector(".progress")
+            const score = parseInt(progress.getAttribute('data-score'));
+            const conceded = parseInt(progress.getAttribute('data-conceded'));
+            const all = score + conceded
+            const p_score = (score == 0 && conceded == 0) ? 0 : (Math.round((score / all) * 100)).toString();
+            const p_conceded = (score == 0 && conceded == 0) ? 0 :  (Math.round((conceded / all) * 100)).toString();
+            document.getElementById('score_bar').style.width = p_score+'%'
+            document.getElementById('conceded_bar').style.width = p_conceded+'%'
+        } else { console.log("Progress element not found")}
         if (document.querySelector(".my-chart")) {
             const myChart = document.querySelector(".my-chart");
             const wins = parseInt(myChart.getAttribute('data-wins')) || 0;
             const losses = parseInt(myChart.getAttribute('data-losses')) || 0;
-
             const nothing = (wins === 0 && losses === 0) ? 1 : 0;
-
             const chartData = {
                 labels: ["Wins", "Losses"],
                 data: [wins, losses],
                 cdata: [wins, losses, nothing],
             };
-
             const textAround = {
                 id: 'textAround',
                 beforeDatasetsDraw(chart, args, plugins) {
                     const { ctx, data } = chart;
                     const sum = data.datasets[0].data.reduce((a, c) => a + c, 0);
-
                     const xCenter = chart.getDatasetMeta(0).data[0].x;
                     const yCenter = chart.getDatasetMeta(0).data[0].y;
                     const win = data.datasets[0].data[0];
                     const lose = data.datasets[0].data[1];
                     const percentage = sum ? ((win / sum) * 100).toFixed(0) : "0";
-
-                    ctx.save();
-                    ctx.font = "400 16px";
+                    ctx.font = '400 1em sans-serif';
                     ctx.fillStyle = 'white';
                     ctx.textAlign = 'center';
                     ctx.fillText(`Win rate`, xCenter, yCenter - 40);
-
-                    ctx.font = "400 40px";
-                    ctx.fillText(`${percentage}%`, xCenter, yCenter + 5);
-
-                    ctx.font = "400 14px";
+                    ctx.font = '400 2.2em sans-serif';
+                    ctx.fillText(`${percentage}%`, xCenter, yCenter);
+                    ctx.font = '400 0.8em sans-serif';
                     ctx.fillStyle = '#c0c0c0';
                     ctx.fillText(`Wins    ${win}`, xCenter, yCenter + 38);
                     ctx.fillText(`Losses  ${lose}`, xCenter, yCenter + 58);
+                    ctx.save();
                 }
             };
 
