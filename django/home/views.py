@@ -39,6 +39,7 @@ def community(req):
 			'username': user.username,
 			'description': user.profile.description,
 			'avatar_url': user.profile.avatar.url if user.profile.avatar else None,
+			'banner_url': user.profile.banner.url if user.profile.banner else None,
 		}
 		for user in users
 	]

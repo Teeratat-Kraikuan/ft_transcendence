@@ -6,24 +6,24 @@
 {% endblock %}
 
 {% block navbar %}
-<div class="w-100 position-relative d-flex flex-grow-1">
+<div class="w-100 position-relative d-flex flex-grow-1 mt-5 pt-2">
 	<div class="container-lg justify-content-center align-items-center w-100 h-100">
 		<!-- <div class="container"></div> -->
-		<div class="d-flex flex-column w-100 h-100">
-			<div class="card-ff w-auto position-relative py-2">
+		<div class="d-flex flex-column w-100 h-100 px-4">
+			<div class="card-ff w-auto position-relative py-2 ms-2">
 				<span class="fa-solid fa-search position-absolute end-0 mx-3 d-block line-h-2 my-1"></span>
 				<input class="form-control" type="text" placeholder="Search">
 			</div>
-			<div class="flex-grow-1 w-100 h-0 px-4 overflow-auto z-0">
+			<div class="flex-grow-1 w-100 h-0 overflow-auto z-0">
 				{% for user in users %}
-				<div class="position-relative overflow-hidden fit-content rounded-2 m-2 px-3 min-content float-start text-center">
-					<img src="{{ user.avatar_url }}" class="position-absolute h-100 start-50 top-50" style="filter: brightness(0.45) blur(1.5px); transform: translate(-50%, -50%);">
+				<div class="position-relative overflow-hidden fit-content rounded-2 m-2 px-3 float-start text-center" style="width: 200px;">
+					<img src="{{ user.banner_url }}" class="position-absolute h-100 start-50 top-50" style="filter: brightness(0.45) blur(1.5px); transform: translate(-50%, -50%);">
 					<div class="d-flex align-items-center flex-column w-100 h-100 p-3">
-						<div class="pfp m-4" style="background-image: url({{ user.avatar_url }})"></div>
+						<div class="pfp-5 m-4" style="background-image: url({{ user.avatar_url }})"></div>
 						<div class="d-inline-flex w-100 align-items-center flex-column z-1">
 							<h4>{{ user.username }}</h4>
 							{% comment %} <span>Dummy Smith</span> {% endcomment %}
-							<p>{{ user.description }}</p>
+							<p class="text-truncate w-100">{{ user.description }}</p>
 						</div>
 						<div class="d-inline-flex w-100 justify-content-evenly">
 							<a class="border-0 bg-transparent text-decoration-none" href="#1">
