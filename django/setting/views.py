@@ -9,7 +9,8 @@ def settings(req):
 
 @login_required
 def twofactor_auth(req):
-	return render(req, '2fa_auth.html')
+    enable2fa = False # test
+    return render(req, '2fa_auth.html', {'enable2fa': enable2fa})
 
 @login_required
 def twofactor_set_email(req):

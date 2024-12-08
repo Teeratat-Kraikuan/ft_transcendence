@@ -19,9 +19,11 @@
 				<div class="position-relative overflow-hidden fit-content rounded-2 m-2 px-3 float-start text-center" style="width: 200px;">
 					<img src="{{ user.banner_url }}" class="position-absolute h-100 start-50 top-50" style="filter: brightness(0.45) blur(1.5px); transform: translate(-50%, -50%);">
 					<div class="d-flex align-items-center flex-column w-100 h-100 p-3">
-						<div class="pfp-5 m-4" style="background-image: url({{ user.avatar_url }})"></div>
+						<div class="pfp-5 m-4 pe-none" style="background-image: url({{ user.avatar_url }})"></div>
 						<div class="d-inline-flex w-100 align-items-center flex-column z-1">
-							<h4>{{ user.username }}</h4>
+						<a href="/users/{{ user.username }}">
+							<h4 class="pe-none">{{ user.username }}</h4>
+						</a>	
 							{% comment %} <span>Dummy Smith</span> {% endcomment %}
 							<p class="text-truncate w-100">{{ user.description }}</p>
 						</div>
