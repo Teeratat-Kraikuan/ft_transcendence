@@ -1,44 +1,7 @@
 {% extends "navbar.html" %}
 {% load static %}
 {% block header %}
-<script>
-    function initialize2FA() {
-        const switch2FA = document.getElementById('switchCheck2FA');
-        const doneButton = document.getElementById('doneButton');
-        let change2FA = false;
-
-        if (!switch2FA || !doneButton) return;
-
-        switch2FA.addEventListener('change', () => {
-            doneButton.disabled = change2FA;
-            change2FA = !change2FA;
-        });
-
-        doneButton.addEventListener('click', () => {
-            if (switch2FA.checked) {
-                const modal = new bootstrap.Modal(document.getElementById('AuthAppModal'));
-                modal.show();
-                // Submit 2FA enable request
-            }
-            else {
-                // Submit 2FA disable request
-            }
-        });
-
-        const modalElement = document.getElementById('AuthAppModal');
-        if (modalElement) {
-            modalElement.addEventListener('hidden.bs.modal', () => {
-                const modalBackdrop = document.querySelector('.modal-backdrop');
-                if (modalBackdrop) {
-                    modalBackdrop.remove();
-                }
-            });
-        }
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-        initialize2FA();
-    });
-</script>
+    <script src="{% static 'js/2fa_auth.js' %}"></script>
 {% endblock %}
 
 {% block navbar %}
