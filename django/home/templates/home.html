@@ -2,6 +2,33 @@
 {% load static %}
 
 {% block navbar %}
+
+{% if user.is_authenticated and not user.profile.is_agree_privacy %}
+<div id="termsModal" class="modal fade show" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+            </div>
+            <div class="modal-body">
+                <p>Please read and agree to our Terms of Service and Privacy Policy to continue.</p>
+                <textarea readonly class="form-control mb-3" style="height: 200px;">{{ terms_content }}</textarea>
+                <form action="/api/v1/agree_privacy/" method="POST" redirect="/home/">
+					{% csrf_token %}
+					<div class="form-check mb-3">
+						<input class="form-check-input" type="checkbox" id="agreeCheckbox" name="is_agree_privacy" value="true" required>
+						<label class="form-check-label" for="agreeCheckbox">
+							I have read and agree to the Terms of Service and Privacy Policy
+						</label>
+					</div>
+					<button type="submit" class="btn btn-primary w-100">Agree and Continue</button>
+				</form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-0">
 	<div class="w-100 my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2">
 		<div class="d-flex flex-column line-h-1 align-self-center my-5 my-lg-auto font-pressstart2p font-300 user-select-none">

@@ -307,6 +307,31 @@ def edit_user_profile(req):
             return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
         else:
             return JsonResponse({'success': False, 'errors': 'Invalid submission.'}, status=400)
+
+@login_required
+def agree_privacy(req):
+    print("----TEST PRIVACY----")
+    if req.method == "POST":
+        is_agree_privacy = req.POST.get("is_agree_privacy") == "true"
+        if is_agree_privacy:
+            user = req.user
+            user.profile.is_agree_privacy = True
+            user.profile.save()
+    return JsonResponse({'message': 'Privacy agreement updated'}, status=200)
+
+@login_required
+@require_POST
+def change_2fa(req):
+    try: 
+        body = json.loads(req.body)
+        user = req.user
+        user.profile.is_2fa_enabled = body.get('enable')
+        user.profile.save()
+        return JsonResponse({'message': '2FA settings updated'}, status=200)    
+    except json.JSONDecodeError:
+        return JsonResponse({'message': 'Invalid JSON data.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
 # Utilize functions
 
 def get_user_profile_data(username):

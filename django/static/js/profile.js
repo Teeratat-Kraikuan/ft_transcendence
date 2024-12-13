@@ -77,6 +77,17 @@ function submitEditForm(username) {
 
 (function () {
     "use strict";
+    function loadChartJS(callback) {
+        if (typeof Chart !== "undefined") {
+            callback();
+            return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/chart.js";
+        script.onload = callback;
+        script.onerror = () => console.error("Failed to load Chart.js");
+        document.head.appendChild(script);
+    }
     function initialize() {
         if (document.querySelector(".progress")) {
             const progress = document.querySelector(".progress")
@@ -152,9 +163,11 @@ function submitEditForm(username) {
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initialize);
+        document.addEventListener("DOMContentLoaded", () => {
+            loadChartJS(initialize);
+        });
     } else {
-        initialize();
+        loadChartJS(initialize);
     }
 
     if (window["initialize"] != undefined) {

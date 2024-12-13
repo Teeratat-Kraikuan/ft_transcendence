@@ -20,7 +20,7 @@
 				<p class="card-my-title pb-4">Edit</p>
 				<form id="editProfileForm" class="mt-3" enctype="multipart/form-data">
 					{% csrf_token %}
-					<textarea class="w-100" type="text" placeholder="bio" name="description">{{ description }}</textarea>
+					<textarea class="w-100" type="text" placeholder="bio" name="description" maxlength="50">{{ description }}</textarea>
 					<div class="mt-4 text-start">
 						<label for="formProfilePic" class="form-label">Profile picture</label>
 						<input class="form-control form-control-sm text-center" id="formProfilePic" type="file" name="profile_image">
@@ -35,7 +35,7 @@
 	</div>
 </div>
 <div class="w-100 position-relative d-flex flex-grow-1 my-lg-0">
-	<div class="w-100 d-flex flex-column flex-lg-row justify-content-center">
+	<div class="w-100 d-flex flex-column flex-lg-row justify-content-center mt-0 mt-lg-5">
 		<div class="col-lg-9 col-12">
 			<div class="row justify-content-center">
 				<!-- bg -->

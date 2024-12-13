@@ -9,6 +9,8 @@ urlpatterns = [
 	path('v1/change-password/', views.change_password),
 	path('v1/change-username/', views.change_username),
 	path('v1/edit_user_profile/', views.edit_user_profile),
+	path('v1/agree_privacy/', views.agree_privacy),
+	path('v1/change-2fa/', views.change_2fa),
 
 	# Profile Management
 	path('v1/profile/<str:username>/', views.profile),

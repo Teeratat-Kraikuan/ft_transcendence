@@ -1,0 +1,47 @@
+Privacy Policy
+
+Effective Date: 11/12/24
+
+We value your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and share your information when you use our services.
+
+1. Information We Collect
+
+	•	Account Information: Username, email address, profile avatar, banner, and description.
+	•	Activity Data: Last login time, friend relationships, and friend request statuses.
+	•	Cookies: We use cookies strictly for essential functionality, such as authentication and maintaining your session.
+
+2. How We Use Your Data
+
+We use your data to:
+	•	Create and manage your account.
+	•	Authenticate your access and maintain your session using secure tokens.
+	•	Enable and improve game features like friendships and user interactions.
+
+3. How We Use Cookies
+
+Cookies are small text files stored on your device to help our web app function. We only use cookies for:
+	•	Authentication: To securely verify your identity using JSON Web Tokens (JWTs).
+	•	Session Management: To maintain your login session while you use the app.
+
+We do not use cookies for tracking, analytics, or advertising purposes.
+
+4. Sharing Your Data
+
+We do not share your data with third parties unless required by law or to operate the service (e.g., secure hosting).
+
+5. Your Rights
+
+You have the right to:
+	•	Access your personal data and obtain a copy.
+	•	Correct inaccurate or incomplete data.
+	•	Delete your data by closing your account.
+	•	Withdraw Consent: Although our cookies are essential, you can manage or delete cookies via your browser settings.
+
+6. Data Retention
+
+We keep your data for as long as your account is active. If you delete your account, we remove all associated data within 30 days.
+
+7. Contact Us
+
+If you have questions or wish to exercise your rights, contact us at: 
+    Me :)
