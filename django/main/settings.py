@@ -61,6 +61,8 @@ INSTALLED_APPS = [
 	# Dependencies
 	'corsheaders',
 	'django_sass',
+	'django_otp',
+	'django_otp.plugins.otp_totp',
 	# Apps
 	'menu',
 	'home',
@@ -68,7 +70,7 @@ INSTALLED_APPS = [
 	'chat',
 	'user',
 	'setting',
-	'api'
+	'api',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +83,7 @@ MIDDLEWARE = [
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'corsheaders.middleware.CorsMiddleware',
 	'user.middleware.UpdateLastActivityMiddleware',
+	'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = 'main.urls'
