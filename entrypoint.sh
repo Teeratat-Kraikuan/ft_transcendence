@@ -5,7 +5,6 @@ while ! ./manage.py sqlflush > /dev/null 2>&1 ;do
 	sleep 1
 done
 
-
 if [ -d "/home/django/ft_transcendence" ]
 then
 	python ./manage.py makemigrations
