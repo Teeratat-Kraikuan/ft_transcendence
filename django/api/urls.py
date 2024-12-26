@@ -19,6 +19,9 @@ urlpatterns = [
 	path('v1/friend_request/send/', views.send_friend_request, name='send_friend_request'),
     path('v1/friend_request/accept/', views.accept_friend_request, name='accept_friend_request'),
     path('v1/friend_request/decline/', views.decline_friend_request, name='decline_friend_request'),
+    
+	# game
+    path('v1/game/entry_online_game/', views.entry_online_game, name='entry_online_game'),
 
     # Notification endpoints
     path('v1/notifications/', views.list_notifications, name='list_notifications'),

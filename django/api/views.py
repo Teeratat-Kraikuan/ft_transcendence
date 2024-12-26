@@ -1,4 +1,5 @@
 import json
+import random
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -446,3 +447,15 @@ def is_user_online(user):
         timeout_period = timedelta(seconds=300)
         return now() - last_activity < timeout_period
     return False
+
+def entry_online_game(req):
+    if req.method == 'POST':
+        print("----TEST GAME----")
+        if req.POST.get('type') == 'create':
+            room_code = str(random.randint(111111,999999))
+            print(f"Create room: {room_code}")
+        elif req.POST.get('type') == 'join':
+            room_code = req.POST.get('code')
+            print(f"Join room: {room_code}")             
+        return JsonResponse({'message': 'Room code created'}, status=200)
+    return JsonResponse({'message': 'Invalid request method'}, status=405)
