@@ -5,7 +5,38 @@
 
 <div class="h-100 d-flex flex-column position-relative min-vh-100">
 	<div class="dashed-line-vertical h-100"></div>
-	<div class="sticky-top z-1">
+		<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-none d-lg-flex sticky-bottom z-1">
+			<a class="game-title start-50 font-200 text-decoration-none" href="/home/">
+				<div class="pe-none">42</div>
+				<div class="game-title game pe-none">GAME</div>
+			</a>
+			<div class="d-inline-flex justify-content-evenly position-relative">
+			{% if user.is_authenticated %}
+				<button class="m-auto border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#notification_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
+					<i class="notification fa-solid fa-bell font-150 text-light">
+						<span class="notification-status"></span>
+					</i>
+				</button>
+				<a class="m-auto mx-4 border-0 bg-transparent" href="/chat">
+					<i class="fa-solid fa-message font-150 text-light pe-none"></i>
+				</a>
+				<button class="navbar-toggler pfp-2 m-auto" style="background-image: url({{ user.profile.avatar.url }})" data-bs-toggle="collapse" data-bs-target="#user_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
+					<span class="status"></span>
+				</button>
+				<div id="notification_menu" class="collapse top-100 end-0 position-absolute bg-dark my-3 rounded-3 overflow-y-hidden z-1">
+					{% include "notification.html" %}
+				</div>
+				<div id="user_menu" class="collapse top-100 end-0 position-absolute bg-dark my-3 rounded-3 overflow-y-hidden z-1">
+					{% include "menu.html" %}
+				</div>
+			{% else %}
+				<a class="m-auto mx-4 border-0 bg-transparent" href="/login">
+					<i class="fa-solid fa-right-to-bracket font-150 text-light pe-none"></i>
+				</a>
+			{% endif %}
+		</div>
+	</div>
+	<!-- <div class="sticky-top z-1">
 		<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-none d-lg-flex position-absolute">
 			<a class="game-title start-50 font-200 text-decoration-none" href="/home/">
 				<div class="pe-none">42</div>
@@ -37,7 +68,7 @@
 			{% endif %}
 			</div>
 		</div>
-	</div>
+	</div> -->
 	{% block navbar %}
 	{% endblock %}
 	<div class="navbar w-100 d-flex justify-content-between px-4 py-3 d-lg-none sticky-bottom z-1">
