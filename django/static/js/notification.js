@@ -166,43 +166,58 @@
 		const csrfToken = getCookie('csrftoken');
 		console.info("notification: Notification daemon started!");
 
+		function html_element (data) {
+			const el = document.createElement(data.tag);
+			if (data.attr)
+				Object.keys(data.attr).map(a => { el.setAttribute(a, data.attr[a]) })
+			if (data.text)
+				el.innerText = data.text;
+			if (data.body)
+				data.body.map( e => el.appendChild(e) );
+			return el;
+		}
+
 		function accept_component (notification) {
-            const message = document.createTextNode(notification.data.message);
-			return container_component (`
-                <div class="pfp-3 my-auto mx-2 float-start" style="background-image: url(${notification.sender_data.avatar})"></div>
-                <div class="w-100">
-                    <span class="d-block"></span>
-                </div>
-                <button class="btn btn-primary px-2 py-0 float-end">Accept</button>
-			`);
+			return container_component ([
+				html_element({ tag: "div", attr: {
+					class: "pfp-3 my-auto mx-2 float-start",
+					style:`background-image: url(${notification.sender_data.avatar})`
+				} }),
+				html_element({
+					tag: 'div',
+					attr: { class: "w-100" },
+					body: [
+						html_element({ tag: "span", attr: {class: "d-block"}, text: notification.data.message })
+					]
+				}),
+				html_element({
+					tag: 'button',
+					attr: { class: "btn btn-primary px-2 py-0 float-end" },
+					text: "Accept"
+				})
+			]);
 		}
 
 		function container_component (body) {
-			return `
-				<div class="h-auto">
-                    ${body}
-                </div>
-			`;
+			return [html_element({
+				tag: 'div',
+				attr: { class: "h-auto" },
+				body
+			})];
 		}
 
 		function render_component (notification) {
-            const wrapper = body => `
-                <div class="d-flex card-ff p-3 pt-2 font-75 w-100 align-items-start">
-                    ${body}
-                </div>
-            `;
-            if (!notification)
-            {
-                return wrapper(`
-                    Looks like there's no notifications, yet!
-                `);
-            }
-            switch (notification.data.notification_type)
-            {
-                case "friend_request": return wrapper(`
-                    ${accept_component(notification)}
-                `);
-            }
+			const wrapper = body => html_element({
+				tag: 'div',
+				attr: { class: "d-flex card-ff p-3 pt-2 font-75 w-100 align-items-start" },
+				body: notification ? body : undefined,
+				text: notification ? undefined : "Looks like there's no notifications, yet!"
+			});
+			switch (notification?.data.notification_type)
+			{
+				case "friend_request": return wrapper(accept_component(notification));
+				default: return wrapper(accept_component);
+			}
 		}
 
 		async function fetch_data () {
@@ -215,22 +230,22 @@
 					'X-Requested-With': 'XMLHttpRequest'
 				}
 			})).json();
-            const sender_data = await Promise.all(data.map(async d =>
-                await (await fetch('/api/v1/profile/' + d.sender_username, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })).json()
-            ));
-            notificationContainer.map( async el => {
-                el.innerHTML = "";
-                if (data.length == 0)
-                    return el.innerHTML = render_component (null);
-				data.map((d, indx) => el.innerHTML += render_component({
-                    data: d,
-                    sender_data: sender_data[indx]
-                }));
+			const sender_data = await Promise.all(data.map(async d =>
+				await (await fetch('/api/v1/profile/' + d.sender_username, {
+					method: 'GET',
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest'
+					}
+				})).json()
+			));
+			notificationContainer.map( async el => {
+				el.innerHTML = "";
+				if (data.length == 0)
+					return el.appendChild(render_component (null));
+				data.map((d, indx) => el.appendChild(render_component({
+					data: d,
+					sender_data: sender_data[indx]
+				})));
 			})
 		}
 		try {
