@@ -85,20 +85,33 @@ def oauth_login(req, email:str=None):
 	return redirect("/login")
 	# return JsonResponse({'message': 'Invalid email or password.'}, status=401)
 
+def download_image(url:str, name:str):
+	response = requests.get(url, stream=True)
+	response.raise_for_status()
+	content_type = response.headers['content-type']
+	extension = mimetypes.guess_extension(content_type)
+	file_name = f"{name}{extension}"
+	return ContentFile(response.content, name=file_name)
+
 def setup_profile(req, data):
 	profile, created = Profile.objects.get_or_create(user=data['user'])
 	if not created:
-		response = requests.get(data['pfp'], stream=True)
-		response.raise_for_status()
-		content_type = response.headers['content-type']
-		extension = mimetypes.guess_extension(content_type)
-		file_name = f"{data['user'].username}_avatar{extension}"
-		file_content = ContentFile(response.content, name=file_name)
-		profile.avatar = file_content
+		profile.avatar = download_image(data['pfp'], f"{data['user'].username}_avatar")
+		profile.banner = download_image(data['banner'], f"{data['user'].username}_banner")
 		profile.save()
 
-def oauth_register(req, username:str=None, email:str=None, pfp:str=None):
-
+def oauth_register(req, oauth=None, user_data=None):
+	username = user_data.get('login')
+	user_id = user_data.get('id')
+	email = user_data.get('email')
+	profile_picture = user_data.get('image').get('link')
+	print(f"USER_ID: {user_data.get('id')}")
+	coalition = oauth.get(f"https://profile.intra.42.fr/users/{user_id}/coalitions?cursus=42cursus") \
+		.get("coalitions_user") \
+		.get("coalition") \
+		.json()
+	coalitions_banner = coalition.get("cover_url")
+	# print(user_data)
 	if not username or not email:
 			return JsonResponse({'message': 'All fields are required.'}, status=400)
 
@@ -114,7 +127,8 @@ def oauth_register(req, username:str=None, email:str=None, pfp:str=None):
 	user.save()
 	setup_profile(req, {
 		"user": user,
-		"pfp": pfp
+		"pfp": profile_picture,
+		"banner": coalitions_banner
 	})
 	return oauth_login(req, email)
 	# return JsonResponse({'message': 'Register successful'}, status=200)
@@ -152,13 +166,11 @@ def oauth_42(req):
 			}
 		)
 		user_data = oauth.get('https://api.intra.42.fr/v2/me').json()
-		username = user_data.get('login')
 		email = user_data.get('email')
-		profile_picture = user_data.get('image').get('link')
 		if User.objects.filter(email=email).exists():
 			return oauth_login(req, email)
 		else:
-			return oauth_register(req, username, email, profile_picture)
+			return oauth_register(req, oauth, user_data)
 	# except Exception as error:
 	# 	return redirect("/")
 		# return JsonResponse({'message': type(error).__name__})
