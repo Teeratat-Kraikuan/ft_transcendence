@@ -105,12 +105,8 @@ def oauth_register(req, oauth=None, user_data=None):
 	user_id = user_data.get('id')
 	email = user_data.get('email')
 	profile_picture = user_data.get('image').get('link')
-	print(f"USER_ID: {user_data.get('id')}")
-	coalition = oauth.get(f"https://profile.intra.42.fr/users/{user_id}/coalitions?cursus=42cursus") \
-		.get("coalitions_user") \
-		.get("coalition") \
-		.json()
-	coalitions_banner = coalition.get("cover_url")
+	coalition = oauth.get(f"https://api.intra.42.fr/v2/users/{user_id}/coalitions").json()
+	coalitions_banner = coalition[1].get("cover_url")
 	# print(user_data)
 	if not username or not email:
 			return JsonResponse({'message': 'All fields are required.'}, status=400)
