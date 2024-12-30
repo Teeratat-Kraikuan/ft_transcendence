@@ -159,7 +159,8 @@ def send_friend_request(req):
 def accept_friend_request(req):
     try:
         # Get the sender's username from the request data
-        sender_username = req.POST.get('sender_username')
+        body = json.loads(req.body)
+        sender_username = body.get('sender_username')
         if not sender_username:
             return JsonResponse({'message': 'Sender username is required.'}, status=400)
 
@@ -194,7 +195,8 @@ def accept_friend_request(req):
 def decline_friend_request(req):
     try:
         # Get the sender's username from the request data
-        sender_username = req.POST.get('sender_username')
+        body = json.loads(req.body)
+        sender_username = body.get('sender_username')
         if not sender_username:
             return JsonResponse({'message': 'Sender username is required.'}, status=400)
 
@@ -224,7 +226,6 @@ def list_notifications(req):
     # Fetch all notifications for the logged-in user, most recent first
     notifications = Notification.objects.filter(user=req.user).order_by('-created_at')
 
-    
     # Serialize notifications into a list of dicts
     data = []
     for n in notifications:
@@ -268,7 +269,8 @@ def mark_notification_as_read(req):
 @login_required
 def remove_notification(req):
     if req.method == 'POST':
-        notification_id = req.POST.get('notification_id')
+        body = json.loads(req.body)
+        notification_id = body.get('notification_id')
         if not notification_id:
             return JsonResponse({'message': 'notification_id is required'}, status=400)
 
