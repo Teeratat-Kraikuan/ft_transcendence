@@ -83,7 +83,7 @@ def oauth_login(req, user_data):
 		if req.session.get('_next', False):
 			del req.session['_next']
 		login = redirect(next_page)
-		login.set_cookie('loggedin', 'true', samesite='Strict')
+		login.set_cookie('loggedin', 'true', samesite='Lax', max_age=req.session.get_expiry_age())
 		return login
 		# return JsonResponse({'message': 'Login successful'}, status=200)
 	return redirect("/login")

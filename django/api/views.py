@@ -28,7 +28,7 @@ def login(req):
 		if user is not None:
 			auth_login(req, user)
 			login = JsonResponse({'message': 'Login successful'}, status=200)
-			login.set_cookie('loggedin', 'true', samesite='Strict')
+			login.set_cookie('loggedin', 'true', samesite='Lax', max_age=req.session.get_expiry_age())
 			return login
 		else:
 			return JsonResponse({'message': 'Invalid email or password.'}, status=401)
