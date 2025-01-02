@@ -27,7 +27,9 @@ def login(req):
 
 		if user is not None:
 			auth_login(req, user)
-			return JsonResponse({'message': 'Login successful'}, status=200)
+			login = JsonResponse({'message': 'Login successful'}, status=200)
+			login.set_cookie('loggedin', 'true', samesite='Strict')
+			return login
 		else:
 			return JsonResponse({'message': 'Invalid email or password.'}, status=401)
 	return JsonResponse({'message': 'Invalid request method'}, status=405)
@@ -35,7 +37,9 @@ def login(req):
 def logout(req):
 	if req.user.is_authenticated:
 		auth_logout(req)
-		return JsonResponse({'message': 'Logout successful'}, status=200)
+		logout = JsonResponse({'message': 'Logout successful'}, status=200)
+		logout.delete_cookie('loggedin', samesite='Strict')
+		return logout
 	return JsonResponse({'message': 'Logout unsuccess'}, status=400)
 
 def register(req):
@@ -108,7 +112,7 @@ def profile(req, username):
 		return JsonResponse({'message': 'User not found'}, status=404)
 	except Exception as e:
 		return JsonResponse({'message': str(e)}, status=500)
-	
+
 @login_required
 @require_POST
 def send_friend_request(req):

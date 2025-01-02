@@ -12,7 +12,6 @@ django-sass = "1.1.0"
 
 ### Postgres ###
 psycopg2 = "2.9.9"
-channels = "4.1.0"
 channels_postgres = "1.0.4"
 
 ### Misc ###
@@ -20,6 +19,7 @@ python-dotenv = "1.0.1"
 Pillow = "10.4.0"
 
 ### Networking ###
+channels = "4.1.0"
 requests = "2.32.3"
 requests-oauthlib = "2.0.0"
 daphne = "4.1.2"

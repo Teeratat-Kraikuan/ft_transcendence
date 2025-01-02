@@ -105,6 +105,8 @@
 		}
 
 		async function fetch_data () {
+			if (!getCookie("loggedin"))
+				return ;
 			try {
 				const notificationContainer = [
 					... document.getElementsByClassName("notification-container")
