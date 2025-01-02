@@ -82,7 +82,9 @@ def oauth_login(req, user_data):
 		next_page = req.session.get('_next', '/home')
 		if req.session.get('_next', False):
 			del req.session['_next']
-		return redirect(next_page)
+		login = redirect(next_page)
+		login.set_cookie('loggedin', 'true', samesite='Strict')
+		return login
 		# return JsonResponse({'message': 'Login successful'}, status=200)
 	return redirect("/login")
 	# return JsonResponse({'message': 'Invalid email or password.'}, status=401)
