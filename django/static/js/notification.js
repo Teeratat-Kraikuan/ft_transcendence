@@ -72,7 +72,8 @@
 						notification_id: notification.data.id
 					})
 				});
-				parent[0].remove();
+				notifications = { data: null, sender_data: null };;
+				load_component();
 			}
 		};
 		return parent;
@@ -103,6 +104,7 @@
 	async function fetch_data () {
 		if (!getCookie("loggedin"))
 			return ;
+		console.log("notification: Fetch notifications...");
 		try {
 			const data = await (await fetch('/api/v1/notifications/', {
 				method: 'GET',
@@ -118,8 +120,13 @@
 					}
 				})).json()
 			));
+			const notofication_status = [ ... document.getElementsByClassName("notification-status") ];
 			notifications.data = data;
 			notifications.sender_data = sender_data;
+			if (data.length)
+				notofication_status.map(el => el.classList.remove("d-none") )
+			else
+				notofication_status.map(el => el.classList.add("d-none") )
 			return notifications;
 		} catch (e) {
 			console.error('notification: ' + e);
@@ -130,8 +137,9 @@
 	{
 		if (!getCookie("loggedin"))
 			return ;
+		console.log("notification: Load component...");
 		try {
-			if (!notifications.data || notifications.data.length == 0)
+			if (!notifications.data || notifications.data?.length == 0)
 				await fetch_data();
 			const notificationContainer = [
 				... document.getElementsByClassName("notification-container")
@@ -149,21 +157,24 @@
 			console.error('notification: ' + e);
 		}
 	}
-	
+
 	function load_self () {
-		console.log("notification: Load component...");
-		load_component();
+		const notificationButton = [
+			... document.querySelectorAll("button[data-bs-target='#notification_menu']")
+		];
+		notificationButton.map(btn => btn.addEventListener("click", load_component));
 		return load_self;
 	}
 
 	ev_contentloaded = window.addEventListener("DOMContentLoaded", async () => {
 		console.info("notification: Notification daemon started!");
 
-		load_self();
-		setInterval(() => {
-			fetch_data();
-			load_component();
-		}, 10000 - Math.random() * 5);
+		const notificationButton = [
+			... document.querySelectorAll("button[data-bs-target='#notification_menu']")
+		];
+		notificationButton.map(btn => btn.addEventListener("click", load_component));
+		fetch_data();
+		setInterval(fetch_data, 15000 - Math.random() * 5);
 	});
 
 	window.unload = ev_contentloaded;

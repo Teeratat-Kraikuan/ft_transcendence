@@ -14,7 +14,7 @@
 			{% if user.is_authenticated %}
 				<button class="m-auto border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#notification_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
 					<i class="notification fa-solid fa-bell font-150 text-light">
-						<span class="notification-status"></span>
+						<span class="notification-status d-none"></span>
 					</i>
 				</button>
 				<a class="m-auto mx-4 border-0 bg-transparent" href="/chat">
@@ -80,7 +80,7 @@
 		{% if user.is_authenticated %}
 			<button class="m-auto border-0 bg-transparent" data-bs-toggle="collapse" data-bs-target="#notification_menu" aria-controls="navbarNavAltMarkup" aria-label="Toggle navigation">
 				<i class="notification fa-solid fa-bell font-150 text-light">
-					<span class="notification-status"></span>
+					<span class="notification-status d-none"></span>
 				</i>
 			</button>
 			<a class="m-auto mx-4 border-0 bg-transparent" href="/chat/">
