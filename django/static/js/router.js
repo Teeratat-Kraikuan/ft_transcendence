@@ -12,6 +12,8 @@ export default (function (){
 	 */
 
 	const redirect = (url) => {
+		if (new URL(url).pathname === location.pathname)
+			return ;
 		console.log(`Routing to ${url} ...`);
 		if (new URL(url, document.location).hostname != location.hostname)
 		{
@@ -132,6 +134,8 @@ export default (function (){
 			document.head.append(script);
 		});
 		init_event_handler();
+		if (typeof window.redirected == "function")
+			window.redirected = window.redirected();
 	};
 
 	window.addEventListener("popstate", handle_location);

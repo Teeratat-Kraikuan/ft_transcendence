@@ -1,9 +1,9 @@
 (function() {
 
 	"use strict";
-
-	let ev_contentloaded;
-	let interval_pull;
+	const	csrfToken = getCookie('csrftoken');
+	let		notifications = { data: null, sender_data: null };
+	let		ev_contentloaded;
 
 	function getCookie(key) {
 		// Check for undefine
@@ -18,133 +18,156 @@
 			return decodeURIComponent(cookieValue.substring(key.length + 1));
 		return null;
 	}
+	
+	function html_element (data) {
+		const el = document.createElement(data.tag);
+		if (data.attr)
+			Object.keys(data.attr).map(a => { el.setAttribute(a, data.attr[a]) })
+		if (data.text)
+			el.innerText = data.text;
+		if (data.body)
+			data.body.map( e => el.appendChild(e) );
+		return el;
+	}
 
-	ev_contentloaded = window.addEventListener("DOMContentLoaded", async () => {
-		const csrfToken = getCookie('csrftoken');
-		console.info("notification: Notification daemon started!");
-
-		function html_element (data) {
-			const el = document.createElement(data.tag);
-			if (data.attr)
-				Object.keys(data.attr).map(a => { el.setAttribute(a, data.attr[a]) })
-			if (data.text)
-				el.innerText = data.text;
-			if (data.body)
-				data.body.map( e => el.appendChild(e) );
-			return el;
-		}
-
-		function accept_component (notification) {
-			const button = html_element({
-				tag: 'button',
-				attr: { class: "btn btn-primary px-2 py-0 float-end" },
-				text: "Accept"
-			});
-			const parent = container_component ([
-				html_element({ tag: "div", attr: {
-					class: "pfp-3 my-auto mx-2 float-start",
-					style:`background-image: url(${notification.sender_data.avatar})`
-				} }),
-				html_element({
-					tag: 'div',
-					attr: { class: "w-100" },
-					body: [
-						html_element({ tag: "span", attr: {class: "d-block"}, text: notification.data.message })
-					]
-				}),
-				button
-			]);
-			button.onclick = async function () {
-				const accept = await (await fetch('/api/v1/friend_request/accept/', {
+	function accept_component (notification) {
+		const button = html_element({
+			tag: 'button',
+			attr: { class: "btn btn-primary px-2 py-0 float-end" },
+			text: "Accept"
+		});
+		const parent = container_component ([
+			html_element({ tag: "div", attr: {
+				class: "pfp-3 my-auto mx-2 float-start",
+				style:`background-image: url(${notification.sender_data.avatar})`
+			} }),
+			html_element({
+				tag: 'div',
+				attr: { class: "w-100" },
+				body: [
+					html_element({ tag: "span", attr: {class: "d-block"}, text: notification.data.message })
+				]
+			}),
+			button
+		]);
+		button.onclick = async function () {
+			const accept = await (await fetch('/api/v1/friend_request/accept/', {
+				method: 'POST',
+				headers: {
+					'X-CSRFToken': csrfToken,
+					'X-Requested-With': 'XMLHttpRequest'
+				},
+				body: JSON.stringify({
+					'sender_username': notification.sender_data.username
+				})
+			})).json();
+			if (accept.message === 'Friend request accepted.') {
+				const remove = await fetch('/api/v1/notifications/remove/', {
 					method: 'POST',
 					headers: {
 						'X-CSRFToken': csrfToken,
 						'X-Requested-With': 'XMLHttpRequest'
 					},
 					body: JSON.stringify({
-						'sender_username': notification.sender_data.username
+						notification_id: notification.data.id
 					})
-				})).json();
-				if (accept.message === 'Friend request accepted.') {
-					const remove = await fetch('/api/v1/notifications/remove/', {
-						method: 'POST',
-						headers: {
-							'X-CSRFToken': csrfToken,
-							'X-Requested-With': 'XMLHttpRequest'
-						},
-						body: JSON.stringify({
-							notification_id: notification.data.id
-						})
-					});
-					parent[0].remove();
-				}
-			};
-			return parent;
-		}
-
-		function container_component (body) {
-			return [html_element({
-				tag: 'div',
-				attr: { class: "h-auto" },
-				body
-			})];
-		}
-
-		function render_component (notification) {
-			const wrapper = body => html_element({
-				tag: 'div',
-				attr: { class: "d-flex card-ff p-3 pt-2 font-75 w-100 align-items-start" },
-				body: notification ? body : undefined,
-				text: notification ? undefined : "Looks like there's no notifications, yet!"
-			});
-			switch (notification?.data.notification_type)
-			{
-				case "friend_request": return wrapper(accept_component(notification));
-				default: return wrapper(accept_component);
+				});
+				parent[0].remove();
 			}
-		}
+		};
+		return parent;
+	}
 
-		async function fetch_data () {
-			if (!getCookie("loggedin"))
-				return ;
-			try {
-				const notificationContainer = [
-					... document.getElementsByClassName("notification-container")
-				];
-				const data = await (await fetch('/api/v1/notifications/', {
+	function container_component (body) {
+		return [html_element({
+			tag: 'div',
+			attr: { class: "h-auto" },
+			body
+		})];
+	}
+
+	function render_component (notification) {
+		const wrapper = body => html_element({
+			tag: 'div',
+			attr: { class: "d-flex card-ff p-3 pt-2 font-75 w-100 align-items-start" },
+			body: notification ? body : undefined,
+			text: notification ? undefined : "Looks like there's no notifications, yet!"
+		});
+		switch (notification?.data.notification_type)
+		{
+			case "friend_request": return wrapper(accept_component(notification));
+			default: return wrapper(accept_component);
+		}
+	}
+
+	async function fetch_data () {
+		if (!getCookie("loggedin"))
+			return ;
+		try {
+			const data = await (await fetch('/api/v1/notifications/', {
+				method: 'GET',
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			})).json();
+			const sender_data = await Promise.all(data.map(async d =>
+				await (await fetch('/api/v1/profile/' + d.sender_username, {
 					method: 'GET',
 					headers: {
 						'X-Requested-With': 'XMLHttpRequest'
 					}
-				})).json();
-				const sender_data = await Promise.all(data.map(async d =>
-					await (await fetch('/api/v1/profile/' + d.sender_username, {
-						method: 'GET',
-						headers: {
-							'X-Requested-With': 'XMLHttpRequest'
-						}
-					})).json()
-				));
-				notificationContainer.map( async el => {
-					el.innerHTML = "";
-					if (data.length == 0)
-						return el.appendChild(render_component (null));
-					data.map((d, indx) => el.appendChild(render_component({
-						data: d,
-						sender_data: sender_data[indx]
-					})));
-				})
-			} catch (e) {
-				console.error('notification: ' + e);
-			}
+				})).json()
+			));
+			notifications.data = data;
+			notifications.sender_data = sender_data;
+			return notifications;
+		} catch (e) {
+			console.error('notification: ' + e);
 		}
-		interval_pull = setInterval(fetch_data, 10000 - Math.random() * 5);
-		fetch_data();
+	}
+
+	async function load_component()
+	{
+		if (!getCookie("loggedin"))
+			return ;
+		try {
+			if (!notifications.data || notifications.data.length == 0)
+				await fetch_data();
+			const notificationContainer = [
+				... document.getElementsByClassName("notification-container")
+			];
+			notificationContainer.map( async el => {
+				el.innerHTML = "";
+				if (notifications?.data.length == 0)
+					return el.appendChild(render_component (null));
+				notifications?.data.map((d, indx) => el.appendChild(render_component({
+					data: d,
+					sender_data: notifications.sender_data[indx]
+				})));
+			})
+		} catch (e) {
+			console.error('notification: ' + e);
+		}
+	}
+	
+	function load_self () {
+		console.log("notification: Load component...");
+		load_component();
+		return load_self;
+	}
+
+	ev_contentloaded = window.addEventListener("DOMContentLoaded", async () => {
+		console.info("notification: Notification daemon started!");
+
+		load_self();
+		setInterval(() => {
+			fetch_data();
+			load_component();
+		}, 10000 - Math.random() * 5);
 	});
 
-	window.unload = function () {
-		removeEventListener('DOMContentLoaded', ev_contentloaded);
-	}
+	window.unload = ev_contentloaded;
+	window.redirected = load_self;
 
 })();
 
