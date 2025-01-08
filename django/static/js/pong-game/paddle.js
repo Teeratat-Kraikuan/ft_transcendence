@@ -4,10 +4,19 @@ export class Paddle{
 // Create the paddles
     constructor(){
         this.paddleSizeX = 0.2;
-        this.paddleSizeY = 3;
+        this.paddleSizeY = 2;
         this.paddleSizeZ = 0.5;
+
+    const padTextureLoader = new THREE.TextureLoader();
+    const pad = padTextureLoader.load(padImagePath);
+
+    pad.wrapS = THREE.RepeatWrapping;
+    pad.wrapT = THREE.RepeatWrapping;
+    
+    pad.repeat.set(1, 1);
+
     const paddleGeometry = new THREE.BoxGeometry(this.paddleSizeX, this.paddleSizeY, this.paddleSizeZ);
-    const paddleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const paddleMaterial = new THREE.MeshBasicMaterial({ map: pad });
     this.pgm = new THREE.Mesh(paddleGeometry, paddleMaterial);
     }
 }

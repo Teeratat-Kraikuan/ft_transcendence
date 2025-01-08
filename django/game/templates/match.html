@@ -2,7 +2,12 @@
 {% load static %}
 
 {% block header %}
-<!-- <script src="{% static 'js/game.js' %}" defer="true"></script> -->
+<script>
+	const grassImagePath = "{% static 'js/pong-game/imgs/football_grass.jpg' %}";
+	const ballImagePath = "{% static 'js/pong-game/imgs/steel_ball.jpg' %}";
+	const padImagePath = "{% static 'js/pong-game/imgs/metal.jpg' %}";
+	const brickImagePath = "{% static 'js/pong-game/imgs/brick_wall.jpg' %}";
+</script>
 <script type="module" src="{% static 'js/pong-game/main.js' %}"></script>
 {% endblock %}
 

@@ -7,7 +7,16 @@ export class Box{
         this.boxSizeY = boxSizeY;
         this.boxSizeZ = boxSizeZ;
     const boxGeometry = new THREE.BoxGeometry(this.boxSizeX, this.boxSizeY, this.boxSizeZ);
-    let boxMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+    
+    const brickTextureLoader = new THREE.TextureLoader();
+    const brick = brickTextureLoader.load(brickImagePath);
+
+    brick.wrapS = THREE.RepeatWrapping; // Horizontal wrapping
+    brick.wrapT = THREE.RepeatWrapping; // Vertical wrapping
+
+    brick.repeat.set(2.5, 0.2); // More repetitions, making the texture appear smaller
+
+    let boxMaterial = new THREE.MeshBasicMaterial({ map: brick });
     this.bgm = new THREE.Mesh(boxGeometry, boxMaterial);
     this.bgm.position.x = 0;
     this.bgm.position.y = 0;

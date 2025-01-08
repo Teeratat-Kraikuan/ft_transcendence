@@ -1,36 +1,51 @@
 export class Input {
     constructor() {
-        this.leftPaddleSpeed = 0;
-        this.rightPaddleSpeed = 0;
         this.pSpeed = 0.1;
+        this.leftPaddleSpeed = this.pSpeed;
+        this.rightPaddleSpeed = this.pSpeed;
         // Keyboard event listeners
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.addEventListener('keyup', this.handleKeyUp.bind(this));
+        this.upPress = false;
+        this.dnPress = false;
+        this.wPress = false;
+        this.sPress = false;
     }
 
     handleKeyDown(event) {
         // Left paddle controls (W and S)
         if (event.key === 'w') {
-            this.leftPaddleSpeed = this.pSpeed;  // Move up
+            // Move up
+            this.wPress = true;
         } else if (event.key === 's') {
-            this.leftPaddleSpeed = -1 * this.pSpeed; // Move down
+            // Move down
+            this.sPress = true;
         }
 
         // Right paddle controls (Up and Down Arrow)
         if (event.key === 'ArrowUp') {
-            this.rightPaddleSpeed = this.pSpeed;  // Move up
+            // Move up
+            this.upPress = true;
         } else if (event.key === 'ArrowDown') {
-            this.rightPaddleSpeed = -1 * this.pSpeed; // Move down
+            // Move down
+            this.dnPress = true;
         }
     }
 
     handleKeyUp(event) {
         // Stop paddle movement when the key is released
-        if (event.key === 'w' || event.key === 's') {
-            this.leftPaddleSpeed = 0;
+        if (event.key === 'w') {
+            this.wPress = false;
         }
-        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-            this.rightPaddleSpeed = 0;
+        if (event.key === 's') {
+            this.sPress = false;
+        }
+
+        if (event.key === 'ArrowUp') {
+            this.upPress = false;
+        }
+        if (event.key === 'ArrowDown') {
+            this.dnPress = false;
         }
     }
 }

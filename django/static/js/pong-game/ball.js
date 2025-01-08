@@ -1,16 +1,18 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.module.js';
 // import { Paddle } from './paddle.js';
-import { p1Score } from './main.js';
-import { p2Score } from './main.js';
 import { addScoreP1 } from './main.js';
 import { addScoreP2 } from './main.js';
 
 export class Ball {
     constructor() {
-        this.ballspeed = 0.07;
-        this.radius = 0.2;
+        this.ballspeed = 0.09;
+        this.radius = 0.15;
+
+        const ballTextureLoader = new THREE.TextureLoader();
+        const ballT = ballTextureLoader.load(ballImagePath);
+
         this.geometry = new THREE.SphereGeometry(this.radius, 32, 32);
-        this.material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+        this.material = new THREE.MeshBasicMaterial({ map: ballT });
         this.ball = new THREE.Mesh(this.geometry, this.material);
         this.ball.position.set(0, 0, 0);
         this.velocity = new THREE.Vector3(this.ballspeed, this.ballspeed, 0);
