@@ -15,20 +15,25 @@ export class Input {
     handleKeyDown(event) {
         // Left paddle controls (W and S)
         if (event.key === 'w') {
+            // Move up
             this.wPress = true;
         } else if (event.key === 's') {
+            // Move down
             this.sPress = true;
         }
 
         // Right paddle controls (Up and Down Arrow)
         if (event.key === 'ArrowUp') {
+            // Move up
             this.upPress = true;
         } else if (event.key === 'ArrowDown') {
+            // Move down
             this.dnPress = true;
         }
     }
 
     handleKeyUp(event) {
+        // Stop paddle movement when the key is released
         if (event.key === 'w') {
             this.wPress = false;
         }

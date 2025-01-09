@@ -9,16 +9,16 @@ export class Ball {
         this.radius = 0.15;
 
         const ballTextureLoader = new THREE.TextureLoader();
-        const ballT = ballTextureLoader.load(ballImagePath);
+        const ballT = ballTextureLoader.load('./imgs/steel_ball.jpg');
 
         this.geometry = new THREE.SphereGeometry(this.radius, 32, 32);
         this.material = new THREE.MeshBasicMaterial({ map: ballT });
         this.ball = new THREE.Mesh(this.geometry, this.material);
         this.ball.position.set(0, 0, 0);
         this.velocity = new THREE.Vector3(this.ballspeed, this.ballspeed, 0);
-        this.collisionSound1 = new Audio(sound1Path); 
-        this.collisionSound2 = new Audio(sound2Path); 
-        this.collisionSound3 = new Audio(sound3Path); 
+        this.collisionSound1 = new Audio('./mp3/bounce_b2.mp3'); 
+        this.collisionSound2 = new Audio('./mp3/pad2.mp3'); 
+        this.collisionSound3 = new Audio('./mp3/get-score2.mp3'); 
     }
 
     update() {
@@ -76,14 +76,10 @@ export class Ball {
             }
         else if(this.radius >= Math.sqrt((dx1 * dx1) + (dy1 * dy1)) || this.radius >= Math.sqrt((dx1 * dx1) + (dy2 * dy2)) || this.radius >= Math.sqrt((dx2 * dx2) + (dy1 * dy1)) || this.radius >= Math.sqrt((dx2 * dx2) + (dy2 * dy2)))
             {
-                this.collisionSound2.play();
                 //this case ball is collision on paddle edge.
+                this.collisionSound2.play();
                 this.velocity.x = -this.velocity.x; // Bounce the ball oposite to x.axis
                 this.velocity.y = -this.velocity.y; // Bounce the ball oposite to y.axis    
-                // console.log("\nradius = " + this.radius + "= ( " + Math.sqrt((dx1 * dx1) + (dy1 * dy1)) + ")");
-                // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx2 * dx2) + (dy1 * dy1)) + ")");
-                // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx1 * dx1) + (dy2 * dy2)) + ")");
-                // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx2 * dx2) + (dy2 * dy2)) + ")\n");
             }
     }
 }

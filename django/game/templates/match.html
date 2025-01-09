@@ -7,6 +7,12 @@
 	const ballImagePath = "{% static 'js/pong-game/imgs/steel_ball.jpg' %}";
 	const padImagePath = "{% static 'js/pong-game/imgs/metal.jpg' %}";
 	const brickImagePath = "{% static 'js/pong-game/imgs/brick_wall.jpg' %}";
+	const sound1Path = "{% static 'js/pong-game/mp3/bounce_b2.mp3' %}";
+	const sound2Path = "{% static 'js/pong-game/mp3/pad2.mp3' %}";
+	const sound3Path = "{% static 'js/pong-game/mp3/get-score2.mp3' %}";
+	const sound4Path = "{% static 'js/pong-game/mp3/game-countdown.mp3' %}";
+	const sound5Path = "{% static 'js/pong-game/mp3/good.mp3' %}";
+	const sound6Path = "{% static 'js/pong-game/mp3/win.mp3' %}";
 </script>
 <script type="module" src="{% static 'js/pong-game/main.js' %}"></script>
 {% endblock %}
@@ -43,7 +49,7 @@
 						<!-- have js -->
 						<div id="player1Scale" class="progress-bar-striped progress-bar-animated progress-bar bg-primary" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
 						<div id="blankScale" class="progress-bar bg-dark" role="progressbar" style="width: 100%" aria-valuemin="0" aria-valuemax="100"></div>
-						<div id="player2Scale" class="progress-bar-striped progress-bar-animated progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+						<div id="player2Scale" class="progress-bar-striped progress-bar-animated progress-bar bg-danger" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
 					</div>
 				</div>
 			</div>

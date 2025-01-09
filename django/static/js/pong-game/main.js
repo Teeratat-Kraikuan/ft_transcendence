@@ -117,6 +117,7 @@ scene.add(directionalLight);
 
 
 function gameOverMessage() {
+    const sound = new Audio(sound6Path);
     const gameOverDiv = document.createElement('div');
     gameOverDiv.textContent = `GAME OVER`;
     gameOverDiv.style.position = "absolute";
@@ -148,6 +149,7 @@ function gameOverMessage() {
     playAgainButton.classList.add('btn', 'btn-primary');
     document.body.appendChild(playAgainButton);
 
+    sound.play();
     playAgainButton.addEventListener('click', () => {
         document.body.removeChild(gameOverDiv);
         document.body.removeChild(scoreDiv);
@@ -254,6 +256,7 @@ function animate() {
 let isGameStarted = false;
 
 function startCountdown() {
+    const sound = new Audio(sound4Path);
     const countdownDiv = document.createElement('div');
     countdownDiv.style.position = "absolute";
     countdownDiv.style.top = "50%";
@@ -266,6 +269,7 @@ function startCountdown() {
     let countdown = 3;
     countdownDiv.textContent = countdown;
 
+    sound.play();
     const countdownInterval = setInterval(() => {
         countdown -= 1;
         if (countdown > 0) {
@@ -303,8 +307,8 @@ function waitingForPlayers() {
         return div;
     };
 
-    waitingP1Div = createWaitingDiv("press w", "50%", "35%");
-    waitingP2Div = createWaitingDiv("press ↑", "50%", "65%");
+    waitingP1Div = createWaitingDiv("press w", "50%", "40%");
+    waitingP2Div = createWaitingDiv("press ↑", "50%", "60%");
 
     waitingPlayersDisplayed = true;
 }
