@@ -2,6 +2,7 @@
 {% load static %}
 {% block header %}
     <script src="{% static 'js/2fa_auth.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 {% endblock %}
 
 {% block navbar %}
@@ -17,12 +18,12 @@
             <div class="modal-body">
                 <p>Scan this QR code or copy the key</p>
                 <div class="d-flex flex-row justify-content-between">
-                    <div class="rounded me-2 w-50" style="max-width: 180px; height: 180px; background-color: antiquewhite;"></div>
+                    <div class="rounded me-2 w-50" id="qrCodeContainer" style="max-width: 180px; height: 180px; background-color: antiquewhite;"></div>
                     <div class="d-flex flex-column w-50">
                         <div class="border rounded p-3 mb-3">
-                            <span class="text-start">ABC DEF GHI JKL MNO PQR STU VWX YZ</span>
+                            <span class="text-start" id="secretKeyText">ABC DEF GHI JKL MNO PQR STU VWX YZ</span>
                         </div>
-                        <button class="btn btn-outline-light btn-sm">
+                        <button class="btn btn-outline-light btn-sm" id="copyKeyButton">
                             <i class="fa-regular fa-clipboard"></i>
                             Copy
                         </button>

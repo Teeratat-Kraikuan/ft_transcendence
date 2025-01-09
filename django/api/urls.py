@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -24,4 +24,8 @@ urlpatterns = [
     path('v1/notifications/', views.list_notifications, name='list_notifications'),
     path('v1/notifications/mark-as-read/', views.mark_notification_as_read, name='mark_notification_as_read'),
 	path('v1/notifications/remove/', views.remove_notification, name='remove_notification'),
+
+	# TOTP
+	re_path(r'^totp/create/$', views.TOTPCreateView.as_view(), name='totp-create'),
+    re_path(r'^totp/login/(?P<token>[0-9]{6})/$', views.TOTPVerifyView.as_view(), name='totp-login'),
 ]

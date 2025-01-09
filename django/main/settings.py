@@ -63,6 +63,7 @@ INSTALLED_APPS = [
 	'django_sass',
 	'django_otp',
 	'django_otp.plugins.otp_totp',
+	'rest_framework',
 	# Apps
 	'menu',
 	'home',
@@ -176,6 +177,6 @@ MEDIA_URL = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Session timeout in seconds (e.g., 900 seconds = 15 minutes)
-# SESSION_COOKIE_AGE = 900
+# Session timeout in seconds
+SESSION_COOKIE_AGE = 1800
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = True

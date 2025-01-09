@@ -44,12 +44,58 @@
 
         const data = await response.json();
 
-        if (response.status === 200) {
-            // alert(data.message);
-            // Optionally, update the UI to reflect the 2FA change
+        if (response.ok) {
+            if (data.message === '2FA enabled' && data.qr_code) {
+                generateQRCode(data.qr_code);
+
+                const secret = extractSecretFromURL(data.config_url);
+                if (secret) {
+                    const secretKeyText = document.getElementById('secretKeyText');
+                    if (secretKeyText) {
+                        secretKeyText.textContent = secret;
+                    }
+                }
+            }
         } else {
             alert(`Error: ${data.message}`);
         }
+    }
+
+    function generateQRCode(qrCode) {
+        const qrCodeUrl = `data:image/png;base64,${qrCode}`;
+        
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        if (qrCodeContainer) {
+            qrCodeContainer.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = qrCodeUrl;
+            img.width = 180;
+            img.height = 180;
+            qrCodeContainer.appendChild(img);
+        }
+    }
+
+    function extractSecretFromURL(otpUrl) {
+        try {
+            const urlObj = new URL(otpUrl);
+            if (urlObj.searchParams) {
+                return urlObj.searchParams.get('secret');
+            }
+        } catch (err) {
+            const match = otpUrl.match(/[?&]secret=([^&]+)/);
+            if (match) return match[1];
+        }
+        return null;
+    }
+
+    const copyKeyButton = document.getElementById('copyKeyButton');
+    if (copyKeyButton) {
+        copyKeyButton.addEventListener('click', () => {
+            const secretKeyText = document.getElementById('secretKeyText');
+            if (secretKeyText) {
+                navigator.clipboard.writeText(secretKeyText.textContent.trim());
+            }
+        });
     }
 
     function getCookie(name) {

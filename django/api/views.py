@@ -1,20 +1,28 @@
+import io
 import json
+import qrcode
+import base64
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
-from user.models import Profile, FriendRequest
-from game.models import MatchHistory
-from menu.models import Notification
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.db.models import Q, Sum, Count
 from django.utils.timezone import now
-from datetime import timedelta
 from django.views.decorators.http import require_GET, require_POST
+from django_otp import devices_for_user
+from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.shortcuts import render
+from rest_framework import views, permissions
+from rest_framework.response import Response
+from rest_framework import status
+from datetime import timedelta
+from user.models import Profile, FriendRequest
+from game.models import MatchHistory
+from menu.models import Notification
 
 # Create your views here.
-
 def login(req):
 	if req.method == 'POST':
 		email = req.POST.get('email')
@@ -325,13 +333,35 @@ def change_2fa(req):
     try: 
         body = json.loads(req.body)
         user = req.user
-        user.profile.is_2fa_enabled = body.get('enable')
-        user.profile.save()
-        return JsonResponse({'message': '2FA settings updated'}, status=200)    
+        enabled_2fa = body.get('enable', False)
+        if enabled_2fa:
+            device, created = TOTPDevice.objects.get_or_create(user=user, name='default')
+
+            user.profile.is_2fa_enabled = True
+            user.profile.save()
+
+            img = qrcode.make(device.config_url)
+
+            buffer = io.BytesIO()
+            img.save(buffer, format='PNG')
+            buffer.seek(0)
+
+            img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+            return JsonResponse({
+                    'message': '2FA enabled',
+                    'qr_code': img_str,
+                    'config_url': device.config_url
+                }, status=200)
+        else:
+            user.profile.is_2fa_enabled = False
+            user.profile.save()
+            return JsonResponse({'message': '2FA disabled'}, status=200)
     except json.JSONDecodeError:
         return JsonResponse({'message': 'Invalid JSON data.'}, status=400)
     except Exception as e:
         return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
+    
 # Utilize functions
 
 def get_user_profile_data(username):
@@ -446,3 +476,30 @@ def is_user_online(user):
         timeout_period = timedelta(seconds=300)
         return now() - last_activity < timeout_period
     return False
+
+# TOTP 2FA
+def get_user_totp_device(self, user, confirmed=None):
+    devices = devices_for_user(user, confirmed=confirmed)
+    for device in devices:
+        if isinstance(device, TOTPDevice):
+            return device
+class TOTPCreateView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, format=None):
+        user = request.user
+        device = get_user_totp_device(self, user)
+        if not device:
+            device = user.totpdevice_set.create(confirmed=False)
+        url = device.config_url
+        return Response(url, status=status.HTTP_201_CREATED)
+class TOTPVerifyView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, token, format=None):
+        user = request.user
+        device = get_user_totp_device(self, user)
+        if not device == None and device.verify_token(token):
+            if not device.confirmed:
+                device.confirmed = True
+                device.save()
+            return Response(True, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
