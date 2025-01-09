@@ -45,7 +45,14 @@
 				tag: 'div',
 				attr: { class: "w-100" },
 				body: [
-					html_element({ tag: "span", attr: {class: "d-block"}, text: notification.data.message })
+					html_element({
+						tag: "span",
+						attr: {class: "d-block"},
+						text: notification.data.message.replaceAll(
+							/%username%/g,
+							notification.sender_data.username
+						)
+					})
 				]
 			}),
 			button

@@ -147,7 +147,7 @@ def send_friend_request(req):
         Notification.objects.create(
             user=receiver,
             notification_type='friend_request',
-            message=f'{req.user.username} has sent a friend request to you.',
+            message=f'%username% has sent a friend request to you.',
             friend_request=FriendRequest.objects.get(sender=req.user, receiver=receiver, status='pending')
         )
 

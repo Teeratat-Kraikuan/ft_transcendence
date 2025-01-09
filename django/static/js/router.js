@@ -12,7 +12,10 @@ export default (function (){
 	 */
 
 	const redirect = (url) => {
-		if (new URL(url).pathname === location.pathname)
+		let tmp_url = url;
+		if (url[0] === '/')
+			tmp_url = location.host + url;
+		if (new URL(tmp_url).pathname === location.pathname)
 			return ;
 		console.log(`Routing to ${url} ...`);
 		if (new URL(url, document.location).hostname != location.hostname)
