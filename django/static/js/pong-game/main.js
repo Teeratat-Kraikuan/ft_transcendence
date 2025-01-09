@@ -13,7 +13,7 @@ const gameCanvas = document.getElementById('gameCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas: gameCanvas });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-export let finalScore = 11;
+export let finalScore = 2;
 export let p1Score = 0;
 export let p2Score = 0;
 
@@ -116,17 +116,58 @@ scene.add(directionalLight);
 //-------------------gameOverMessage-------------------------
 
 
-function gameOverMessage()
-{
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = "GAME OVER score[" + p1Score + ":" + p2Score + "]";
-    messageDiv.style.position = "absolute";
-    messageDiv.style.top = "50%";
-    messageDiv.style.left = "50%";
-    messageDiv.style.transform = "translate(-50%, -50%)";
-    messageDiv.style.fontSize = "2rem";
-    messageDiv.style.color = "red";
-    document.body.appendChild(messageDiv);
+function gameOverMessage() {
+    const gameOverDiv = document.createElement('div');
+    gameOverDiv.textContent = `GAME OVER`;
+    gameOverDiv.style.position = "absolute";
+    gameOverDiv.style.top = "45%";
+    gameOverDiv.style.left = "50%";
+    gameOverDiv.style.transform = "translate(-50%, -50%)";
+    gameOverDiv.style.fontSize = "1rem";
+    gameOverDiv.style.color = "white";
+    document.body.appendChild(gameOverDiv);
+    const scoreDiv = document.createElement('div');
+    scoreDiv.textContent = `${p1Score} : ${p2Score}`;
+    scoreDiv.style.position = "absolute";
+    scoreDiv.style.top = "40%";
+    scoreDiv.style.left = "50%";
+    scoreDiv.style.transform = "translate(-50%, -50%)";
+    scoreDiv.style.fontSize = "3rem";
+    scoreDiv.style.color = "white";
+    document.body.appendChild(scoreDiv);
+
+    const playAgainButton = document.createElement('button');
+    playAgainButton.textContent = "Play Again";
+    playAgainButton.style.position = "absolute";
+    playAgainButton.style.top = "55%";
+    playAgainButton.style.left = "50%";
+    playAgainButton.style.transform = "translate(-50%, -50%)";
+    playAgainButton.style.padding = "10px 20px";
+    playAgainButton.style.fontSize = "1rem";
+    playAgainButton.style.cursor = "pointer";
+    playAgainButton.classList.add('btn', 'btn-primary');
+    document.body.appendChild(playAgainButton);
+
+    playAgainButton.addEventListener('click', () => {
+        document.body.removeChild(gameOverDiv);
+        document.body.removeChild(scoreDiv);
+        document.body.removeChild(playAgainButton);
+        resetGame();
+    });
+}
+
+function resetGame() {
+    p1Score = 0;
+    p2Score = 0;
+    waitingPlayersDisplayed = false;
+    gameOver = false;
+    isGameStarted = false;
+    
+    paddleLeft.pgm.position.y = 0;
+    paddleRight.pgm.position.y = 0;
+    
+    updateScoreDisplay();
+    checkReadyState();
 }
 
 //-------------------gameOverMessage-------------------------
@@ -208,4 +249,84 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-animate();
+// animate();
+
+let isGameStarted = false;
+
+function startCountdown() {
+    const countdownDiv = document.createElement('div');
+    countdownDiv.style.position = "absolute";
+    countdownDiv.style.top = "50%";
+    countdownDiv.style.left = "50%";
+    countdownDiv.style.transform = "translate(-50%, -50%)";
+    countdownDiv.style.fontSize = "3rem";
+    countdownDiv.style.color = "white";
+    document.body.appendChild(countdownDiv);
+
+    let countdown = 3;
+    countdownDiv.textContent = countdown;
+
+    const countdownInterval = setInterval(() => {
+        countdown -= 1;
+        if (countdown > 0) {
+            countdownDiv.textContent = countdown;
+        } else {
+            clearInterval(countdownInterval);
+            document.body.removeChild(countdownDiv);
+            isGameStarted = true;
+            animate();
+        }
+    }, 1000);
+}
+
+
+let waitingP1Div;
+let waitingP2Div;
+
+let waitingPlayersDisplayed = false;
+
+function waitingForPlayers() {
+    if (waitingPlayersDisplayed) return;
+
+    console.log("Waiting for players..., creating waitingP1Div and waitingP2Div");
+
+    const createWaitingDiv = (text, top, left) => {
+        const div = document.createElement('div');
+        div.textContent = text;
+        div.style.position = "absolute";
+        div.style.top = top;
+        div.style.left = left;
+        div.style.transform = "translate(-50%, -50%)";
+        div.style.fontSize = "1rem";
+        div.style.color = "white";
+        document.body.appendChild(div);
+        return div;
+    };
+
+    waitingP1Div = createWaitingDiv("press w", "50%", "35%");
+    waitingP2Div = createWaitingDiv("press ↑", "50%", "65%");
+
+    waitingPlayersDisplayed = true;
+}
+
+function checkReadyState() {
+    renderer.render(scene, camera);
+    if (input.wPress == true && document.body.contains(waitingP1Div)) {
+        console.log("left ready, removing waitingP1Div");
+        document.body.removeChild(waitingP1Div);
+    }
+    if (input.upPress == true && document.body.contains(waitingP2Div)) {
+        console.log("right ready, removing waitingP2Div");
+        document.body.removeChild(waitingP2Div);
+    }
+
+    if (!isGameStarted && input.wPress && input.upPress) {
+        console.log("Both players are ready. Starting countdown...");
+        startCountdown();
+    } else {
+        waitingForPlayers();
+        requestAnimationFrame(checkReadyState);
+    }
+}
+
+checkReadyState();
