@@ -2,6 +2,7 @@ import io
 import json
 import qrcode
 import base64
+import random
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -503,3 +504,15 @@ class TOTPVerifyView(views.APIView):
                 device.save()
             return Response(True, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+def entry_online_game(req):
+    if req.method == 'POST':
+        print("----TEST GAME----")
+        if req.POST.get('type') == 'create':
+            room_code = str(random.randint(111111,999999))
+            print(f"Create room: {room_code}")
+        elif req.POST.get('type') == 'join':
+            room_code = req.POST.get('code')
+            print(f"Join room: {room_code}")             
+        return JsonResponse({'message': 'Room code created'}, status=200)
+    return JsonResponse({'message': 'Invalid request method'}, status=405)

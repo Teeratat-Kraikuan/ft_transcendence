@@ -5,6 +5,7 @@
 
 <div class="w-100 position-relative d-flex flex-grow-1 flex-column mt-5">
     <div class="mt-lg-0 mt-5 mb-lg-5 mb-0">
+        {% if online_game %}
         <div class="d-flex justify-content-center">
             <div class="bg-dark rounded px-3 py-2 d-flex justify-content-center align-items-center"
                 style="width: 60vw;">
@@ -17,6 +18,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         <div class="d-flex justify-content-center align-items-center row my-5">
             <div class="col-lg-6 d-flex justify-content-lg-end justify-content-sm-center justify-content-evenly">
                 <div class="pfp-n-name mx-2">

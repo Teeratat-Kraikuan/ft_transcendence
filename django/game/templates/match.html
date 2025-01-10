@@ -2,14 +2,26 @@
 {% load static %}
 
 {% block header %}
-<script src="{% static 'js/game.js' %}" defer="true"></script>
+<script>
+	const grassImagePath = "{% static 'js/pong-game/imgs/football_grass.jpg' %}";
+	const ballImagePath = "{% static 'js/pong-game/imgs/steel_ball.jpg' %}";
+	const padImagePath = "{% static 'js/pong-game/imgs/metal.jpg' %}";
+	const brickImagePath = "{% static 'js/pong-game/imgs/brick_wall.jpg' %}";
+	const sound1Path = "{% static 'js/pong-game/mp3/bounce_b2.mp3' %}";
+	const sound2Path = "{% static 'js/pong-game/mp3/pad2.mp3' %}";
+	const sound3Path = "{% static 'js/pong-game/mp3/get-score2.mp3' %}";
+	const sound4Path = "{% static 'js/pong-game/mp3/game-countdown.mp3' %}";
+	const sound5Path = "{% static 'js/pong-game/mp3/good.mp3' %}";
+	const sound6Path = "{% static 'js/pong-game/mp3/win.mp3' %}";
+</script>
+<script type="module" src="{% static 'js/pong-game/main.js' %}"></script>
 {% endblock %}
 
 {% block navbar %}
 
 <div class="w-100 position-relative my-auto">
-	<div class="d-flex justify-content-center mb-5">
-		<div class="bg-dark rounded align-items-center my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2" style="width: 60vw;">
+	<div class="d-flex justify-content-center mb-4">
+		<!-- <div class="bg-dark rounded align-items-center my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2" style="width: 60vw;">
 			<div>
 				<small> Game Pin :</small>
 				<h1 class="display-3 fw-bolder">000 000</h1>
@@ -19,18 +31,18 @@
 				<h2 class="fw-bold mx-3">VS</h2>
 				<h3>username</h3>
 			</div>
-		</div>
+		</div> -->
 	</div>
-	<div class="d-flex justify-content-center flex-sm-row flex-column w-100 align-items-center" >
-		<div class="my-2 col-sm-2 d-flex flex-sm-column flex-row justify-content-center text-center align-items-center">
-			<div class="pfp"></div>
-			<h4 id="player2">username</h4>
-			<h1 id="player2Score">0</h1>
+	<div class="d-flex justify-content-center flex-lg-row flex-column w-100 align-items-center">
+		<div class="my-2 col-lg-2 d-flex flex-lg-column flex-row justify-content-center text-center align-items-center">
+			<div class="pfp me-3 me-lg-0"></div>
+			<h4 class="me-3 me-lg-0" id="player1">username</h4>
+			<h1 id="player1Score">0</h1>
 		</div>
-		<div class="justify-content-center d-flex w-100">
-			<div class="col-12 p-3 mx-3 justify-content-center">
-				<div class="position-relative w-100 h-100">
-					<canvas class="game-canvas position-absolute align-content-center"></canvas>
+		<div class="justify-content-center d-flex w-100" style="max-width: 750px;">
+			<div class="col-12 p-3 mx-3 d-flex flex-column justify-content-center">
+				<div class="canvas-container d-flex justify-content-center w-100 h-auto" style="aspect-ratio: 5 / 3;">
+					<canvas class="d-block" id="gameCanvas"></canvas>
 				</div>
 				<div class="my-2">
 					<div class="progress" style="border: 2px solid #b3b3b3;">
@@ -42,12 +54,13 @@
 				</div>
 			</div>
 		</div>
-		<div class="my-2 col-sm-2 d-flex flex-sm-column flex-row justify-content-center text-center align-items-center">
-			<div class="pfp"></div>
-			<h4 id="player2">username</h4>
+		<div class="my-2 col-lg-2 d-flex flex-lg-column flex-row justify-content-center text-center align-items-center">
+			<div class="pfp me-3 me-lg-0"></div>
+			<h4 class="me-3 me-lg-0" id="player2">username</h4>
 			<h1 id="player2Score">0</h1>
 		</div>
 	</div>
 </div>
+
 
 {% endblock %}

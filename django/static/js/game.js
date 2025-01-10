@@ -1,29 +1,31 @@
-(function() {
-
+(function () {
 	"use strict";
 
 	class Canvas {
-		constructor (selector) {
-			this.el = document.querySelector(selector);
-			this.ctx = this.el.getContext("2d");
-		}
+	  constructor(selector) {
+		this.el = document.querySelector(selector);
+		this.ctx = this.el.getContext("2d");
+	  }
 	}
 
 	const canvas = new Canvas(".game-canvas");
 
-	const set_canvas = function () {
-		canvas.el.width = 0;
-		canvas.el.height = 0;
-		const bound = canvas.el.getBoundingClientRect();
-		canvas.el.width = bound.width;
-		canvas.el.height = bound.height;
+	const setCanvas = function () {
+	  const bound = canvas.el.parentElement.getBoundingClientRect();
+	  const desiredHeight = bound.width * (3 / 4);
+
+	  canvas.el.width = bound.width;
+	  canvas.el.height = desiredHeight;
+
+	  console.log(`Canvas resized: ${canvas.el.width}x${canvas.el.height}`);
 	};
 
-	const ev_resize = window.addEventListener("resize", set_canvas);
+	const evResize = window.addEventListener("resize", setCanvas);
 
-	set_canvas();
-	window.unload = function () {
-		removeEventListener('resize', ev_resize);
-	}
+	setCanvas();
 
-})();
+	window.onunload = function () {
+	  removeEventListener("resize", evResize);
+	};
+
+  })();
