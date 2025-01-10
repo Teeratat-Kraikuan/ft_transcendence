@@ -52,16 +52,23 @@
                     </a>
                 </div>
                 <p class="card-my-title py-4">Two-factor Authentication</p>
-                <div class="d-flex justify-content-between">
-                    <div>Authenticator app</div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" role="switch" id="switchCheck2FA" {% if enable2fa %}checked{% endif %}>
+                {% if is_student %}
+                    <div class="alert alert-info">
+                        Two-factor authentication is unavailable for your account.
                     </div>
-                </div>
-                <p class="fw-light">Use an authentication app or browser extension to get two-factor authentication codes when prompted.</p>
-                <button type="button" class="btn btn-primary mb-4" id="doneButton" disabled>
-                    Done
-                </button>
+                {% else %}
+                    <div class="d-flex justify-content-between">
+                        <div>Authenticator app</div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switchCheck2FA"
+                                   {% if enable2fa %}checked{% endif %}>
+                        </div>
+                    </div>
+                    <p class="fw-light">Use an authentication app or browser extension to get two-factor authentication codes when prompted.</p>
+                    <button type="button" class="btn btn-primary mb-4" id="doneButton" disabled>
+                        Done
+                    </button>
+                {% endif %}
             </div>
 		</div>
 	</div>
