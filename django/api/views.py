@@ -1,4 +1,5 @@
 import io
+import re
 import json
 import qrcode
 import base64
@@ -52,51 +53,78 @@ def logout(req):
 	return JsonResponse({'message': 'Logout unsuccess'}, status=400)
 
 def register(req):
-	if req.method == 'POST':
-		username = req.POST['username']
-		email = req.POST['email']
-		password = req.POST['password']
-		repeat_password = req.POST['repeat_password']
+    if req.method == 'POST':
+        username = req.POST.get('username', '').strip()
+        email = req.POST.get('email', '').strip()
+        password = req.POST.get('password', '')
+        repeat_password = req.POST.get('repeat_password', '')
 
-		if not username or not email or not password or not repeat_password:
-			return JsonResponse({'message': 'All fields are required.'}, status=400)
+        if not username or not email or not password or not repeat_password:
+            return JsonResponse({'message': 'All fields are required.'}, status=400)
 
-		if password != repeat_password:
-			return JsonResponse({'message': 'Passwords do not match.'}, status=400)
-		
-		if User.objects.filter(username=username).exists():
-			return JsonResponse({'message': 'Username already taken.'}, status=400)
+        # Username sanitization
+        if not re.match(r'^[a-zA-Z0-9_.-]{3,30}$', username):
+            return JsonResponse({'message': 'Username must be 3-30 characters long and can only contain letters, numbers, underscores, dots, or hyphens.'}, status=400)
 
-		if User.objects.filter(email=email).exists():
-			return JsonResponse({'message': 'Email already registered.'}, status=400)
+        # Password validation
+        if password != repeat_password:
+            return JsonResponse({'message': 'Passwords do not match.'}, status=400)
 
-		user = User(username=username, email=email)
-		user.set_password(password)
-		user.save()
+        if len(password) < 8:
+            return JsonResponse({'message': 'Password must be at least 8 characters long.'}, status=400)
 
-		return JsonResponse({'message': 'Register successful'}, status=200)
-	return JsonResponse({'message': 'Invalid request method'}, status=405)
+        if not any(char.islower() for char in password):
+            return JsonResponse({'message': 'Password must contain at least one lowercase letter.'}, status=400)
+
+        if not any(char.isupper() for char in password):
+            return JsonResponse({'message': 'Password must contain at least one uppercase letter.'}, status=400)
+
+        if not any(char.isdigit() for char in password):
+            return JsonResponse({'message': 'Password must contain at least one digit.'}, status=400)
+
+        if not any(char in "!@#$%^&*()-_=+[]{}|;:',.<>?/`~" for char in password):
+            return JsonResponse({'message': 'Password must contain at least one special character.'}, status=400)
+
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'message': 'Username already taken.'}, status=400)
+
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'message': 'Email already registered.'}, status=400)
+
+        user = User(username=username, email=email)
+        user.set_password(password)
+        user.save()
+
+        return JsonResponse({'message': 'Register successful'}, status=200)
+
+    return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 @login_required
 def change_username(req):
     if req.method == 'POST':
-        new_username = req.POST.get('new_username')
+        new_username = req.POST.get('new_username', '').strip()
+
         if not new_username:
             return JsonResponse({'message': 'New username is required.'}, status=400)
+
+        if not re.match(r'^[a-zA-Z0-9_.-]{3,30}$', new_username):
+            return JsonResponse({'message': 'Username must be 3-30 characters long and can only contain letters, numbers, underscores, dots, or hyphens.'}, status=400)
 
         if User.objects.filter(username=new_username).exists():
             return JsonResponse({'message': 'Username already taken.'}, status=400)
 
         req.user.username = new_username
         req.user.save()
-    return JsonResponse({'message': 'username changed'}, status=200)
+        return JsonResponse({'message': 'Username changed successfully'}, status=200)
+
+    return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 @login_required
 def change_password(req):
     if req.method == 'POST':
-        old_password = req.POST.get('old_password')
-        new_password = req.POST.get('new_password')
-        repeat_password = req.POST.get('repeat_password')
+        old_password = req.POST.get('old_password', '')
+        new_password = req.POST.get('new_password', '')
+        repeat_password = req.POST.get('repeat_password', '')
 
         if not old_password or not new_password or not repeat_password:
             return JsonResponse({'message': 'All fields are required.'}, status=400)
@@ -107,9 +135,25 @@ def change_password(req):
         if new_password != repeat_password:
             return JsonResponse({'message': 'Passwords do not match.'}, status=400)
 
+        if len(new_password) < 8:
+            return JsonResponse({'message': 'Password must be at least 8 characters long.'}, status=400)
+
+        if not any(char.islower() for char in new_password):
+            return JsonResponse({'message': 'Password must contain at least one lowercase letter.'}, status=400)
+
+        if not any(char.isupper() for char in new_password):
+            return JsonResponse({'message': 'Password must contain at least one uppercase letter.'}, status=400)
+
+        if not any(char.isdigit() for char in new_password):
+            return JsonResponse({'message': 'Password must contain at least one digit.'}, status=400)
+
+        if not any(char in "!@#$%^&*()-_=+[]{}|;:',.<>?/`~" for char in new_password):
+            return JsonResponse({'message': 'Password must contain at least one special character.'}, status=400)
+
         req.user.set_password(new_password)
         req.user.save()
-        return JsonResponse({'message': 'Password changed'}, status=200)
+        return JsonResponse({'message': 'Password changed successfully'}, status=200)
+
     return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 @login_required
