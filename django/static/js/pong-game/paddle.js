@@ -1,5 +1,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.module.js';
 
+const padImagePath      = "/static/js/pong-game/imgs/metal.jpg";
+
 export class Paddle{
 // Create the paddles
     constructor(){

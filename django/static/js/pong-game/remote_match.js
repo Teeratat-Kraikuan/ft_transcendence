@@ -1,6 +1,6 @@
 (function() {
 	"use strict";
-  
+
 	const matchId = remoteData.match_id;
 	const username = remoteData.username;
 

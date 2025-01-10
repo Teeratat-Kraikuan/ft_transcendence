@@ -3,8 +3,35 @@ import { Ball } from './ball.js';
 import { Input } from './input.js';
 import { Paddle } from './paddle.js';
 import { Box } from './box.js';
+import { AudioPlayer } from './audio.js';
 
 // Pong v.2
+
+console.log("game load");
+
+const grassImagePath    = "/static/js/pong-game/imgs/football_grass.jpg";
+const sound4Path        = "/static/js/pong-game/mp3/game-countdown.mp3";
+const sound6Path        = "/static/js/pong-game/mp3/win.mp3";
+
+export let finalScore = 2;
+export let p1Score = 0;
+export let p2Score = 0;
+export let audioPlayer = new AudioPlayer();
+
+export function addScoreP1() {
+    p1Score += 1;
+    console.log('p1 add = ' + p1Score);
+    window.updateScoreDisplay();
+}
+
+export function addScoreP2() {
+    p2Score += 1;
+    console.log('p2 add = ' + p2Score);
+    window.updateScoreDisplay();
+}
+
+window.game_main = function ()
+{
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -13,14 +40,16 @@ const gameCanvas = document.getElementById('gameCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas: gameCanvas });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-export let finalScore = 2;
-export let p1Score = 0;
-export let p2Score = 0;
+window.updateScoreDisplay = updateScoreDisplay;
+updateScoreDisplay();
 
 function updateScoreDisplay() {
     const player1ScoreElement = document.getElementById('player1Score');
     const player2ScoreElement = document.getElementById('player2Score');
     
+    if (!player1ScoreElement || !player2ScoreElement)
+        return ;
+
     player1ScoreElement.textContent = p1Score;
     player2ScoreElement.textContent = p2Score;
 
@@ -32,6 +61,9 @@ function updateScale() {
     const player1Scale = document.getElementById('player1Scale');
     const player2Scale = document.getElementById('player2Scale');
     const blankScale = document.getElementById('blankScale');
+
+    if (!player1Scale || !player2Scale || !blankScale)
+        return ;
 
     const player1Percent = (p1Score / maxScore) * 100;
     const player2Percent = (p2Score / maxScore) * 100;
@@ -45,20 +77,6 @@ function updateScale() {
     player2Scale.setAttribute('aria-valuenow', player2Percent);
     blankScale.setAttribute('aria-valuenow', blankPercent);
 }
-
-export function addScoreP1() {
-    p1Score += 1;
-    console.log('p1 add = ' + p1Score);
-    updateScoreDisplay();
-}
-
-export function addScoreP2() {
-    p2Score += 1;
-    console.log('p2 add = ' + p2Score);
-    updateScoreDisplay();
-}
-
-updateScoreDisplay();
 
 function resizeCanvas() {
     const canvasContainer = gameCanvas.parentElement.getBoundingClientRect();
@@ -117,7 +135,7 @@ scene.add(directionalLight);
 
 
 function gameOverMessage() {
-    const sound = new Audio(sound6Path);
+    const sound = audioPlayer.load("gameOver", sound6Path);
     const gameOverDiv = document.createElement('div');
     gameOverDiv.textContent = `GAME OVER`;
     gameOverDiv.style.position = "absolute";
@@ -164,10 +182,11 @@ function resetGame() {
     waitingPlayersDisplayed = false;
     gameOver = false;
     isGameStarted = false;
-    
+
     paddleLeft.pgm.position.y = 0;
     paddleRight.pgm.position.y = 0;
-    
+
+    cancelAnimationFrame(animate);
     updateScoreDisplay();
     checkReadyState();
 }
@@ -256,7 +275,7 @@ function animate() {
 let isGameStarted = false;
 
 function startCountdown() {
-    const sound = new Audio(sound4Path);
+    const sound = audioPlayer.load("countDown", sound4Path);
     const countdownDiv = document.createElement('div');
     countdownDiv.style.position = "absolute";
     countdownDiv.style.top = "50%";
@@ -271,6 +290,11 @@ function startCountdown() {
 
     sound.play();
     const countdownInterval = setInterval(() => {
+        if (!document.body.contains(countdownDiv))
+        {
+            clearInterval(countdownInterval);
+            return ;
+        }
         countdown -= 1;
         if (countdown > 0) {
             countdownDiv.textContent = countdown;
@@ -334,3 +358,10 @@ function checkReadyState() {
 }
 
 checkReadyState();
+
+return Object.freeze({
+    resetGame,
+    audioPlayer
+});
+
+}

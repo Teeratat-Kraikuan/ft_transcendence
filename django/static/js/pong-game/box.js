@@ -1,5 +1,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.module.js';
 
+const brickImagePath    ="/static/js/pong-game/imgs/brick_wall.jpg";
+
 export class Box{
 // Create the paddles
     constructor(boxSizeX = 1, boxSizeY = 1, boxSizeZ = 0.5){

@@ -5,19 +5,6 @@
 <script>
     var remoteData = JSON.parse("{{ data_json|escapejs }}");
 </script>
-
-<script>
-    const grassImagePath = "{% static 'js/pong-game/imgs/football_grass.jpg' %}";
-    const ballImagePath = "{% static 'js/pong-game/imgs/steel_ball.jpg' %}";
-    const padImagePath = "{% static 'js/pong-game/imgs/metal.jpg' %}";
-    const brickImagePath = "{% static 'js/pong-game/imgs/brick_wall.jpg' %}";
-    const sound1Path = "{% static 'js/pong-game/mp3/bounce_b2.mp3' %}";
-    const sound2Path = "{% static 'js/pong-game/mp3/pad2.mp3' %}";
-    const sound3Path = "{% static 'js/pong-game/mp3/get-score2.mp3' %}";
-    const sound4Path = "{% static 'js/pong-game/mp3/game-countdown.mp3' %}";
-    const sound5Path = "{% static 'js/pong-game/mp3/good.mp3' %}";
-    const sound6Path = "{% static 'js/pong-game/mp3/win.mp3' %}";
-</script>
 {% endblock %}
 
 {% block navbar %}
