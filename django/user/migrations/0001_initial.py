@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
             name='Profile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('avatar', models.ImageField(default='profile_pics/default_avatar.png', upload_to='avatar')),
-                ('banner', models.ImageField(default='banner_pics/default_banner.png', upload_to='banner')),
+                ('avatar', models.ImageField(default='default/default_avatar.png', upload_to='avatar')),
+                ('banner', models.ImageField(default='default/default_banner.png', upload_to='banner')),
                 ('description', models.TextField(default='I am the winner', max_length=600, verbose_name='Description')),
                 ('is_student', models.BooleanField(default=False)),
                 ('is_agree_privacy', models.BooleanField(default=False)),

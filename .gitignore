@@ -86,5 +86,8 @@ __pycache__/
 *.pyc
 
 # django
-django/static_build/
-django/media/
+django/static_build/*
+django/media/*
+# django keep
+!django/media/default/
+!django/media/default/*

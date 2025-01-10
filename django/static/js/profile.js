@@ -170,8 +170,8 @@ function submitEditForm(username) {
         loadChartJS(initialize);
     }
 
-    if (window["initialize"] != undefined) {
-        window["initialize"]();
-    }
+    // if (window["initialize"] != undefined) {
+    //     window["initialize"]();
+    // }
 
 })();

@@ -12,6 +12,11 @@ export default (function (){
 	 */
 
 	const redirect = (url) => {
+		let tmp_url = url;
+		if (url[0] === '/')
+			tmp_url = location.host + url;
+		if (new URL(tmp_url).pathname === location.pathname)
+			return ;
 		console.log(`Routing to ${url} ...`);
 		if (new URL(url, document.location).hostname != location.hostname)
 		{
@@ -132,6 +137,8 @@ export default (function (){
 			document.head.append(script);
 		});
 		init_event_handler();
+		if (typeof window.redirected == "function")
+			window.redirected = window.redirected();
 	};
 
 	window.addEventListener("popstate", handle_location);

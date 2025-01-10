@@ -36,7 +36,9 @@ def login(req):
 
 		if user is not None:
 			auth_login(req, user)
-			return JsonResponse({'message': 'Login successful'}, status=200)
+			login = JsonResponse({'message': 'Login successful'}, status=200)
+			login.set_cookie('loggedin', 'true', samesite='Lax', max_age=req.session.get_expiry_age())
+			return login
 		else:
 			return JsonResponse({'message': 'Invalid email or password.'}, status=401)
 	return JsonResponse({'message': 'Invalid request method'}, status=405)
@@ -44,7 +46,9 @@ def login(req):
 def logout(req):
 	if req.user.is_authenticated:
 		auth_logout(req)
-		return JsonResponse({'message': 'Logout successful'}, status=200)
+		logout = JsonResponse({'message': 'Logout successful'}, status=200)
+		logout.delete_cookie('loggedin', samesite='Strict')
+		return logout
 	return JsonResponse({'message': 'Logout unsuccess'}, status=400)
 
 def register(req):
@@ -117,7 +121,7 @@ def profile(req, username):
 		return JsonResponse({'message': 'User not found'}, status=404)
 	except Exception as e:
 		return JsonResponse({'message': str(e)}, status=500)
-	
+
 @login_required
 @require_POST
 def send_friend_request(req):
@@ -152,7 +156,7 @@ def send_friend_request(req):
         Notification.objects.create(
             user=receiver,
             notification_type='friend_request',
-            message=f'{req.user.username} has sent a friend request to you.',
+            message=f'%username% has sent a friend request to you.',
             friend_request=FriendRequest.objects.get(sender=req.user, receiver=receiver, status='pending')
         )
 
@@ -168,7 +172,8 @@ def send_friend_request(req):
 def accept_friend_request(req):
     try:
         # Get the sender's username from the request data
-        sender_username = req.POST.get('sender_username')
+        body = json.loads(req.body)
+        sender_username = body.get('sender_username')
         if not sender_username:
             return JsonResponse({'message': 'Sender username is required.'}, status=400)
 
@@ -203,7 +208,8 @@ def accept_friend_request(req):
 def decline_friend_request(req):
     try:
         # Get the sender's username from the request data
-        sender_username = req.POST.get('sender_username')
+        body = json.loads(req.body)
+        sender_username = body.get('sender_username')
         if not sender_username:
             return JsonResponse({'message': 'Sender username is required.'}, status=400)
 
@@ -233,7 +239,6 @@ def list_notifications(req):
     # Fetch all notifications for the logged-in user, most recent first
     notifications = Notification.objects.filter(user=req.user).order_by('-created_at')
 
-    
     # Serialize notifications into a list of dicts
     data = []
     for n in notifications:
@@ -277,7 +282,8 @@ def mark_notification_as_read(req):
 @login_required
 def remove_notification(req):
     if req.method == 'POST':
-        notification_id = req.POST.get('notification_id')
+        body = json.loads(req.body)
+        notification_id = body.get('notification_id')
         if not notification_id:
             return JsonResponse({'message': 'notification_id is required'}, status=400)
 
