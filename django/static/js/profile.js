@@ -40,9 +40,7 @@ function doneEdit() {
 //     });
 // }
 
-function submitEditForm(username) {
-    console.log("Hello from Edit");
-    console.log("Try to edit : " + username);
+function submitEditForm(username, type) {
     const editApiEndpoint = '/api/v1/edit_user_profile/';
     const form = document.getElementById('editProfileForm');
     if (!form || !username) {
@@ -50,7 +48,7 @@ function submitEditForm(username) {
         return;
     }
     const formData = new FormData(form);
-	formData.append('submit', 'edit');
+	formData.append('submit', type);
     formData.append('username', username);
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 

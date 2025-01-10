@@ -1,4 +1,5 @@
 import io
+import os
 import json
 import qrcode
 import base64
@@ -302,23 +303,42 @@ def edit_user_profile(req):
     print("----TEST EDIT----") # Debug
     if req.method == 'POST':
         username = req.POST.get('username')
-        if req.POST.get('submit') == 'edit' and username:
-
-            profile_image = req.FILES.get('profile_image')
-            banner_image = req.FILES.get('banner_image')
-            description = req.POST.get('description')
-            print(f"TEST EDIT : {description}, {profile_image}, {banner_image}") # Debug
-
+        if username:
             user = User.objects.get(username=username)
             profile = Profile.objects.get(user=user)
-
-            if profile_image:
-                profile.avatar = profile_image
-            if banner_image:
-                profile.banner = banner_image
-            if description and description != profile.description:
-                profile.description = description
-            profile.save()
+            if req.POST.get('submit') == 'edit':
+                profile_image = req.FILES.get('profile_image')
+                banner_image = req.FILES.get('banner_image')
+                description = req.POST.get('description')
+                if profile_image and profile.avatar and profile.avatar.url != '/media/default/default_avatar.png':
+                    old_avatar_path = profile.avatar.path
+                    if os.path.exists(old_avatar_path):
+                        os.remove(old_avatar_path)
+                if banner_image and profile.banner and profile.banner.url != '/media/default/default_banner.png':
+                    old_banner_path = profile.banner.path
+                    if os.path.exists(old_banner_path):
+                        os.remove(old_banner_path)
+                if profile_image:
+                    profile.avatar = profile_image
+                if banner_image:
+                    profile.banner = banner_image
+                if description and description != profile.description:
+                    profile.description = description
+                profile.save()
+            elif req.POST.get('submit') == 'delete-avatar':
+                if profile.avatar and profile.avatar != 'default/default_avatar.png':
+                    old_avatar_path = profile.avatar.path
+                    if os.path.exists(old_avatar_path):
+                        os.remove(old_avatar_path)
+                    profile.avatar = 'default/default_avatar.png'
+                    profile.save()
+            elif req.POST.get('submit') == 'delete-avatar':
+                if profile.banner and profile.banner != 'default/default_banner.png':
+                    old_banner_path = profile.banner.path
+                    if os.path.exists(old_banner_path):
+                        os.remove(old_banner_path)
+                    profile.banner = 'default/default_banner.png'
+                    profile.save()
             return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
         else:
             return JsonResponse({'success': False, 'errors': 'Invalid submission.'}, status=400)
