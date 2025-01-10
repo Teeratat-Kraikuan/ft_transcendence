@@ -52,7 +52,6 @@ AUTHENTICATION_BACKENDS = ('user.backends.EmailBackend', )
 
 INSTALLED_APPS = [
 	'daphne',
-	'channels',
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
@@ -60,6 +59,8 @@ INSTALLED_APPS = [
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	# Dependencies
+	'channels',
+	'channels_postgres',
 	'corsheaders',
 	'django_sass',
 	'django_otp',
@@ -111,6 +112,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'main.wsgi.application'
 ASGI_APPLICATION = "main.asgi.application"
+
+# Channels
+
+CHANNEL_LAYERS = {
+	'default': {
+		'BACKEND': 'channels_postgres.core.PostgresChannelLayer',
+		'CONFIG': {
+			'ENGINE': 'django.db.backends.postgresql',
+			'NAME': environ.get('POSTGRES_DB'),
+			'USER': environ.get('POSTGRES_USER'),
+			'PASSWORD': environ.get('POSTGRES_PASSWORD'),
+			'HOST': 'postgres',
+			'PORT': 5432,
+		}
+	},
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
