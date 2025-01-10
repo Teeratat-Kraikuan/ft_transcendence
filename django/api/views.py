@@ -26,23 +26,43 @@ from menu.models import Notification
 
 # Create your views here.
 def login(req):
-	if req.method == 'POST':
-		email = req.POST.get('email')
-		password = req.POST.get('password')
+    if req.method == 'POST':
+        email = req.POST.get('email')
+        password = req.POST.get('password')
+        twofa_code = req.POST.get('twofa_code')
 
-		if not email or not password:
-			return JsonResponse({'message': 'Email and password are required.'}, status=400)
+        if not email or not password:
+            return JsonResponse({'message': 'Email and password are required.'}, status=400)
 
-		user = authenticate(req, username=email, password=password)
+        user = authenticate(req, username=email, password=password)
 
-		if user is not None:
-			auth_login(req, user)
-			login = JsonResponse({'message': 'Login successful'}, status=200)
-			login.set_cookie('loggedin', 'true', samesite='Lax', max_age=req.session.get_expiry_age())
-			return login
-		else:
-			return JsonResponse({'message': 'Invalid email or password.'}, status=401)
-	return JsonResponse({'message': 'Invalid request method'}, status=405)
+        if user is not None:
+            if hasattr(user, 'profile') and user.profile.is_2fa_enabled:
+                if not twofa_code:
+                    return JsonResponse({'message': '2FA code is required.'}, status=400)
+                
+                try:
+                    device = TOTPDevice.objects.get(user=user, name='default')
+                except TOTPDevice.DoesNotExist:
+                    return JsonResponse({
+                        'message': '2FA is enabled but no TOTP device found.'
+                    }, status=500)
+
+                if device.verify_token(twofa_code):
+                    auth_login(req, user)
+                    response = JsonResponse({'message': 'Login successful'}, status=200)
+                    response.set_cookie('loggedin', 'true', samesite='Lax', max_age=req.session.get_expiry_age())
+                    return response
+                else:
+                    return JsonResponse({'message': 'Invalid 2FA code.'}, status=401)
+            else:
+                auth_login(req, user)
+                response = JsonResponse({'message': 'Login successful'}, status=200)
+                response.set_cookie('loggedin', 'true', samesite='Lax', max_age=req.session.get_expiry_age())
+                return response
+        else:
+            return JsonResponse({'message': 'Invalid email or password.'}, status=401)
+    return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 def logout(req):
 	if req.user.is_authenticated:

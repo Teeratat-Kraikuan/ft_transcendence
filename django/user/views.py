@@ -104,6 +104,8 @@ def setup_profile(req, data):
 			profile.avatar = download_image(data['pfp'], f"{data['user'].username}_avatar")
 		if data['banner']:
 			profile.banner = download_image(data['banner'], f"{data['user'].username}_banner")
+		if data['is_student']:
+			profile.is_student = True
 		profile.save()
 
 def oauth_register(req, oauth, user_data):
@@ -129,7 +131,8 @@ def oauth_register(req, oauth, user_data):
 	setup_profile(req, {
 		"user": user,
 		"pfp": profile_picture,
-		"banner": coalitions_banner
+		"banner": coalitions_banner,
+		"is_student": True,
 	})
 	return oauth_login(req, user_data)
 	# return JsonResponse({'message': 'Register successful'}, status=200)
