@@ -206,26 +206,68 @@ scene.add(wallUp.bgm, wallDown.bgm);
 
 let gameOver = false;
 
+// function botControl() {
+//     const botSpeed = 0.07;
+//     if (ball.ball.position.y > paddleLeft.pgm.position.y) {
+//         paddleLeft.pgm.position.y += botSpeed;
+//     } else if (ball.ball.position.y < paddleLeft.pgm.position.y) {
+//         paddleLeft.pgm.position.y -= botSpeed;
+//     }
+// }
+
+function botControl() {
+    console.log("Bot control");
+    console.log(`Ball X: ${ball.ball.position.x}`);
+    console.log(`Paddle X: ${paddleLeft.pgm.position.x}`);
+    console.log(`logic: ${ball.ball.position.x < 0 && ball.ball.position.x > paddleLeft.pgm.position.x}`);
+    if (ball.ball.position.x < 0 && ball.ball.position.x > paddleLeft.pgm.position.x) {
+        const botSpeed = 0.1; // Speed of the bot paddle
+        const distanceToBall = Math.abs(ball.ball.position.x - paddleLeft.pgm.position.x); // Distance from paddleLeft to ball
+
+        if (distanceToBall < 5) { 
+            console.log("Bot moving");
+        
+            // Estimate the ball's trajectory by assuming its current Y position is where it will go
+            const predictedBallY = ball.ball.position.y;
+        
+            // Debug logs
+            console.log(`Predicted ball Y: ${predictedBallY}`);
+            console.log(`Paddle Y before move: ${paddleLeft.pgm.position.y}`);
+        
+            // Adjust bot paddle Y position to align with the ball
+            if (paddleLeft.pgm.position.y + paddleLeft.paddleSizeY / 2 < predictedBallY && paddleLeft.pgm.position.y < 5.5) {
+                paddleLeft.pgm.position.y += botSpeed;
+                console.log("Paddle moving up");
+            } else if (paddleLeft.pgm.position.y + paddleLeft.paddleSizeY / 2 > predictedBallY && paddleLeft.pgm.position.y > -5.5) {
+                paddleLeft.pgm.position.y -= botSpeed;
+                console.log("Paddle moving down");
+            }
+        
+            // Debug log: Paddle position after move
+            console.log(`Paddle Y after move: ${paddleLeft.pgm.position.y}`);
+        }
+    }
+}
+
 // Game loop
 function animate() {
 
-    // Update paddle positions based on input
-    if(input.upPress == true && ((paddleRight.pgm.position.y + (paddleRight.paddleSizeY / 2)) < 5.5))
-    {
+    // arrow key control
+    if (input.upPress && paddleRight.pgm.position.y + paddleRight.paddleSizeY / 2 < 5.5) {
         paddleRight.pgm.position.y += input.rightPaddleSpeed;
-    }
-    else if(input.dnPress == true && (paddleRight.pgm.position.y - (paddleRight.paddleSizeY / 2) > -5.5))
-    {
+    } else if (input.dnPress && paddleRight.pgm.position.y - paddleRight.paddleSizeY / 2 > -5.5) {
         paddleRight.pgm.position.y -= input.rightPaddleSpeed;
     }
 
-    if(input.wPress == true && ((paddleLeft.pgm.position.y + (paddleLeft.paddleSizeY / 2)) < 5.5))
-    {
-        paddleLeft.pgm.position.y += input.leftPaddleSpeed;
-    }
-    else if(input.sPress == true && ((paddleLeft.pgm.position.y - (paddleLeft.paddleSizeY / 2)) > -5.5))
-    {
-        paddleLeft.pgm.position.y -= input.leftPaddleSpeed;
+    // w s key control
+    if (mode === 'multi') {
+        if (input.wPress && paddleLeft.pgm.position.y + paddleLeft.paddleSizeY / 2 < 5.5) {
+            paddleLeft.pgm.position.y += input.leftPaddleSpeed;
+        } else if (input.sPress && paddleLeft.pgm.position.y - paddleLeft.paddleSizeY / 2 > -5.5) {
+            paddleLeft.pgm.position.y -= input.leftPaddleSpeed;
+        }
+    } else if (mode === 'single') {
+        botControl();
     }
 
     // Update ball position
@@ -307,7 +349,9 @@ function waitingForPlayers() {
         return div;
     };
 
-    waitingP1Div = createWaitingDiv("press w", "50%", "40%");
+    if (mode == "multi") {
+        waitingP1Div = createWaitingDiv("press w", "50%", "40%");
+    }
     waitingP2Div = createWaitingDiv("press ↑", "50%", "60%");
 
     waitingPlayersDisplayed = true;
@@ -315,7 +359,7 @@ function waitingForPlayers() {
 
 function checkReadyState() {
     renderer.render(scene, camera);
-    if (input.wPress == true && document.body.contains(waitingP1Div)) {
+    if (mode == 'multi' && input.wPress == true && document.body.contains(waitingP1Div)) {
         console.log("left ready, removing waitingP1Div");
         document.body.removeChild(waitingP1Div);
     }
@@ -324,7 +368,7 @@ function checkReadyState() {
         document.body.removeChild(waitingP2Div);
     }
 
-    if (!isGameStarted && input.wPress && input.upPress) {
+    if (!isGameStarted && input.upPress && mode == "single" || (mode == "multi" && input.wPress && input.upPress)) {
         console.log("Both players are ready. Starting countdown...");
         startCountdown();
     } else {

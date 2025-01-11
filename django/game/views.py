@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 @login_required
-def match(req):
-	return render(req, 'match.html')
+def match(req, mode):
+	return render(req, 'match.html', {'mode' : mode})
 
 def waiting(req):
 	return render(req, 'waiting_room.html')
