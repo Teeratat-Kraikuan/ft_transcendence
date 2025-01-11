@@ -310,17 +310,17 @@ def edit_user_profile(req):
                 profile_image = req.FILES.get('profile_image')
                 banner_image = req.FILES.get('banner_image')
                 description = req.POST.get('description')
-                if profile_image and profile.avatar and profile.avatar.url != '/media/default/default_avatar.png':
-                    old_avatar_path = profile.avatar.path
-                    if os.path.exists(old_avatar_path):
-                        os.remove(old_avatar_path)
-                if banner_image and profile.banner and profile.banner.url != '/media/default/default_banner.png':
-                    old_banner_path = profile.banner.path
-                    if os.path.exists(old_banner_path):
-                        os.remove(old_banner_path)
                 if profile_image:
+                    if profile.avatar and profile.avatar != 'default/default_avatar.png':
+                        old_avatar_path = profile.avatar.path
+                        if os.path.exists(old_avatar_path):
+                            os.remove(old_avatar_path)
                     profile.avatar = profile_image
                 if banner_image:
+                    if profile.banner and profile.banner != 'default/default_banner.png':
+                        old_banner_path = profile.banner.path
+                        if os.path.exists(old_banner_path):
+                            os.remove(old_banner_path)
                     profile.banner = banner_image
                 if description and description != profile.description:
                     profile.description = description
@@ -389,6 +389,8 @@ def change_2fa(req):
     except Exception as e:
         return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
 
+@login_required
+@require_POST
 def change_visibility(req):
     try: 
         body = json.loads(req.body)
@@ -404,6 +406,7 @@ def change_visibility(req):
                 old_banner_path = user.profile.banner.path
                 if os.path.exists(old_banner_path):
                     os.remove(old_banner_path)
+            user.profile.description = 'I am the winner'
             user.profile.avatar = 'default/default_avatar.png'
             user.profile.banner = 'default/default_banner.png'
             user.profile.save()
@@ -417,6 +420,29 @@ def change_visibility(req):
         return JsonResponse({'message': 'Invalid JSON data.'}, status=400)
     except Exception as e:
         return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
+
+@login_required
+@require_POST
+def delete_account(req):
+    if req.method == 'POST':
+        print("----TEST DELETE----")
+        user = req.user
+        print("Delete account: ", user.username)
+        if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+            old_avatar_path = user.profile.avatar.path
+            if os.path.exists(old_avatar_path):
+                os.remove(old_avatar_path)
+        if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+            old_banner_path = user.profile.banner.path
+            if os.path.exists(old_banner_path):
+                os.remove(old_banner_path)
+        print("Image already deleted")
+        get_user_match_history(user.username, delete=True)
+        print("Remove match history")
+        user.delete()
+        print("Delete account success")
+        return JsonResponse({'message': 'Account deleted'}, status=200)
+    return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 # Utilize functions
 

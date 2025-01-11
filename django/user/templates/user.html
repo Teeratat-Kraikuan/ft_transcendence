@@ -53,6 +53,7 @@
 		</div>
 	</div>
 </div>
+
 <div class="w-100 position-relative d-flex flex-grow-1 my-lg-0">
 	<div class="w-100 d-flex flex-column flex-lg-row justify-content-center">
 		<div class="col-lg-9 col-12">
@@ -71,7 +72,7 @@
 					<div class="col-lg-5 col-12 d-flex justify-content-lg-start justify-content-center">
 						<div class="text-center text-lg-start">
 							<h5>
-								{{ username }}
+								{{ username }} {% if is_anonymous %} <i class="fa-solid fa-eye-slash" style="font-size: small;"></i> {% endif %}
 							</h5>
 							<span style="opacity: 70%;">
 								{{ description }}
@@ -82,13 +83,15 @@
 					<div class="col-lg-4 col-12 ms-auto text-end">
 
 						<!-- Own Profile -->
-						{% if request.user.username == username %}
+						{% if request.user.username == username%}
+							{% if not is_anonymous %}
 							<a onclick="showEdit()">
 								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
 									<i class="fa-solid fa-pencil"></i>
 									Edit
 								</button>
 							</a>
+							{% endif %}
 						{% elif is_friend %}
 						<div>
 							<a onclick="">

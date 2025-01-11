@@ -12,6 +12,7 @@ urlpatterns = [
 	path('v1/agree_privacy/', views.agree_privacy),
 	path('v1/change-2fa/', views.change_2fa),
 	path('v1/anonymize_data/', views.change_visibility),
+	path('v1/delete_account/', views.delete_account),
 
 	# Profile Management
 	path('v1/profile/<str:username>/', views.profile),
