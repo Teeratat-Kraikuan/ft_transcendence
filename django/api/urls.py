@@ -11,6 +11,7 @@ urlpatterns = [
 	path('v1/edit_user_profile/', views.edit_user_profile),
 	path('v1/agree_privacy/', views.agree_privacy),
 	path('v1/change-2fa/', views.change_2fa),
+	path('v1/anonymize_data/', views.change_visibility),
 
 	# Profile Management
 	path('v1/profile/<str:username>/', views.profile),

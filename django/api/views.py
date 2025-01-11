@@ -388,7 +388,36 @@ def change_2fa(req):
         return JsonResponse({'message': 'Invalid JSON data.'}, status=400)
     except Exception as e:
         return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
-    
+
+def change_visibility(req):
+    try: 
+        body = json.loads(req.body)
+        user = req.user
+        enabled = body.get('enable', False)
+        if enabled:
+            user.profile.is_anonymous = True
+            if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+                old_avatar_path = user.profile.avatar.path
+                if os.path.exists(old_avatar_path):
+                    os.remove(old_avatar_path)
+            if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+                old_banner_path = user.profile.banner.path
+                if os.path.exists(old_banner_path):
+                    os.remove(old_banner_path)
+            user.profile.avatar = 'default/default_avatar.png'
+            user.profile.banner = 'default/default_banner.png'
+            user.profile.save()
+            get_user_match_history(user.username, delete=True)
+            return JsonResponse({ 'message': 'Anonymous enabled'}, status=200)
+        else:
+            user.profile.is_anonymous = False
+            user.profile.save()
+            return JsonResponse({'message': 'Anonymous disabled'}, status=200)
+    except json.JSONDecodeError:
+        return JsonResponse({'message': 'Invalid JSON data.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
+
 # Utilize functions
 
 def get_user_profile_data(username):
@@ -410,6 +439,7 @@ def get_user_profile_data(username):
         'banner': profile.banner.url if profile.banner else None,
         'description': profile.description,
         'is_student': profile.is_student,
+        'is_anonymous': profile.is_anonymous,
         'friends': list(profile.friends.order_by('user__username').values_list('user__username', flat=True)),
         'pending_friend_requests': [
             {'sender_username': fr.sender.username, 'timestamp': fr.timestamp}
@@ -417,22 +447,33 @@ def get_user_profile_data(username):
         ],
     }
 
-def get_user_match_history(username):
+def get_user_anonymous_name(username):
+    if is_user_anonymous(username):
+        return 'Anonymous'
+    else:
+        return username
+
+def get_user_match_history(username, delete=False):
     """
     Utility function to fetch match history related to a specific user.
     Returns a list of dictionaries, each representing a match.
     Raises `User.DoesNotExist` if the user is not found.
     """
     user = User.objects.get(username=username)
+    if delete:
+        matches_deleted, _ = MatchHistory.objects.filter(Q(player1=user) | Q(player2=user)).delete()
+        return {"message": f"{matches_deleted} matches deleted for user {username}."}
+
 
     # Fetch matches where the user is player1 or player2
     matches = MatchHistory.objects.filter(Q(player1=user) | Q(player2=user)).order_by('-start_time')
-
     # Serialize match data
     match_history = []
     for match in matches:
         match_history.append({
             'id': match.id,
+            # 'player1': get_user_anonymous_name(match.player1.username),
+            # 'player2': get_user_anonymous_name(match.player2.username),
             'player1': match.player1.username,
             'player2': match.player2.username,
 			'game_type': match.game_type,
@@ -503,6 +544,10 @@ def is_user_online(user):
         timeout_period = timedelta(seconds=300)
         return now() - last_activity < timeout_period
     return False
+
+def is_user_anonymous(username):
+    profile = get_user_profile_data(username)
+    return profile['is_anonymous']
 
 # TOTP 2FA
 def get_user_totp_device(self, user, confirmed=None):

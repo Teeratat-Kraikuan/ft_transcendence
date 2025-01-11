@@ -30,7 +30,8 @@ def audience_visibility(req):
 
 @login_required
 def manage_profile(req):
-	return render(req, 'manage_profile.html')
+	enableAnonymize = req.user.profile.is_anonymous
+	return render(req, 'manage_profile.html', {'enableAnonymize': enableAnonymize})
 
 @login_required
 def manage_blocking(req):

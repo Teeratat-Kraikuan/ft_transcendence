@@ -13,6 +13,7 @@ class Profile(models.Model):
 	is_student = models.BooleanField(default=False)
 	is_agree_privacy = models.BooleanField(default=False)
 	is_2fa_enabled = models.BooleanField(default=False)
+	is_anonymous = models.BooleanField(default=False)
 	last_activity = models.DateTimeField(null=True, blank=True)
 
 	def __str__(self):
