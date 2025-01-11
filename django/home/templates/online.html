@@ -1,6 +1,10 @@
 {% extends "navbar.html" %}
 {% load static %}
 
+{% block header %}
+	<script src="{% static 'js/online.js' %}" defer></script>
+{% endblock %}
+
 {% block navbar %}
 <div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-01">
 	<div class="w-100 my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2">
@@ -14,14 +18,11 @@
 				<h2>Online Game</h2>
 				<p>Enjoy with your friends!</p>
 			</div>
-			<form action="/api/v1/game/entry_online_game/" method="POST">
-				{% csrf_token %}
 				<input type="hidden" id="submit-action" name="type" value="">
-				<button type="submit" class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" onclick="document.getElementById('submit-action').value='create';">Create</button>
+				<button type="submit" id="createMatchBtn" class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" onclick="document.getElementById('submit-action').value='create';">Create</button>
 				<div class="separator text-secondary animate-slide-1 delay-150" style="--animation-order:2">Or</div>
-				<input class="btn btn-secondary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:3" type="text" name="code" placeholder="code">
-				<button type="submit" class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" onclick="document.getElementById('submit-action').value='join';">Join</button>
-			</form>
+				<input id="matchCodeInput" class="btn btn-secondary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:3" type="text" name="code" placeholder="code">
+				<button type="submit" id="joinMatchBtn" class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" onclick="document.getElementById('submit-action').value='join';">Join</button>
 			<a class="text-light text-decoration-none fw-bold" href="/home/">
 				<i class="fa-solid fa-chevron-left"></i>
 				Back

@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.timezone import now
@@ -45,3 +46,28 @@ class MatchHistory(models.Model):
     
     def __str__(self):
         return f"Match: {self.player1} vs {self.player2} ({self.start_time})"
+
+def generate_unique_match_id():
+    return str(uuid.uuid4())[:8]
+
+class MatchRoom(models.Model):
+    match_id = models.CharField(
+        max_length=50,
+        unique=True,
+        default=generate_unique_match_id
+    )
+    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hosted_matches')
+    player2 = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='joined_matches')
+    started = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.match_id
+
+    @property
+    def is_full(self):
+        return self.player2 is not None
+
+    @property
+    def can_join(self):
+        return not self.started and not self.is_full

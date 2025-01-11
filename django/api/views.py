@@ -4,18 +4,14 @@ import json
 import qrcode
 import base64
 import random
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.db.models import Q, Sum, Count
 from django.utils.timezone import now
-from django.views.decorators.http import require_GET, require_POST
 from django_otp import devices_for_user
 from django_otp.plugins.otp_totp.models import TOTPDevice
-from django.shortcuts import render
 from rest_framework import views, permissions
 from rest_framework.response import Response
 from rest_framework import status
@@ -25,8 +21,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import timedelta
 from user.models import Profile, FriendRequest
-from game.models import MatchHistory
+from game.models import MatchHistory, MatchRoom
 from menu.models import Notification
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import AnonymousUser
 import logging
 
@@ -500,6 +497,54 @@ def entry_online_game(req):
         room_code = req.POST.get('code')
         print(f"Join room: {room_code}")             
     return Response({'message': 'Room code created'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_matchroom(request):
+    try:
+        match = MatchRoom.objects.create(host=request.user)
+        return Response({
+            'message': 'Matchroom created successfully',
+            'match_id': match.match_id
+        }, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        print("Error: ", e)
+        return Response({
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def join_matchroom(request):
+    try:
+        body = request.data
+        match_id = body.get('match_id')
+
+        if not match_id:
+            return Response({'message': 'match_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        match = get_object_or_404(MatchRoom, match_id=match_id)
+
+        if match.host == request.user:
+            return Response({'message': 'You cannot join your own match.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not match.can_join:
+            return Response({'message': 'Match is either full or already started.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        match.player2 = request.user
+        match.started = True
+        match.save()
+
+        return Response({
+            'message': 'Joined match successfully',
+            'match_id': match.match_id
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 # Utilize functions
 
