@@ -56,6 +56,7 @@ function submitEditForm(username) {
 
     fetch(editApiEndpoint, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'X-CSRFToken': csrfToken
         },

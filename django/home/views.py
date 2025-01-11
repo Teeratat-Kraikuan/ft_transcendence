@@ -4,6 +4,9 @@ from django.template import loader
 from django.contrib.auth.models import User
 from user.models import FriendRequest
 from django.contrib.staticfiles import finders
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 import random
 

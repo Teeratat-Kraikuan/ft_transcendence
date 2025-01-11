@@ -19,12 +19,92 @@ from django.shortcuts import render
 from rest_framework import views, permissions
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from datetime import timedelta
 from user.models import Profile, FriendRequest
 from game.models import MatchHistory
 from menu.models import Notification
+from django.contrib.auth.models import AnonymousUser
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
+class LoginWithJWT(APIView):
+    permission_classes = []
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        twofa_code = request.data.get('twofa_code', None)
+
+        if not email or not password:
+            return Response(
+                {'message': 'Email and password are required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = authenticate(username=email, password=password)
+        if user is None:
+            return Response(
+                {'message': 'Invalid email or password.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if hasattr(user, 'profile') and user.profile.is_2fa_enabled:
+            if not twofa_code:
+                return Response(
+                    {'message': '2FA code is required.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            try:
+                device = TOTPDevice.objects.get(user=user, name='default')
+            except TOTPDevice.DoesNotExist:
+                return Response(
+                    {'message': '2FA is enabled but no TOTP device found.'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+            if not device.verify_token(twofa_code):
+                return Response(
+                    {'message': 'Invalid 2FA code.'},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
+        response = Response({"message": "Login successful"}, status=status.HTTP_200_OK)
+
+        response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=True,
+            samesite='Strict',
+            secure=True
+        )
+        response.set_cookie(
+            key='refresh_token',
+            value=refresh_token,
+            httponly=True,
+            samesite='Strict',
+            secure=True
+        )
+        return response
+    
+class LogoutJWT(APIView):
+    permission_classes = []
+
+    def post(self, request):
+        response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response
+    
 def login(req):
     if req.method == 'POST':
         email = req.POST.get('email')
@@ -119,103 +199,94 @@ def register(req):
 
     return JsonResponse({'message': 'Invalid request method'}, status=405)
 
-@login_required
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def change_username(req):
-    if req.method == 'POST':
-        new_username = req.POST.get('new_username', '').strip()
+    new_username = req.POST.get('new_username', '').strip()
 
-        if not new_username:
-            return JsonResponse({'message': 'New username is required.'}, status=400)
+    if not new_username:
+        return Response({'message': 'New username is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not re.match(r'^[a-zA-Z0-9_.-]{3,30}$', new_username):
-            return JsonResponse({'message': 'Username must be 3-30 characters long and can only contain letters, numbers, underscores, dots, or hyphens.'}, status=400)
+    if not re.match(r'^[a-zA-Z0-9_.-]{3,30}$', new_username):
+        return Response({'message': 'Username must be 3-30 characters long and can only contain letters, numbers, underscores, dots, or hyphens.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if User.objects.filter(username=new_username).exists():
-            return JsonResponse({'message': 'Username already taken.'}, status=400)
+    if User.objects.filter(username=new_username).exists():
+        return Response({'message': 'Username already taken.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        req.user.username = new_username
-        req.user.save()
-        return JsonResponse({'message': 'Username changed successfully'}, status=200)
+    req.user.username = new_username
+    req.user.save()
+    return Response({'message': 'Username changed successfully'}, status=status.HTTP_200_OK)
 
-    return JsonResponse({'message': 'Invalid request method'}, status=405)
-
-@login_required
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def change_password(req):
-    if req.method == 'POST':
-        old_password = req.POST.get('old_password', '')
-        new_password = req.POST.get('new_password', '')
-        repeat_password = req.POST.get('repeat_password', '')
+    old_password = req.POST.get('old_password', '')
+    new_password = req.POST.get('new_password', '')
+    repeat_password = req.POST.get('repeat_password', '')
 
-        if not old_password or not new_password or not repeat_password:
-            return JsonResponse({'message': 'All fields are required.'}, status=400)
+    if not old_password or not new_password or not repeat_password:
+        return Response({'message': 'All fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not req.user.check_password(old_password):
-            return JsonResponse({'message': 'Invalid old password.'}, status=400)
+    if not req.user.check_password(old_password):
+        return Response({'message': 'Invalid old password.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if new_password != repeat_password:
-            return JsonResponse({'message': 'Passwords do not match.'}, status=400)
+    if new_password != repeat_password:
+        return Response({'message': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if len(new_password) < 8:
-            return JsonResponse({'message': 'Password must be at least 8 characters long.'}, status=400)
+    if len(new_password) < 8:
+        return Response({'message': 'Password must be at least 8 characters long.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not any(char.islower() for char in new_password):
-            return JsonResponse({'message': 'Password must contain at least one lowercase letter.'}, status=400)
+    if not any(char.islower() for char in new_password):
+        return Response({'message': 'Password must contain at least one lowercase letter.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not any(char.isupper() for char in new_password):
-            return JsonResponse({'message': 'Password must contain at least one uppercase letter.'}, status=400)
+    if not any(char.isupper() for char in new_password):
+        return Response({'message': 'Password must contain at least one uppercase letter.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not any(char.isdigit() for char in new_password):
-            return JsonResponse({'message': 'Password must contain at least one digit.'}, status=400)
+    if not any(char.isdigit() for char in new_password):
+        return Response({'message': 'Password must contain at least one digit.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not any(char in "!@#$%^&*()-_=+[]{}|;:',.<>?/`~" for char in new_password):
-            return JsonResponse({'message': 'Password must contain at least one special character.'}, status=400)
+    if not any(char in "!@#$%^&*()-_=+[]{}|;:',.<>?/`~" for char in new_password):
+        return Response({'message': 'Password must contain at least one special character.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        req.user.set_password(new_password)
-        req.user.save()
-        return JsonResponse({'message': 'Password changed successfully'}, status=200)
+    req.user.set_password(new_password)
+    req.user.save()
+    return Response({'message': 'Password changed successfully'}, status=status.HTTP_200_OK)
 
-    return JsonResponse({'message': 'Invalid request method'}, status=405)
-
-@login_required
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def profile(req, username):
 	try:
 		context = get_user_profile_data(username)
-		return JsonResponse(context, status=200)
+		return Response(context, status=status.HTTP_200_OK)
 	except User.DoesNotExist:
-		return JsonResponse({'message': 'User not found'}, status=404)
+		return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 	except Exception as e:
-		return JsonResponse({'message': str(e)}, status=500)
+		return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@login_required
-@require_POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def send_friend_request(req):
     try:
-        # Parse JSON body
         body = json.loads(req.body)
         friend_username = body.get('friend_username')
         
         if not friend_username:
-            return JsonResponse({'message': 'Friend username is required.'}, status=400)
+            return Response({'message': 'Friend username is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Prevent sending a request to oneself
         if req.user.username == friend_username:
-            return JsonResponse({'message': 'You cannot send a friend request to yourself.'}, status=400)
+            return Response({'message': 'You cannot send a friend request to yourself.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Fetch the receiver user
         try:
             receiver = User.objects.get(username=friend_username)
         except User.DoesNotExist:
-            return JsonResponse({'message': 'User not found.'}, status=404)
+            return Response({'message': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Check if a FriendRequest already exists
         if FriendRequest.objects.filter(sender=req.user, receiver=receiver, status='pending').exists():
-            return JsonResponse({'message': 'Friend request already sent.'}, status=400)
+            return Response({'message': 'Friend request already sent.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if they are already friends
         if receiver.profile in req.user.profile.friends.all():
-            return JsonResponse({'message': 'You are already friends.'}, status=400)
+            return Response({'message': 'You are already friends.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create a new FriendRequest
         FriendRequest.objects.create(sender=req.user, receiver=receiver)
         Notification.objects.create(
             user=receiver,
@@ -224,86 +295,80 @@ def send_friend_request(req):
             friend_request=FriendRequest.objects.get(sender=req.user, receiver=receiver, status='pending')
         )
 
-        return JsonResponse({'message': 'Friend request sent.'}, status=200)
+        return Response({'message': 'Friend request sent.'}, status=status.HTTP_200_OK)
 
     except json.JSONDecodeError:
-        return JsonResponse({'message': 'Invalid JSON data.'}, status=400)
+        return Response({'message': 'Invalid JSON data.'}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
+        return Response({'message': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 	
-@login_required
-@require_POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def accept_friend_request(req):
     try:
-        # Get the sender's username from the request data
         body = json.loads(req.body)
         sender_username = body.get('sender_username')
         if not sender_username:
-            return JsonResponse({'message': 'Sender username is required.'}, status=400)
+            return Response({'message': 'Sender username is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Fetch the sender user
         try:
             print(sender_username)
             sender = User.objects.get(username=sender_username)
         except User.DoesNotExist:
-            return JsonResponse({'message': 'Sender not found.'}, status=404)
+            return Response({'message': 'Sender not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Fetch the FriendRequest
         try:
             friend_request = FriendRequest.objects.get(sender=sender, receiver=req.user, status='pending')
         except FriendRequest.DoesNotExist:
-            return JsonResponse({'message': 'No pending friend request from this user.'}, status=404)
+            return Response({'message': 'No pending friend request from this user.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Update the status to accepted
         friend_request.status = 'accepted'
         friend_request.save()
 
-        # Add each other as friends
         req.user.profile.friends.add(sender.profile)
         sender.profile.friends.add(req.user.profile)
 
-        return JsonResponse({'message': 'Friend request accepted.'}, status=200)
+        return Response({'message': 'Friend request accepted.'}, status=status.HTTP_200_OK)
 
     except Exception as e:
-        return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
+        return Response({'message': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@login_required
-@require_POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def decline_friend_request(req):
     try:
-        # Get the sender's username from the request data
         body = json.loads(req.body)
         sender_username = body.get('sender_username')
         if not sender_username:
-            return JsonResponse({'message': 'Sender username is required.'}, status=400)
+            return Response({'message': 'Sender username is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Fetch the sender user
         try:
             sender = User.objects.get(username=sender_username)
         except User.DoesNotExist:
-            return JsonResponse({'message': 'Sender not found.'}, status=404)
+            return Response({'message': 'Sender not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Fetch the FriendRequest
         try:
             friend_request = FriendRequest.objects.get(sender=sender, receiver=req.user, status='pending')
         except FriendRequest.DoesNotExist:
-            return JsonResponse({'message': 'No pending friend request from this user.'}, status=404)
+            return Response({'message': 'No pending friend request from this user.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Update the status to declined
         friend_request.status = 'declined'
         friend_request.save()
 
-        return JsonResponse({'message': 'Friend request declined.'}, status=200)
+        return Response({'message': 'Friend request declined.'}, status=status.HTTP_200_OK)
 
     except Exception as e:
-        return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
+        return Response({'message': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-@login_required
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def list_notifications(req):
-    # Fetch all notifications for the logged-in user, most recent first
+    logger.debug(f"User: {req.user}, Is Authenticated: {req.user.is_authenticated}")
+    if isinstance(req.user, AnonymousUser):
+        return Response({'message': 'Unauthorized user'}, status=status.HTTP_401_UNAUTHORIZED)
+    
     notifications = Notification.objects.filter(user=req.user).order_by('-created_at')
 
-    # Serialize notifications into a list of dicts
     data = []
     for n in notifications:
 
@@ -323,83 +388,75 @@ def list_notifications(req):
             'created_at': n.created_at.strftime('%Y-%m-%d %H:%M:%S')
         })
 
-    return JsonResponse(data, safe=False, status=200)
+    return Response(data, status=status.HTTP_200_OK)
 
-@login_required
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def mark_notification_as_read(req):
-    if req.method == 'POST':
-        notification_id = req.POST.get('notification_id')
-        if not notification_id:
-            return JsonResponse({'message': 'notification_id is required'}, status=400)
+    notification_id = req.POST.get('notification_id')
+    if not notification_id:
+        return Response({'message': 'notification_id is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            notification = Notification.objects.get(id=notification_id, user=req.user)
-        except Notification.DoesNotExist:
-            return JsonResponse({'message': 'Notification not found'}, status=404)
+    try:
+        notification = Notification.objects.get(id=notification_id, user=req.user)
+    except Notification.DoesNotExist:
+        return Response({'message': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        notification.is_read = True
-        notification.save()
-        return JsonResponse({'message': 'Notification marked as read'}, status=200)
+    notification.is_read = True
+    notification.save()
+    return Response({'message': 'Notification marked as read'}, status=status.HTTP_200_OK)
 
-    return JsonResponse({'message': 'Invalid request method'}, status=405)
-
-@login_required
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def remove_notification(req):
-    if req.method == 'POST':
-        body = json.loads(req.body)
-        notification_id = body.get('notification_id')
-        if not notification_id:
-            return JsonResponse({'message': 'notification_id is required'}, status=400)
+    body = json.loads(req.body)
+    notification_id = body.get('notification_id')
+    if not notification_id:
+        return Response({'message': 'notification_id is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            notification = Notification.objects.get(id=notification_id, user=req.user)
-        except Notification.DoesNotExist:
-            return JsonResponse({'message': 'Notification not found'}, status=404)
+    try:
+        notification = Notification.objects.get(id=notification_id, user=req.user)
+    except Notification.DoesNotExist:
+        return Response({'message': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        notification.delete()
-        return JsonResponse({'message': 'Notification removed'}, status=200)
+    notification.delete()
+    return Response({'message': 'Notification removed'}, status=status.HTTP_200_OK)
 
-    return JsonResponse({'message': 'Invalid request method'}, status=405)
-
-@login_required
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def edit_user_profile(req):
-    print("----TEST EDIT----") # Debug
-    if req.method == 'POST':
-        username = req.POST.get('username')
-        if req.POST.get('submit') == 'edit' and username:
+    username = req.POST.get('username')
+    if req.POST.get('submit') == 'edit' and username:
 
-            profile_image = req.FILES.get('profile_image')
-            banner_image = req.FILES.get('banner_image')
-            description = req.POST.get('description')
-            print(f"TEST EDIT : {description}, {profile_image}, {banner_image}") # Debug
+        profile_image = req.FILES.get('profile_image')
+        banner_image = req.FILES.get('banner_image')
+        description = req.POST.get('description')
 
-            user = User.objects.get(username=username)
-            profile = Profile.objects.get(user=user)
+        user = User.objects.get(username=username)
+        profile = Profile.objects.get(user=user)
 
-            if profile_image:
-                profile.avatar = profile_image
-            if banner_image:
-                profile.banner = banner_image
-            if description and description != profile.description:
-                profile.description = description
-            profile.save()
-            return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
-        else:
-            return JsonResponse({'success': False, 'errors': 'Invalid submission.'}, status=400)
+        if profile_image:
+            profile.avatar = profile_image
+        if banner_image:
+            profile.banner = banner_image
+        if description and description != profile.description:
+            profile.description = description
+        profile.save()
+        return Response({'success': True, 'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)
 
-@login_required
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def agree_privacy(req):
-    print("----TEST PRIVACY----")
-    if req.method == "POST":
-        is_agree_privacy = req.POST.get("is_agree_privacy") == "true"
-        if is_agree_privacy:
-            user = req.user
-            user.profile.is_agree_privacy = True
-            user.profile.save()
-    return JsonResponse({'message': 'Privacy agreement updated'}, status=200)
+    is_agree_privacy = req.POST.get("is_agree_privacy") == "true"
+    if is_agree_privacy:
+        user = req.user
+        user.profile.is_agree_privacy = True
+        user.profile.save()
+        return Response({'message': 'Privacy policy agreed'}, status=status.HTTP_200_OK)
+    return Response({'message': 'Privacy policy not agreed'}, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
-@require_POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def change_2fa(req):
     try: 
         body = json.loads(req.body)
@@ -419,28 +476,34 @@ def change_2fa(req):
 
             img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-            return JsonResponse({
+            return Response({
                     'message': '2FA enabled',
                     'qr_code': img_str,
                     'config_url': device.config_url
-                }, status=200)
+                }, status=status.HTTP_200_OK)
         else:
             user.profile.is_2fa_enabled = False
             user.profile.save()
-            return JsonResponse({'message': '2FA disabled'}, status=200)
+            return Response({'message': '2FA disabled'}, status=status.HTTP_200_OK)
     except json.JSONDecodeError:
-        return JsonResponse({'message': 'Invalid JSON data.'}, status=400)
+        return Response({'message': 'Invalid JSON data.'}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return JsonResponse({'message': f'An error occurred: {str(e)}'}, status=500)
+        return Response({'message': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def entry_online_game(req):
+    if req.POST.get('type') == 'create':
+        room_code = str(random.randint(111111,999999))
+        print(f"Create room: {room_code}")
+    elif req.POST.get('type') == 'join':
+        room_code = req.POST.get('code')
+        print(f"Join room: {room_code}")             
+    return Response({'message': 'Room code created'}, status=status.HTTP_200_OK)
     
 # Utilize functions
 
 def get_user_profile_data(username):
-    """
-    Utility function to fetch user and profile data.
-    Returns a dictionary with the user's profile information.
-    Raises `User.DoesNotExist` if the user is not found.
-    """
     user = User.objects.get(username=username)
     profile, created = Profile.objects.get_or_create(user=user)
 
@@ -462,17 +525,10 @@ def get_user_profile_data(username):
     }
 
 def get_user_match_history(username):
-    """
-    Utility function to fetch match history related to a specific user.
-    Returns a list of dictionaries, each representing a match.
-    Raises `User.DoesNotExist` if the user is not found.
-    """
     user = User.objects.get(username=username)
 
-    # Fetch matches where the user is player1 or player2
     matches = MatchHistory.objects.filter(Q(player1=user) | Q(player2=user)).order_by('-start_time')
 
-    # Serialize match data
     match_history = []
     for match in matches:
         match_history.append({
@@ -496,26 +552,16 @@ def get_user_match_history(username):
     }
 
 def get_user_match_summary(username):
-    """
-    Utility function to fetch the match summary for a specific user.
-    Returns a dictionary containing the user's wins, losses, total matches played, 
-    goals scored, goals conceded, win rate, and goal difference.
-    Raises `User.DoesNotExist` if the user is not found.
-    """
     user = User.objects.get(username=username)
 
-    # Fetch matches where the user participated
     matches = MatchHistory.objects.filter(Q(player1=user) | Q(player2=user))
 
-    # Wins
     wins = matches.filter(winner=user).count()
 
-    # Losses (total matches played - wins - draws)
     total_matches = matches.count()
     draws = matches.filter(is_draw=True).count()
     losses = total_matches - wins - draws
 
-    # Goals Scored and Conceded
     goals_scored_as_player1 = matches.filter(player1=user).aggregate(total=Sum('player1_score'))['total'] or 0
     goals_scored_as_player2 = matches.filter(player2=user).aggregate(total=Sum('player2_score'))['total'] or 0
     goals_scored = goals_scored_as_player1 + goals_scored_as_player2
@@ -524,10 +570,9 @@ def get_user_match_summary(username):
     goals_conceded_as_player2 = matches.filter(player2=user).aggregate(total=Sum('player1_score'))['total'] or 0
     goals_conceded = goals_conceded_as_player1 + goals_conceded_as_player2
 
-    # Win Rate
     win_rate = (wins / total_matches * 100) if total_matches > 0 else 0
 
-    # Goal Difference
+
     goal_difference = goals_scored - goals_conceded
 
     return {
@@ -574,15 +619,3 @@ class TOTPVerifyView(views.APIView):
                 device.save()
             return Response(True, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    
-def entry_online_game(req):
-    if req.method == 'POST':
-        print("----TEST GAME----")
-        if req.POST.get('type') == 'create':
-            room_code = str(random.randint(111111,999999))
-            print(f"Create room: {room_code}")
-        elif req.POST.get('type') == 'join':
-            room_code = req.POST.get('code')
-            print(f"Join room: {room_code}")             
-        return JsonResponse({'message': 'Room code created'}, status=200)
-    return JsonResponse({'message': 'Invalid request method'}, status=405)

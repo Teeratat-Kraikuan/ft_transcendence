@@ -10,6 +10,7 @@ from user.models import Profile, FriendRequest
 from api.views import get_user_profile_data, get_user_match_history, get_user_match_summary, is_user_online
 from django.middleware.csrf import get_token
 from requests_oauthlib import OAuth2Session
+from rest_framework_simplejwt.tokens import RefreshToken
 import requests
 import mimetypes
 import hashlib
@@ -36,6 +37,7 @@ def signup(req):
 	return render(req, 'signup.html')
 
 def logout(req):
+	print("user authehnticated", req.user.is_authenticated)
 	if not req.user.is_authenticated:
 		return redirect('home')
 	return render(req, 'logout.html')
@@ -74,20 +76,43 @@ def user(req, username):
 		return render(req, '404.html', {'message': str(e)}, status=500)
 
 def oauth_login(req, user_data):
-	email = user_data.get('email')
-	password = hashlib.sha256(str(os.environ['CLIENT_SECRET']).encode('utf-8')).hexdigest()
-	user = authenticate(req, username=email, password=password)
-	if user is not None:
-		auth_login(req, user)
-		next_page = req.session.get('_next', '/home')
-		if req.session.get('_next', False):
-			del req.session['_next']
-		login = redirect(next_page)
-		login.set_cookie('loggedin', 'true', samesite='Lax', max_age=req.session.get_expiry_age())
-		return login
-		# return JsonResponse({'message': 'Login successful'}, status=200)
-	return redirect("/login")
-	# return JsonResponse({'message': 'Invalid email or password.'}, status=401)
+    email = user_data.get('email')
+    password = hashlib.sha256(str(os.environ['CLIENT_SECRET']).encode('utf-8')).hexdigest()
+    user = authenticate(req, username=email, password=password)
+    
+    if user is not None:
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
+        next_page = req.session.get('_next', '/home')
+        if req.session.get('_next', False):
+            del req.session['_next']
+        
+        login_response = redirect(next_page)
+        login_response.set_cookie(
+            key='loggedin', 
+            value='true', 
+            samesite='Lax', 
+            max_age=req.session.get_expiry_age()
+        )
+        login_response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=True,
+            samesite='Strict',
+            secure=True
+        )
+        login_response.set_cookie(
+            key='refresh_token',
+            value=refresh_token,
+            httponly=True,
+            samesite='Strict',
+            secure=True
+        )
+        return login_response
+    return redirect("/login")
 
 def download_image(url:str, name:str):
 	response = requests.get(url, stream=True)

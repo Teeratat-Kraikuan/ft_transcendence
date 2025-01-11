@@ -51,6 +51,7 @@ export default (function (){
 			console.log(`Submitting to ${url}...`);
 			var xhttp = new XMLHttpRequest();
 			xhttp.open(target.method || "POST", url, true);
+			xhttp.withCredentials = true;
 			if (csrftoken)
 				xhttp.setRequestHeader("X-CSRFToken", csrftoken[1]);
 			xhttp.setRequestHeader("Accept", "application/json");

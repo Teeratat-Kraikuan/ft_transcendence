@@ -33,6 +33,7 @@
         const csrftoken = getCookie('csrftoken');
         const response = await fetch('/api/v1/change-2fa/', {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken,

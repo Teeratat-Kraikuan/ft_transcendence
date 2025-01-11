@@ -2,7 +2,18 @@
 
 (async function(){
 	try {
-		await fetch("/api/v1/logout/");
+        const response = await fetch("/api/v2/logout/", {
+            method: "POST",
+            credentials: "include",
+        });
+
+        if (!response.ok) {
+            console.error(`Logout failed: ${response.status}`);
+            alert("Failed to log out. Please try again.");
+            return;
+        }
+
+		console.log("Logged out successfully.");
 		
 		const redirect = (url) => {
 			console.log(`Routing to ${url} ...`);

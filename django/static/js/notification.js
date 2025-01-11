@@ -60,6 +60,7 @@
 		button.onclick = async function () {
 			const accept = await (await fetch('/api/v1/friend_request/accept/', {
 				method: 'POST',
+				credentials: 'include',
 				headers: {
 					'X-CSRFToken': csrfToken,
 					'X-Requested-With': 'XMLHttpRequest'
@@ -71,6 +72,7 @@
 			if (accept.message === 'Friend request accepted.') {
 				const remove = await fetch('/api/v1/notifications/remove/', {
 					method: 'POST',
+					credentials: 'include',
 					headers: {
 						'X-CSRFToken': csrfToken,
 						'X-Requested-With': 'XMLHttpRequest'
@@ -115,6 +117,7 @@
 		try {
 			const data = await (await fetch('/api/v1/notifications/', {
 				method: 'GET',
+				credentials: 'include',
 				headers: {
 					'X-Requested-With': 'XMLHttpRequest'
 				}
@@ -122,6 +125,7 @@
 			const sender_data = await Promise.all(data.map(async d =>
 				await (await fetch('/api/v1/profile/' + d.sender_username, {
 					method: 'GET',
+					credentials: 'include',
 					headers: {
 						'X-Requested-With': 'XMLHttpRequest'
 					}

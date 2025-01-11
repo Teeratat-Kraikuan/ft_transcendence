@@ -4,8 +4,10 @@ from . import views
 urlpatterns = [
 	# Authentication & User Management
 	path('v1/register/', views.register),
-	path('v1/login/', views.login),
-	path('v1/logout/', views.logout),
+	# path('v1/login/', views.login),
+	path('v2/login/', views.LoginWithJWT.as_view(), name='login_jwt'),
+	# path('v1/logout/', views.logout),
+	path('v2/logout/', views.LogoutJWT.as_view(), name='logout_jwt'),
 	path('v1/change-password/', views.change_password),
 	path('v1/change-username/', views.change_username),
 	path('v1/edit_user_profile/', views.edit_user_profile),
