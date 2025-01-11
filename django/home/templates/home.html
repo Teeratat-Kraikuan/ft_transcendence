@@ -4,28 +4,29 @@
 {% block navbar %}
 
 {% if user.is_authenticated and not user.profile.is_agree_privacy %}
-<div id="termsModal" class="modal fade show" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true" style="display: block;">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
-            </div>
-            <div class="modal-body">
-                <p>Please read and agree to our Terms of Service and Privacy Policy to continue.</p>
-                <textarea readonly class="form-control mb-3" style="height: 200px;">{{ terms_content }}</textarea>
-                <form action="/api/v1/agree_privacy/" method="POST" redirect="/home/">
+<div class="w-100 h-100 position-fixed"></div>
+<div id="termsModal" class="modal fade show" tabindex="-1" aria-labelledby="termsModalLabel" style="display: block;">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+			</div>
+			<div class="modal-body">
+				<p>Please read and agree to our Terms of Service and Privacy Policy to continue.</p>
+				<textarea readonly class="form-control mb-3" style="height: 200px;">{{ terms_content }}</textarea>
+				<form action="/api/v1/agree_privacy/" method="POST" redirect="/home/">
 					{% csrf_token %}
 					<div class="form-check mb-3">
 						<input class="form-check-input" type="checkbox" id="agreeCheckbox" name="is_agree_privacy" value="true" required>
-						<label class="form-check-label" for="agreeCheckbox">
+						<div class="form-check-label" for="agreeCheckbox">
 							I have read and agree to the Terms of Service and Privacy Policy
-						</label>
+						</div>
 					</div>
 					<button type="submit" class="btn btn-primary w-100">Agree and Continue</button>
 				</form>
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endif %}
 
@@ -37,7 +38,7 @@
 			<img class="d-flex icon-sm m-auto" src="{% static 'assets/icon.svg' %}">
 		</div>
 		<div class="col-1 card-ff align-self-center">
-			<a class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" href="/match/">Offline</a>
+			<a class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" href="/offline/">Offline</a>
 			<a class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:2" href="/online/">Online PvP</a>
 			<a class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:3" href="/tournament/">Tournament</a>
 		</div>

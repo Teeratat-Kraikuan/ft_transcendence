@@ -1,5 +1,6 @@
 import io
 import re
+import os
 import json
 import qrcode
 import base64
@@ -422,27 +423,49 @@ def remove_notification(req):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def edit_user_profile(req):
-    username = req.POST.get('username')
-    if req.POST.get('submit') == 'edit' and username:
+    print("----TEST EDIT----") # Debug
+    if req.method == 'POST':
+        username = req.POST.get('username')
+        if username:
+            user = User.objects.get(username=username)
+            profile = Profile.objects.get(user=user)
+            if req.POST.get('submit') == 'edit':
+                profile_image = req.FILES.get('profile_image')
+                banner_image = req.FILES.get('banner_image')
+                description = req.POST.get('description')
+                if profile_image:
+                    if profile.avatar and profile.avatar != 'default/default_avatar.png':
+                        old_avatar_path = profile.avatar.path
+                        if os.path.exists(old_avatar_path):
+                            os.remove(old_avatar_path)
+                    profile.avatar = profile_image
+                if banner_image:
+                    if profile.banner and profile.banner != 'default/default_banner.png':
+                        old_banner_path = profile.banner.path
+                        if os.path.exists(old_banner_path):
+                            os.remove(old_banner_path)
+                    profile.banner = banner_image
+                if description and description != profile.description:
+                    profile.description = description
+                profile.save()
+            elif req.POST.get('submit') == 'delete-avatar':
+                if profile.avatar and profile.avatar != 'default/default_avatar.png':
+                    old_avatar_path = profile.avatar.path
+                    if os.path.exists(old_avatar_path):
+                        os.remove(old_avatar_path)
+                    profile.avatar = 'default/default_avatar.png'
+                    profile.save()
+            elif req.POST.get('submit') == 'delete-avatar':
+                if profile.banner and profile.banner != 'default/default_banner.png':
+                    old_banner_path = profile.banner.path
+                    if os.path.exists(old_banner_path):
+                        os.remove(old_banner_path)
+                    profile.banner = 'default/default_banner.png'
+                    profile.save()
+            return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
+        else:
+            return JsonResponse({'success': False, 'errors': 'Invalid submission.'}, status=400)
 
-        profile_image = req.FILES.get('profile_image')
-        banner_image = req.FILES.get('banner_image')
-        description = req.POST.get('description')
-
-        user = User.objects.get(username=username)
-        profile = Profile.objects.get(user=user)
-
-        if profile_image:
-            profile.avatar = profile_image
-        if banner_image:
-            profile.banner = banner_image
-        if description and description != profile.description:
-            profile.description = description
-        profile.save()
-        return Response({'success': True, 'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def agree_privacy(req):
     is_agree_privacy = req.POST.get("is_agree_privacy") == "true"
     if is_agree_privacy:
@@ -545,7 +568,62 @@ def join_matchroom(request):
         return Response({
             'error': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_visibility(req):
+    try: 
+        body = json.loads(req.body)
+        user = req.user
+        enabled = body.get('enable', False)
+        if enabled:
+            user.profile.is_anonymous = True
+            if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+                old_avatar_path = user.profile.avatar.path
+                if os.path.exists(old_avatar_path):
+                    os.remove(old_avatar_path)
+            if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+                old_banner_path = user.profile.banner.path
+                if os.path.exists(old_banner_path):
+                    os.remove(old_banner_path)
+            user.profile.description = 'I am the winner'
+            user.profile.avatar = 'default/default_avatar.png'
+            user.profile.banner = 'default/default_banner.png'
+            user.profile.save()
+            get_user_match_history(user.username, delete=True)
+            return Response({ 'message': 'Anonymous enabled'}, status=status.HTTP_200_OK)
+        else:
+            user.profile.is_anonymous = False
+            user.profile.save()
+            return Response({'message': 'Anonymous disabled'}, status=status.HTTP_200_OK)
+    except json.JSONDecodeError:
+        return Response({'message': 'Invalid JSON data.'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'message': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def delete_account(req):
+    if req.method == 'POST':
+        print("----TEST DELETE----")
+        user = req.user
+        print("Delete account: ", user.username)
+        if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+            old_avatar_path = user.profile.avatar.path
+            if os.path.exists(old_avatar_path):
+                os.remove(old_avatar_path)
+        if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+            old_banner_path = user.profile.banner.path
+            if os.path.exists(old_banner_path):
+                os.remove(old_banner_path)
+        print("Image already deleted")
+        get_user_match_history(user.username, delete=True)
+        print("Remove match history")
+        user.delete()
+        print("Delete account success")
+        return Response({'message': 'Account deleted'}, status=status.HTTP_200_OK)
+    return Response({'message': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 # Utilize functions
 
 def get_user_profile_data(username):
@@ -562,6 +640,7 @@ def get_user_profile_data(username):
         'banner': profile.banner.url if profile.banner else None,
         'description': profile.description,
         'is_student': profile.is_student,
+        'is_anonymous': profile.is_anonymous,
         'friends': list(profile.friends.order_by('user__username').values_list('user__username', flat=True)),
         'pending_friend_requests': [
             {'sender_username': fr.sender.username, 'timestamp': fr.timestamp}
@@ -569,8 +648,18 @@ def get_user_profile_data(username):
         ],
     }
 
+def get_user_anonymous_name(username):
+    if is_user_anonymous(username):
+        return 'Anonymous'
+    else:
+        return username
+
 def get_user_match_history(username):
     user = User.objects.get(username=username)
+
+    if delete:
+        matches_deleted, _ = MatchHistory.objects.filter(Q(player1=user) | Q(player2=user)).delete()
+        return {"message": f"{matches_deleted} matches deleted for user {username}."}
 
     matches = MatchHistory.objects.filter(Q(player1=user) | Q(player2=user)).order_by('-start_time')
 
@@ -578,6 +667,8 @@ def get_user_match_history(username):
     for match in matches:
         match_history.append({
             'id': match.id,
+            # 'player1': get_user_anonymous_name(match.player1.username),
+            # 'player2': get_user_anonymous_name(match.player2.username),
             'player1': match.player1.username,
             'player2': match.player2.username,
 			'game_type': match.game_type,
@@ -637,6 +728,10 @@ def is_user_online(user):
         timeout_period = timedelta(seconds=300)
         return now() - last_activity < timeout_period
     return False
+
+def is_user_anonymous(username):
+    profile = get_user_profile_data(username)
+    return profile['is_anonymous']
 
 # TOTP 2FA
 def get_user_totp_device(self, user, confirmed=None):

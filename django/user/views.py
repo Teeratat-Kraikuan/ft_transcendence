@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.db.models import Model
 from user.models import Profile, FriendRequest
-from api.views import get_user_profile_data, get_user_match_history, get_user_match_summary, is_user_online
+from api.views import get_user_profile_data, get_user_match_history, get_user_match_summary, is_user_online, is_user_anonymous
 from django.middleware.csrf import get_token
 from requests_oauthlib import OAuth2Session
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -46,7 +46,15 @@ def logout(req):
 def user(req, username):
 	try:
 		profile_data = get_user_profile_data(username)
-		friends = profile_data.get('friends', [])  # Assuming 'friends' contains usernames
+		if (username != req.user.username):
+			if profile_data['is_anonymous']:
+				return render(req, '404.html', {'message': 'User not found'}, status=404)
+		all_friends = profile_data.get('friends', [])
+		friends = []
+		for friend_username in all_friends:
+			friend_user = User.objects.get(username=friend_username)
+			if not is_user_anonymous(friend_username):
+				friends.append(friend_username)
 		is_friend = req.user.username in friends
 
 		online_friends = []

@@ -22,20 +22,40 @@
 					{% csrf_token %}
 					<textarea class="w-100" type="text" placeholder="bio" name="description" maxlength="50">{{ description }}</textarea>
 					<div class="mt-4 text-start">
-						<label for="formProfilePic" class="form-label">Profile picture</label>
-						<input class="form-control form-control-sm text-center" id="formProfilePic" type="file" name="profile_image">
-	
-						<label for="formBgPic" class="form-label pt-3">Background picture</label>
-						<input class="form-control form-control-sm text-center" id="formBgPic" type="file" name="banner_image">
+						<div class="mb-4">
+							<div class="d-flex justify-content-between">
+								<label for="formProfilePic" class="form-label">Profile picture</label>
+								<button type="submit" name="submit" value="edit" class="btn btn-outline-danger btn-sm mb-1" 
+									onclick="submitEditForm('{{ username }}', 'delete-avatar');"
+									style="font-size: 0.7rem;">
+									<i class="fa-solid fa-trash"></i>
+									Delete
+								</button>
+							</div>
+							<input class="form-control form-control-sm text-center mb-1 me-auto" id="formProfilePic" type="file" name="profile_image">
+						</div>
+						<div class="mb-4">
+							<div class="d-flex justify-content-between">
+								<label for="formBgPic" class="form-label">Background picture</label>
+								<button type="submit" name="submit" value="edit" class="btn btn-outline-danger btn-sm mb-1"
+									onclick="submitEditForm('{{ username }}', 'delete-banner');"
+									style="font-size: 0.7rem;">
+									<i class="fa-solid fa-trash"></i>
+									Delete
+								</button>
+							</div>
+							<input class="form-control form-control-sm text-center mb-1 me-auto" id="formBgPic" type="file" name="banner_image">
+						</div>
 					</div>
-					<button type="submit" name="submit" value="edit" class="btn btn-primary my-3 w-100" onclick="submitEditForm('{{ username }}');">Done</button>
+					<button type="submit" name="submit" value="edit" class="btn btn-primary my-3 w-100" onclick="submitEditForm('{{ username }}', 'edit');">Done</button>
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
+
 <div class="w-100 position-relative d-flex flex-grow-1 my-lg-0">
-	<div class="w-100 d-flex flex-column flex-lg-row justify-content-center mt-0 mt-lg-5">
+	<div class="w-100 d-flex flex-column flex-lg-row justify-content-center">
 		<div class="col-lg-9 col-12">
 			<div class="row justify-content-center">
 				<!-- bg -->
@@ -52,7 +72,7 @@
 					<div class="col-lg-5 col-12 d-flex justify-content-lg-start justify-content-center">
 						<div class="text-center text-lg-start">
 							<h5>
-								{{ username }}
+								{{ username }} {% if is_anonymous %} <i class="fa-solid fa-eye-slash" style="font-size: small;"></i> {% endif %}
 							</h5>
 							<span style="opacity: 70%;">
 								{{ description }}
@@ -63,13 +83,15 @@
 					<div class="col-lg-4 col-12 ms-auto text-end">
 
 						<!-- Own Profile -->
-						{% if request.user.username == username %}
+						{% if request.user.username == username%}
+							{% if not is_anonymous %}
 							<a onclick="showEdit()">
 								<button class="btn btn-outline-light btn-sm mt-1" style=" font-size: 0.7rem;">
 									<i class="fa-solid fa-pencil"></i>
 									Edit
 								</button>
 							</a>
+							{% endif %}
 						{% elif is_friend %}
 						<div>
 							<a onclick="">
@@ -181,7 +203,7 @@
 						<ul class="chat-contacts mb-1">
 							<a href="/users/{{ friend.username }}" class="text-decoration-none">
 								<div class="pe-none">
-									<li style="mb-0">
+									<li class="mb-0">
 										<div class="d-flex align-items-center py-1 font-75">
 											<div class="pfp-3" style="background-image: url({{ friend.profile.avatar.url }})">
 											</div>

@@ -12,19 +12,28 @@ export default (function (){
 	 */
 
 	const redirect = (url) => {
+		if (!url || typeof url !== 'string') {
+			console.error('Invalid URL:', url);
+			return;
+		}
 		let tmp_url = url;
 		if (url[0] === '/')
-			tmp_url = location.host + url;
-		if (new URL(tmp_url).pathname === location.pathname)
-			return ;
+			tmp_url = `${location.protocol}//${location.host}${url}`;
+		
+		const fullUrl = new URL(tmp_url, `${location.protocol}//${location.host}`);
+	
+		if (fullUrl.pathname === location.pathname)
+			return;
+		
 		console.log(`Routing to ${url} ...`);
-		if (new URL(url, document.location).hostname != location.hostname)
-		{
+	
+		if (fullUrl.hostname !== location.hostname) {
 			if (!confirm(`Potential risk up ahead! Are you sure you want to follow this link?\nURL: ${url}`))
 				return console.log("Routing cancelled.");
 			location.href = url;
-			return ;
+			return;
 		}
+	
 		window.history.pushState({}, "", url);
 		handle_location();
 	};

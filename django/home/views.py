@@ -41,7 +41,7 @@ def tournament_queue(req):
 
 @login_required
 def community(req):
-	users = User.objects.select_related('profile').exclude(id=req.user.id)
+	users = User.objects.select_related('profile').exclude(id=req.user.id).exclude(profile__is_anonymous=True)
 
 	friends = req.user.profile.friends.all().values_list('user__username', flat=True)
 
