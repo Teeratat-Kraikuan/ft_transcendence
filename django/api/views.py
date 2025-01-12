@@ -624,6 +624,29 @@ def create_tournament(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def submit_score(request):
+    try:
+        data = request.data
+        match_id = data.get('match_id')
+        player1_score = data.get('player1')
+        player2_score = data.get('player2')
+
+        match = Match.objects.get(id=match_id)
+        match.played = True 
+        match.player1_score = player1_score
+        match.player2_score = player2_score
+        match.winner = match.player1 if player1_score > player2_score else match.player2
+        match.save()
+
+        return Response({
+            'message': 'Match result submitted successfully',
+            'winner': match.winner.name
+        }, status=status.HTTP_200_OK)
+    except KeyError:
+        return Response({'message': 'match_id, player1_score, and player2_score are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def change_visibility(req):
     try: 
         body = json.loads(req.body)

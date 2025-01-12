@@ -30,7 +30,7 @@ async function submitTournamentRegistration() {
     input = document.querySelectorAll('input[type="text"]');
     members = Array.from(input).map(member => member.value.trim());
     console.log('members:', members);
-    const response = await fetch('/api/v1/create_tournament/', {
+    const response = await fetch('/api/v1/tournament/create/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -51,35 +51,74 @@ async function submitTournamentRegistration() {
 }
 
 const redirect = (url) => {
+    if (!url || typeof url !== 'string') {
+        console.error('Invalid URL:', url);
+        return;
+    }
     let tmp_url = url;
     if (url[0] === '/')
-        tmp_url = location.host + url;
-    if (new URL(tmp_url).pathname === location.pathname)
-        return ;
+        tmp_url = `${location.protocol}//${location.host}${url}`;
+    
+    const fullUrl = new URL(tmp_url, `${location.protocol}//${location.host}`);
+
+    if (fullUrl.pathname === location.pathname)
+        return;
+    
     console.log(`Routing to ${url} ...`);
-    if (new URL(url, document.location).hostname != location.hostname)
-    {
+
+    if (fullUrl.hostname !== location.hostname) {
         if (!confirm(`Potential risk up ahead! Are you sure you want to follow this link?\nURL: ${url}`))
             return console.log("Routing cancelled.");
         location.href = url;
-        return ;
+        return;
     }
+
     window.history.pushState({}, "", url);
     handle_location();
 };
 
+const init_event_handler = () => {
+    // Why use addEventListener? It's there to prevent override of event click listener,
+    // because it can't be erased without a reference to the event listener object.
+    document.querySelectorAll("a:not([no-route])")
+            .forEach( el => el.addEventListener('click', router) );
+    document.querySelectorAll("form")
+            .forEach( el => el.addEventListener('submit', router) );
+    // For redirecting a custom element
+    document.querySelectorAll("*[class='redirect_spa']")
+            .forEach( el => el.addEventListener('click', router) );
+    document.querySelectorAll("*[data-bs-toggle]").forEach(el => {
+        const menus = document.querySelectorAll(el.getAttribute("data-bs-target"));
+        el.addEventListener("click", ev => {
+            menus.forEach(menu => {
+                menu.tabIndex = 0;
+                menu.focus();
+            });
+        });
+        menus.forEach(menu => menu.addEventListener("focusout", ev => {
+            let within = menu.matches(':focus-within');
+            if (within)
+                return ;
+            document.querySelectorAll(".collapse.show").forEach(
+                el => {
+                    menu.removeAttribute("tabindex");
+                    bootstrap.Collapse.getInstance(el).hide();
+                }
+            );
+        }));
+    });
+};
+
 const handle_location = async () => {
+    const data = await fetch(window.location.pathname);
+    const html = document.createElement("html");
     // Unload game scripts, etc.
     if (typeof window.unload == "function")
     {
         window.unload();
         window.unload = null;
     }
-
-    const data = await fetch(window.location.pathname);
-    const html = document.createElement("html");
     html.innerHTML = await data.text();
-    
     document.body = html.getElementsByTagName("body")[0];
     // "Unload scripts"
     document.head.querySelectorAll("script[src]").forEach(el => {

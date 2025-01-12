@@ -26,6 +26,12 @@ def waiting(req):
 
 def tournament_match(req, match_id):
 	match = Match.objects.get(id=match_id)
+	tournament_id = match.tournament.id
+	tournament = Tournament.objects.get(id=tournament_id)
+	print(f"last round: {tournament.last_round}")
+	tournament.last_round = match.round_number
+	tournament.save()
+	print(f"last round: {tournament.last_round}")
 	player1 = match.player1
 	player2 = match.player2
 
@@ -33,13 +39,15 @@ def tournament_match(req, match_id):
 		'player1': player1.name,
 		'player2': player2.name,
 		'mode': 'tournament',
+		'match_id': match_id,
+		'tournament_id': tournament_id,
 	})
 
 def tournament_room(req, tournament_id):
 	tournament = Tournament.objects.get(id=tournament_id)
 	
-	round_number = tournament.last_round
-	round_number += 1
+	round_number = tournament.last_round + 1
+	print(f"next round number: {round_number}")
 
 	players = Player.objects.filter(tournament=tournament)
 	matches = Match.objects.filter(tournament=tournament)

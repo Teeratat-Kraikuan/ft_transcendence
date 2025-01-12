@@ -13,7 +13,7 @@ const grassImagePath    = "/static/js/pong-game/imgs/football_grass.jpg";
 const sound4Path        = "/static/js/pong-game/mp3/game-countdown.mp3";
 const sound6Path        = "/static/js/pong-game/mp3/win.mp3";
 
-export let finalScore = 5;
+export let finalScore = 2;
 export let p1Score = 0;
 export let p2Score = 0;
 export let audioPlayer = new AudioPlayer();
@@ -36,8 +36,14 @@ let resizeHandler = null;
 
 window.game_main = function ()
 {
-    const valContainer = document.getElementById('mode-variable');
-    const mode = valContainer ? valContainer.dataset.mode : null;
+    const modeContainer = document.getElementById('mode-variable');
+    const mode = modeContainer ? modeContainer.dataset.mode : null;
+    
+    const matchContainer = document.getElementById('match_id');
+    const match_id = matchContainer ? matchContainer.dataset.match_id : null;
+
+    const tournamentContainer = document.getElementById('tournament_id');
+    const tournament_id = tournamentContainer ? tournamentContainer.dataset.tournament_id : null;
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -162,27 +168,68 @@ window.game_main = function ()
         scoreDiv.style.color = "white";
         document.body.appendChild(scoreDiv);
 
-        const playAgainButton = document.createElement('button');
-        playAgainButton.textContent = "Play Again";
-        playAgainButton.style.position = "absolute";
-        playAgainButton.style.top = "55%";
-        playAgainButton.style.left = "50%";
-        playAgainButton.style.transform = "translate(-50%, -50%)";
-        playAgainButton.style.padding = "10px 20px";
-        playAgainButton.style.fontSize = "1rem";
-        playAgainButton.style.cursor = "pointer";
-        playAgainButton.classList.add('btn', 'btn-primary');
+        if (mode === 'tournament') {
+            console.log("Creating submit button...");
+            const submitButton = document.createElement('button');
+            submitButton.textContent = "Submit Score";
+            submitButton.style.position = "absolute";
+            submitButton.style.top = "55%";
+            submitButton.style.left = "50%";
+            submitButton.style.transform = "translate(-50%, -50%)";
+            submitButton.style.padding = "10px 20px";
+            submitButton.style.fontSize = "1rem";
+            submitButton.style.cursor = "pointer";
+            submitButton.classList.add('btn', 'btn-primary');
 
-        console.log("Adding event listener to play again button");
-        
-        playAgainButton.addEventListener('click', () => {
-            console.log("Play again button clicked");
-            document.body.removeChild(gameOverDiv);
-            document.body.removeChild(scoreDiv);
-            document.body.removeChild(playAgainButton);
-            resetGame();
-        });
-        document.body.appendChild(playAgainButton);
+            submitButton.addEventListener('click', async () => {
+                console.log("Submit button clicked");
+                const response = await fetch('/api/v1/tournament/submit_score/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        match_id: match_id,
+                        player1: p1Score,
+                        player2: p2Score,
+                    }),
+                })
+                if (response.ok) {
+                    console.log("Score submitted successfully");
+                    document.body.removeChild(gameOverDiv);
+                    document.body.removeChild(scoreDiv);
+                    document.body.removeChild(submitButton);
+
+                    redirect(`/tournament/room/${tournament_id}/`);
+                    // resetGame();
+                }
+            });
+            document.body.appendChild(submitButton);
+        } else {
+            console.log("Creating play again button...");
+            const playAgainButton = document.createElement('button');
+            playAgainButton.textContent = "Play Again";
+            playAgainButton.style.position = "absolute";
+            playAgainButton.style.top = "55%";
+            playAgainButton.style.left = "50%";
+            playAgainButton.style.transform = "translate(-50%, -50%)";
+            playAgainButton.style.padding = "10px 20px";
+            playAgainButton.style.fontSize = "1rem";
+            playAgainButton.style.cursor = "pointer";
+            playAgainButton.classList.add('btn', 'btn-primary');
+    
+            console.log("Adding event listener to play again button");
+            
+            playAgainButton.addEventListener('click', () => {
+                console.log("Play again button clicked");
+                document.body.removeChild(gameOverDiv);
+                document.body.removeChild(scoreDiv);
+                document.body.removeChild(playAgainButton);
+                resetGame();
+            });
+            document.body.appendChild(playAgainButton);
+
+        }
         
         sound.play();
     }
@@ -283,7 +330,7 @@ window.game_main = function ()
             paddleRight.down();
 
         // w s key control
-        if (mode === 'multi') {
+        if (mode === 'multi' || mode === 'tournament') {
             if (input.wPress && paddleLeft.pgm.position.y + paddleLeft.paddleSizeY / 2 < 5.5) {
                 paddleLeft.pgm.position.y += input.leftPaddleSpeed;
             } else if (input.sPress && paddleLeft.pgm.position.y - paddleLeft.paddleSizeY / 2 > -5.5) {
@@ -379,7 +426,7 @@ window.game_main = function ()
             return div;
         };
 
-        if (mode == "multi") {
+        if (mode == "multi" || mode == "tournament") {
             waitingP1Div = createWaitingDiv("press w", "50%", "40%");
         }
         waitingP2Div = createWaitingDiv("press ↑", "50%", "60%");
@@ -394,7 +441,7 @@ window.game_main = function ()
 
         renderer.render(scene, camera);
         
-        if (mode == 'multi' && input.wPress == true && document.body.contains(waitingP1Div)) {
+        if ((mode == 'multi' || mode == 'tournament') && input.wPress == true && document.body.contains(waitingP1Div)) {
             console.log("left ready, removing waitingP1Div");
             document.body.removeChild(waitingP1Div);
         }
@@ -403,7 +450,7 @@ window.game_main = function ()
             document.body.removeChild(waitingP2Div);
         }
 
-        if (!isGameStarted && input.upPress && mode == "single" || (mode == "multi" && input.wPress && input.upPress)) {
+        if (!isGameStarted && input.upPress && mode == "single" || ((mode == 'multi' || mode == 'tournament') && input.wPress && input.upPress)) {
             console.log("Both players are ready. Starting countdown...");
             startCountdown();
         } else {
@@ -464,3 +511,111 @@ window.unloadGameMain = function() {
     // delete window.game_main;
     // delete window.unloadGameMain;
 };
+
+const redirect = (url) => {
+    if (!url || typeof url !== 'string') {
+        console.error('Invalid URL:', url);
+        return;
+    }
+    let tmp_url = url;
+    if (url[0] === '/')
+        tmp_url = `${location.protocol}//${location.host}${url}`;
+    
+    const fullUrl = new URL(tmp_url, `${location.protocol}//${location.host}`);
+
+    if (fullUrl.pathname === location.pathname)
+        return;
+    
+    console.log(`Routing to ${url} ...`);
+
+    if (fullUrl.hostname !== location.hostname) {
+        if (!confirm(`Potential risk up ahead! Are you sure you want to follow this link?\nURL: ${url}`))
+            return console.log("Routing cancelled.");
+        location.href = url;
+        return;
+    }
+
+    window.history.pushState({}, "", url);
+    handle_location();
+};
+
+const init_event_handler = () => {
+    // Why use addEventListener? It's there to prevent override of event click listener,
+    // because it can't be erased without a reference to the event listener object.
+    document.querySelectorAll("a:not([no-route])")
+            .forEach( el => el.addEventListener('click', router) );
+    document.querySelectorAll("form")
+            .forEach( el => el.addEventListener('submit', router) );
+    // For redirecting a custom element
+    document.querySelectorAll("*[class='redirect_spa']")
+            .forEach( el => el.addEventListener('click', router) );
+    document.querySelectorAll("*[data-bs-toggle]").forEach(el => {
+        const menus = document.querySelectorAll(el.getAttribute("data-bs-target"));
+        el.addEventListener("click", ev => {
+            menus.forEach(menu => {
+                menu.tabIndex = 0;
+                menu.focus();
+            });
+        });
+        menus.forEach(menu => menu.addEventListener("focusout", ev => {
+            let within = menu.matches(':focus-within');
+            if (within)
+                return ;
+            document.querySelectorAll(".collapse.show").forEach(
+                el => {
+                    menu.removeAttribute("tabindex");
+                    bootstrap.Collapse.getInstance(el).hide();
+                }
+            );
+        }));
+    });
+};
+
+const handle_location = async () => {
+    const data = await fetch(window.location.pathname);
+    const html = document.createElement("html");
+    // Unload game scripts, etc.
+    if (typeof window.unload == "function")
+    {
+        window.unload();
+        window.unload = null;
+    }
+    html.innerHTML = await data.text();
+    document.body = html.getElementsByTagName("body")[0];
+    // "Unload scripts"
+    document.head.querySelectorAll("script[src]").forEach(el => {
+        el.remove();
+    });
+    // Set head to the new one.
+    document.head.innerHTML = html.getElementsByTagName("head")[0].innerHTML;
+    // Load scripts
+    html.querySelectorAll("script[src]").forEach(el => {
+        if (el.getAttribute("load-once"))
+            return ;
+        let script = document.createElement('script');
+        script.src = el.src;
+        if (el.type)
+            script.type = el.type;
+        if (el.defer)
+            script.setAttribute("defer", el.defer ? "true" : "false");
+        document.head.append(script);
+    });
+    init_event_handler();
+    if (typeof window.redirected == "function")
+        window.redirected = window.redirected();
+};
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const cookieTrimmed = cookie.trim();
+            if (cookieTrimmed.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookieTrimmed.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

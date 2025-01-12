@@ -94,10 +94,10 @@
                 </div>
                 <div class="col-lg-3 col-12 order-lg-2 order-1 mb-4 mb-lg-0">
                     <div class="bg-dark text-light rounded d-flex justify-content-center p-4 row text-center">
+                        {% if next_match %}
                         <h2>Round {{ round_number }}!</h2>
                         <span>Next match is</span>
                         <div class="bg-danger my-3 rounded d-flex justify-content-center align-items-center">
-                            {% if next_match %}
                             <div class="pfp-n-name rounded my-2 col-3">
                                 <div class="pfp-4 mb-1"></div>
                                 <div>
@@ -111,25 +111,16 @@
                                     <span id="player2">{{ next_match.player2.name }}</span>
                                 </div>
                             </div>
-                            {% endif %}
                         </div>
-                        <!-- <div class="bg-danger my-3 rounded d-flex justify-content-center align-items-center">
-                            <div class="pfp-n-name rounded my-2 col-3">
-                                <div class="pfp-4 mb-1"></div>
-                                <div>
-                                    <span id="">xxx</span>
-                                </div>
-                            </div>
-                            <h6 class="col-4">VS</h6>
-                            <div class="pfp-n-name rounded my-2 col-3">
-                                <div class="pfp-4 mb-1"></div>
-                                <div>
-                                    <span id="">xxx</span>
-                                </div>
-                            </div>
-                        </div> -->
                         <span class="mb-3">Are you ready?</span>
                         <a type="submit" class="btn btn-primary w-100" href="/match/tournament/{{ next_match.id }}" id="playButton">Play</a>
+                        {% else %}
+                        <h2>Game Over!</h2>
+                        <div class="bg-danger my-3 rounded d-flex justify-content-center align-items-center py-5">
+                            Tournament is finished!
+                        </div>
+                        <a type="submit" class="btn btn-primary w-100" href="/home/" id="playButton">Done</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
