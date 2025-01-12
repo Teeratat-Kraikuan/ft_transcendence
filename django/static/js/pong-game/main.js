@@ -239,23 +239,27 @@ let gameOver = false;
 // }
 
 function botControl() {
-    if (ball.ball.position.x < 0 && ball.ball.position.x > paddleLeft.pgm.position.x) {
-        const botSpeed = 0.1; // Speed of the bot paddle
-        const distanceToBall = Math.abs(ball.ball.position.x - paddleLeft.pgm.position.x); // Distance from paddleLeft to ball
+    // Bot parameters
+    const botSpeed = 0.1;
+    const predictionPrecision = 0.7;
+    const reactionThreshold = 5;
+    const smallErrorMargin = 0.4;
 
-        if (distanceToBall < 5) { 
-        
-            // Estimate the ball's trajectory by assuming its current Y position is where it will go
-            const predictedBallY = ball.ball.position.y;
-        
-            // Adjust bot paddle Y position to align with the ball
-            if (paddleLeft.pgm.position.y < predictedBallY && paddleLeft.pgm.position.y < 5.5) {
-                paddleLeft.pgm.position.y += botSpeed;
-            } else if (paddleLeft.pgm.position.y > predictedBallY && paddleLeft.pgm.position.y > -5.5) {
-                paddleLeft.pgm.position.y -= botSpeed;
-            }
-        
+    // Check if the ball is on the bot's side and within reaction range
+    if (ball.ball.position.x < 0 && Math.abs(ball.ball.position.x - paddleLeft.pgm.position.x) < reactionThreshold) {
+        // Predict the ball's Y position with a small margin of error
+        const predictedBallY = ball.ball.position.y * predictionPrecision + 
+                               (Math.random() * smallErrorMargin - smallErrorMargin / 2);
+
+        // Move the bot paddle towards the predicted Y position
+        if (paddleLeft.pgm.position.y < predictedBallY && paddleLeft.pgm.position.y < 5.5) {
+            paddleLeft.pgm.position.y += botSpeed;
+        } else if (paddleLeft.pgm.position.y > predictedBallY && paddleLeft.pgm.position.y > -5.5) {
+            paddleLeft.pgm.position.y -= botSpeed;
         }
+    } else if (ball.ball.position.x >= 0) {
+        // Add subtle delay or distraction when the ball is on the opponent's side
+        paddleLeft.pgm.position.y += Math.random() * 0.05 - 0.01;
     }
 }
 
