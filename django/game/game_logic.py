@@ -12,12 +12,12 @@ class PongGame:
         self.top_bound = 5.5
         self.bottom_bound = -5.5
 
-        self.final_score = 3  # Example: first to 3 wins
+        self.final_score = 5  # Example: first to 3 wins
 
         # Paddle data
         self.paddle_width = 0.5
         self.paddle_height = 2.0
-        self.paddle_speed = 0.25
+        self.paddle_speed = 0.75
 
         # Paddle positions
         self.left_paddle_x = -8.0
@@ -36,7 +36,21 @@ class PongGame:
         self.p1_score = 0
         self.p2_score = 0
 
+        # Game state flags
         self.game_over = False
+        self.game_started = False
+        self.player1_ready = False 
+        self.player2_ready = False 
+
+    def set_ready(self, player_id):
+        if player_id == 1:
+            self.player1_ready = True
+        elif player_id == 2:
+            self.player2_ready = True
+
+        if self.player1_ready and self.player2_ready:
+            self.game_started = True
+
 
     def reset_ball(self):
         """Center the ball and reverse its horizontal direction."""
@@ -47,6 +61,9 @@ class PongGame:
     def move_paddle(self, paddle_id, direction):
         """Move left or right paddle up/down."""
         if self.game_over:
+            return
+        
+        if not self.game_started:
             return
 
         # Which paddle?
@@ -137,10 +154,6 @@ class PongGame:
     def serialize_state(self):
         """Return state as a dict suitable for JSON."""
         return {
-            "player1_username": self.player1_username,
-            "player2_username": self.player2_username,
-            "player1_avatar": self.player1_avatar,
-            "player2_avatar": self.player2_avatar,
             "ball_x": self.ball_x,
             "ball_y": self.ball_y,
             "ball_vx": self.ball_vx,
@@ -149,5 +162,16 @@ class PongGame:
             "right_paddle_y": self.right_paddle_y,
             "p1_score": self.p1_score,
             "p2_score": self.p2_score,
+            "game_started": self.game_started,
             "game_over": self.game_over,
+        }
+    
+    def serialize_players(self):
+        return {
+            "player1_username": self.player1_username,
+            "player2_username": self.player2_username,
+            "player1_avatar": self.player1_avatar,
+            "player2_avatar": self.player2_avatar,
+            "player1_ready": self.player1_ready,
+            "player2_ready": self.player2_ready,
         }

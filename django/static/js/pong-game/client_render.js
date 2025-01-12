@@ -5,19 +5,22 @@ import { Box } from './box.js';
 import { AudioPlayer } from './audio.js';
 import { Input } from './input.js';
 
+console.log("game load");
+
 // Paths for images and sounds
 const grassImagePath = "/static/js/pong-game/imgs/football_grass.jpg";
 const sound4Path      = "/static/js/pong-game/mp3/game-countdown.mp3";
 const sound6Path      = "/static/js/pong-game/mp3/win.mp3";
 
-// We keep these exports so the structure is similar to your original code
-export let finalScore = 2;
+export let finalScore = 5;
 export let p1Score = 0;
 export let p2Score = 0;
 export let audioPlayer = new AudioPlayer();
 
 // "Global" references
 let scene, camera, renderer;
+let animationId = null;
+let resizeHandler = null;
 let gameCanvas;
 
 // 3D objects
@@ -30,25 +33,21 @@ let isGameStarted = false;
 let gameOver = false;
 let waitingPlayersDisplayed = false;
 
-/** 
- * This function replaces your old local game logic with a purely render-based approach.
- * You can call `window.game_main('single')` or `window.game_main('multi')` from the HTML.
- */
+export var waitingP1Div;
+
 window.game_main = function() {
     
-    // Initialize Three.js scene
     setupScene();
-
-    // Initialize scoreboard display
+    
     window.updateScoreDisplay = updateScoreDisplay;
     updateScoreDisplay();
-
+    
     // Create 3D objects (paddles, ball, walls, floor, lights)
     createGameObjects();
-
+    
     // Start the checkReadyState loop (waiting for user input or server).
     checkReadyState();
-
+    
     // Return an object that might be useful externally
     return Object.freeze({
         resetGame,
@@ -57,9 +56,6 @@ window.game_main = function() {
     });
 };
 
-/**
- * 1) Create and configure the scene, camera, renderer.
- */
 function setupScene() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(
@@ -68,19 +64,32 @@ function setupScene() {
         0.1,
         1000
     );
-
+    
     gameCanvas = document.getElementById('gameCanvas');
     renderer = new THREE.WebGLRenderer({ canvas: gameCanvas });
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
+    
+    resizeHandler = function resizeCanvas() {
+        const canvasContainer = gameCanvas.parentElement.getBoundingClientRect();
+        let canvasWidth = canvasContainer.width;
+        const maxCanvasWidth = window.innerWidth - 100;
+        if (canvasWidth > maxCanvasWidth) {
+            canvasWidth = maxCanvasWidth;
+        }
+        const canvasHeight = canvasWidth * (3 / 5); // Maintain (5:3) ratio
+        
+        gameCanvas.width = canvasWidth;
+        gameCanvas.height = canvasHeight;
+        renderer.setSize(canvasWidth, canvasHeight);
+        
+        camera.aspect = canvasWidth / canvasHeight;
+        camera.updateProjectionMatrix();
+    }
+    resizeHandler();
+    window.addEventListener('resize', resizeHandler);
+    
     camera.position.z = 8;
 }
 
-/**
- * 2) Create the paddles, ball, walls, and other 3D objects,
- *    but do NOT do any local collision logic.
- */
 function createGameObjects() {
     // Floor (grass)
     const grassTextureLoader = new THREE.TextureLoader();
@@ -88,13 +97,13 @@ function createGameObjects() {
     grass.wrapS = THREE.RepeatWrapping;
     grass.wrapT = THREE.RepeatWrapping;
     grass.repeat.set(3, 3);
-
+    
     const floorPlaneGeometry = new THREE.PlaneGeometry(20, 12);
     const floorPlaneMaterial = new THREE.MeshLambertMaterial({ map: grass });
     const floorMesh = new THREE.Mesh(floorPlaneGeometry, floorPlaneMaterial);
     floorMesh.receiveShadow = true;
     scene.add(floorMesh);
-
+    
     // Light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(-12, -12, 10);
@@ -133,6 +142,8 @@ function createGameObjects() {
  * We do NOT update ball/paddle positions here (that’s from the server).
  */
 function renderLoop() {
+    if (!scene || !renderer)
+        return;
     renderer.render(scene, camera);
     requestAnimationFrame(renderLoop);
 }
@@ -151,7 +162,7 @@ function renderLoop() {
  *    game_over: false
  *  }
  */
-function updateFromServer(gameState) {
+export function updateFromServer(gameState) {
     // 1) Update ball position
     if (ball && ball.ball) {
         ball.ball.position.x = gameState.ball_x || 0;
@@ -175,7 +186,6 @@ function updateFromServer(gameState) {
     }
     updateScoreDisplay();
 
-    // If the server sets finalScore or game_over, handle it
     if (typeof gameState.final_score !== 'undefined') {
         finalScore = gameState.final_score;
     }
@@ -185,10 +195,6 @@ function updateFromServer(gameState) {
     }
 }
 
-/**
- * 4) Scoreboard UI updates, same as your original code,
- *    but we do NOT increment p1Score/p2Score locally.
- */
 function updateScoreDisplay() {
     const player1ScoreElement = document.getElementById('player1Score');
     const player2ScoreElement = document.getElementById('player2Score');
@@ -214,56 +220,17 @@ function updateScale() {
     player1Scale.style.width = `${player1Percent}%`;
     player2Scale.style.width = `${player2Percent}%`;
     blankScale.style.width = `${blankPercent}%`;
+
+    player1Scale.setAttribute('aria-valuenow', player1Percent);
+    player2Scale.setAttribute('aria-valuenow', player2Percent);
+    blankScale.setAttribute('aria-valuenow', blankPercent);
 }
 
-/**
- * 5) Resize the canvas whenever the window changes size.
- */
-function resizeCanvas() {
-    const canvasContainer = gameCanvas.parentElement.getBoundingClientRect();
-    let canvasWidth = canvasContainer.width;
-    const maxCanvasWidth = window.innerWidth - 100;
-    if (canvasWidth > maxCanvasWidth) {
-        canvasWidth = maxCanvasWidth;
-    }
-    const canvasHeight = canvasWidth * (3 / 5); // Maintain (5:3) ratio
-
-    gameCanvas.width = canvasWidth;
-    gameCanvas.height = canvasHeight;
-    renderer.setSize(canvasWidth, canvasHeight);
-
-    camera.aspect = canvasWidth / canvasHeight;
-    camera.updateProjectionMatrix();
-}
-
-/**
- * 6) “Game Over” overlay. You can still call this if the server says game_over = true.
- */
 function gameOverMessage() {
     const sound = audioPlayer.load("gameOver", sound6Path);
 
-    const gameOverDiv = document.createElement('div');
-    gameOverDiv.textContent = `GAME OVER`;
-    gameOverDiv.style.position = "absolute";
-    gameOverDiv.style.top = "45%";
-    gameOverDiv.style.left = "50%";
-    gameOverDiv.style.transform = "translate(-50%, -50%)";
-    gameOverDiv.style.fontSize = "1rem";
-    gameOverDiv.style.color = "white";
-    document.body.appendChild(gameOverDiv);
-
-    const scoreDiv = document.createElement('div');
-    scoreDiv.textContent = `${p1Score} : ${p2Score}`;
-    scoreDiv.style.position = "absolute";
-    scoreDiv.style.top = "40%";
-    scoreDiv.style.left = "50%";
-    scoreDiv.style.transform = "translate(-50%, -50%)";
-    scoreDiv.style.fontSize = "3rem";
-    scoreDiv.style.color = "white";
-    document.body.appendChild(scoreDiv);
-
     const playAgainButton = document.createElement('button');
-    playAgainButton.textContent = "Play Again";
+    playAgainButton.textContent = "Done";
     playAgainButton.style.position = "absolute";
     playAgainButton.style.top = "55%";
     playAgainButton.style.left = "50%";
@@ -276,46 +243,20 @@ function gameOverMessage() {
 
     sound.play();
     playAgainButton.addEventListener('click', () => {
-        document.body.removeChild(gameOverDiv);
-        document.body.removeChild(scoreDiv);
-        document.body.removeChild(playAgainButton);
-        resetGame();
+        redirect('/home/');
     });
 }
 
-/**
- * 7) Reset game visuals; you might also ask the server to reset.
- *    But locally, we’ll just reset scores, flags, etc.
- */
-function resetGame() {
-    p1Score = 0;
-    p2Score = 0;
-    waitingPlayersDisplayed = false;
-    gameOver = false;
-    isGameStarted = false;
-
-    // Move paddles back to center
-    if (paddleLeft)  paddleLeft.pgm.position.y = 0;
-    if (paddleRight) paddleRight.pgm.position.y = 0;
-
-    updateScoreDisplay();
-    checkReadyState();
-}
-
-/**
- * 8) The “waiting for players” logic, or “start countdown” logic,
- *    but we remove all local collisions. We only handle the countdown
- *    and then let the server run the actual game logic.
- */
 function checkReadyState() {
     // Just a minimal version: you might wait for keyboard input or the server
     // to say “both players joined.” For now, let’s re-use your “wPress/upPress” approach
     // if you want local triggers.
+    if (!scene || !renderer)
+        return;
 
     renderer.render(scene, camera);
-    if (!isGameStarted && input.upPress) {
-        console.log("Both players are ready. Starting countdown...");
-        startCountdown();
+    if (!isGameStarted && input.space) {
+        document.body.removeChild(waitingP1Div);
     } else {
         waitingForPlayers();
         requestAnimationFrame(checkReadyState);
@@ -334,53 +275,103 @@ function waitingForPlayers() {
             top,
             left,
             transform: "translate(-50%, -50%)",
-            fontSize: "1rem",
+            fontSize: "2rem",
             color: "white"
         });
         document.body.appendChild(div);
         return div;
     };
 
-    createWaitingDiv("press w", "50%", "40%");
-    createWaitingDiv("press ↑", "50%", "60%");
+    waitingP1Div = createWaitingDiv("press space", "50%", "50%");
     waitingPlayersDisplayed = true;
 }
 
-function startCountdown() {
-    const sound = audioPlayer.load("countDown", sound4Path);
-    const countdownDiv = document.createElement('div');
-    Object.assign(countdownDiv.style, {
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        fontSize: "3rem",
-        color: "white"
-    });
-    document.body.appendChild(countdownDiv);
-
-    let countdown = 3;
-    countdownDiv.textContent = countdown;
-    sound.play();
-
-    const countdownInterval = setInterval(() => {
-        if (!document.body.contains(countdownDiv)) {
-            clearInterval(countdownInterval);
-            return;
+function redirect(url) {
+    console.log(`Routing to ${url} ...`);
+    // Basic safety check if the URL is external:
+    if (new URL(url, document.location).hostname !== location.hostname) {
+        if (!confirm(`Potential risk up ahead! Are you sure you want to follow this link?\nURL: ${url}`)) {
+            return console.log("Routing cancelled.");
         }
-        countdown--;
-        if (countdown > 0) {
-            countdownDiv.textContent = countdown;
-        } else {
-            clearInterval(countdownInterval);
-            document.body.removeChild(countdownDiv);
-            isGameStarted = true;
-            // No local animate() call that moves ball or checks collisions!
-            // We rely on the server to send positions. (But if you still want
-            // a local "requestAnimationFrame" for something else, you can do it.)
-        }
-    }, 1000);
+        location.href = url;
+        return;
+    }
+    window.history.pushState({}, "", url);
+    handle_location();
 }
+
+async function handle_location() {
+    // A minimal approach to fetch the new page content and update the DOM
+    // same as in your logout.js example.
+    const data = await fetch(window.location.pathname, { credentials: "include" });
+    const html = document.createElement("html");
+
+    // If there's a global 'unload' function for cleaning up game scripts:
+    if (typeof window.unload === "function") {
+        window.unload();
+        window.unload = null;
+    }
+
+    html.innerHTML = await data.text();
+    document.body = html.getElementsByTagName("body")[0];
+    document.head.innerHTML = html.getElementsByTagName("head")[0].innerHTML;
+
+    // Re-load scripts
+    html.querySelectorAll("script[src]").forEach(el => {
+        if (el.hasAttribute("load-once")) return;
+        let script = document.createElement("script");
+        script.src = el.src;
+        script.type = el.type || "text/javascript";
+        if (el.defer) script.defer = true;
+        document.head.appendChild(script);
+    });
+}
+
+function resetGame() {}
 
 // We can still create a global input if you want local key events:
 const input = new Input();
+
+window.unloadGameMain = function() {
+    console.log("Unloading the Pong Game...");
+
+    // 1. Cancel the animation loop
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
+
+    // 2. Remove event listeners
+    if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+        resizeHandler = null;
+    }
+
+    // 3. Dispose of Three.js objects
+    if (scene) {
+        scene.traverse((obj) => {
+            if (obj.geometry) obj.geometry.dispose();
+            if (obj.material) obj.material.dispose();
+        });
+    }
+    if (renderer) {
+        renderer.dispose();
+    }
+
+    // 4. Remove any dynamic DOM elements created by the game
+    const dynamicElements = document.querySelectorAll('.gameOverDiv, .waitingP1Div, .waitingP2Div, #countdownDiv');
+    dynamicElements.forEach(el => el.remove());
+
+    // 5. Reset global variables
+    scene        = null;
+    camera       = null;
+    renderer     = null;
+    p1Score      = 0;
+    p2Score      = 0;
+    audioPlayer.unloadAll();  // if you want to unload all sounds
+    console.log("All game resources disposed.");
+
+    // // 6. (Optional) Delete window.game_main if you want to completely remove it
+    // delete window.game_main;
+    // delete window.unloadGameMain;
+};

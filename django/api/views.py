@@ -551,14 +551,22 @@ def join_matchroom(request):
 
         match = get_object_or_404(MatchRoom, match_id=match_id)
 
-        if match.host == request.user:
-            return Response({'message': 'You cannot join your own match.'}, status=status.HTTP_400_BAD_REQUEST)
+        if match.started:
+            if request.user == match.host or request.user == match.player2:
+                match.last_active = now()
+                return Response({
+                    'message': 'Reconnected to match successfully',
+                    'match_id': match.match_id
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Match has already started.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not match.can_join:
             return Response({'message': 'Match is either full or already started.'}, status=status.HTTP_400_BAD_REQUEST)
 
         match.player2 = request.user
         match.started = True
+        match.last_active = now()
         match.save()
 
         return Response({

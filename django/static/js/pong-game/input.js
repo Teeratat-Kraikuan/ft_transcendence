@@ -24,6 +24,10 @@ export class Input {
         } else if (event.key === 'ArrowDown') {
             this.dnPress = true;
         }
+
+        if (event.key === ' ') {
+            this.space = true;
+        }
     }
 
     handleKeyUp(event) {
@@ -39,6 +43,9 @@ export class Input {
         }
         if (event.key === 'ArrowDown') {
             this.dnPress = false;
+        }
+        if (event.key === ' ') {
+            this.space = false;
         }
     }
 }
