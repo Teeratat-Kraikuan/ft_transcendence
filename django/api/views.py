@@ -82,7 +82,7 @@ class LoginWithJWT(APIView):
             key='access_token',
             value=access_token,
             httponly=True,
-            samesite='Strict',
+            samesite='None',
             secure=True
         )
         response.set_cookie(
@@ -146,7 +146,7 @@ def logout(req):
 	if req.user.is_authenticated:
 		auth_logout(req)
 		logout = JsonResponse({'message': 'Logout successful'}, status=200)
-		logout.delete_cookie('loggedin', samesite='Strict')
+		logout.delete_cookie('loggedin', samesite='None')
 		return logout
 	return JsonResponse({'message': 'Logout unsuccess'}, status=400)
 
@@ -434,13 +434,13 @@ def edit_user_profile(req):
                 banner_image = req.FILES.get('banner_image')
                 description = req.POST.get('description')
                 if profile_image:
-                    if profile.avatar and profile.avatar != 'default/default_avatar.png':
+                    if profile.avatar and profile.avatar != 'default/default_avatar.jpg':
                         old_avatar_path = profile.avatar.path
                         if os.path.exists(old_avatar_path):
                             os.remove(old_avatar_path)
                     profile.avatar = profile_image
                 if banner_image:
-                    if profile.banner and profile.banner != 'default/default_banner.png':
+                    if profile.banner and profile.banner != 'default/default_banner.jpg':
                         old_banner_path = profile.banner.path
                         if os.path.exists(old_banner_path):
                             os.remove(old_banner_path)
@@ -449,18 +449,18 @@ def edit_user_profile(req):
                     profile.description = description
                 profile.save()
             elif req.POST.get('submit') == 'delete-avatar':
-                if profile.avatar and profile.avatar != 'default/default_avatar.png':
+                if profile.avatar and profile.avatar != 'default/default_avatar.jpg':
                     old_avatar_path = profile.avatar.path
                     if os.path.exists(old_avatar_path):
                         os.remove(old_avatar_path)
-                    profile.avatar = 'default/default_avatar.png'
+                    profile.avatar = 'default/default_avatar.jpg'
                     profile.save()
-            elif req.POST.get('submit') == 'delete-avatar':
-                if profile.banner and profile.banner != 'default/default_banner.png':
+            elif req.POST.get('submit') == 'delete-banner':
+                if profile.banner and profile.banner != 'default/default_banner.jpg':
                     old_banner_path = profile.banner.path
                     if os.path.exists(old_banner_path):
                         os.remove(old_banner_path)
-                    profile.banner = 'default/default_banner.png'
+                    profile.banner = 'default/default_banner.jpg'
                     profile.save()
             return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
         else:
@@ -580,17 +580,17 @@ def change_visibility(req):
         enabled = body.get('enable', False)
         if enabled:
             user.profile.is_anonymous = True
-            if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+            if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.jpg':
                 old_avatar_path = user.profile.avatar.path
                 if os.path.exists(old_avatar_path):
                     os.remove(old_avatar_path)
-            if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+            if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.jpg':
                 old_banner_path = user.profile.banner.path
                 if os.path.exists(old_banner_path):
                     os.remove(old_banner_path)
             user.profile.description = 'I am the winner'
-            user.profile.avatar = 'default/default_avatar.png'
-            user.profile.banner = 'default/default_banner.png'
+            user.profile.avatar = 'default/default_avatar.jpg'
+            user.profile.banner = 'default/default_banner.jpg'
             user.profile.save()
             get_user_match_history(user.username, delete=True)
             return Response({ 'message': 'Anonymous enabled'}, status=status.HTTP_200_OK)
@@ -609,11 +609,11 @@ def delete_account(req):
     print("----TEST DELETE----")
     user = req.user
     print("Delete account: ", user.username)
-    if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+    if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.jpg':
         old_avatar_path = user.profile.avatar.path
         if os.path.exists(old_avatar_path):
             os.remove(old_avatar_path)
-    if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+    if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.jpg':
         old_banner_path = user.profile.banner.path
         if os.path.exists(old_banner_path):
             os.remove(old_banner_path)
