@@ -154,11 +154,11 @@ function submitEditForm(username) {
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initialize);
     } else {
-        initialize();
+        // initialize();
     }
 
-    if (window["initialize"] != undefined) {
-        window["initialize"]();
-    }
+    // if (window["initialize"] != undefined) {
+    //     window["initialize"]();
+    // }
 
 })();

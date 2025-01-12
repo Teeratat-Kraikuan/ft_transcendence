@@ -1,15 +1,10 @@
 {% load static %}
 
-{% block header %}
-<script src="{% static 'js/notification.js' %}" defer="true"></script>
-{% endblock %}
-
 {% block notification_content %}
 <div class="d-inline-block card-ff mx-4 mt-3">
     Notification
 </div>
 <hr class="mt-3 mb-2">
-<div class="h-max-200px overflow-auto">
-	
+<div class="notification-container h-max-200px overflow-auto">
 </div>
 {% endblock %}

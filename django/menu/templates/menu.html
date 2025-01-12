@@ -2,9 +2,11 @@
 
 <div class="d-inline-block card-ff mx-4 mt-3">
     <a href="/users/{{ user.username }}">
-        <div class="pe-none">
-            <div class="pfp-3 my-auto me-2 float-start" style="background-image: url({{ user.profile.avatar.url }})"></div>
+        <div class="pe-none d-flex">
             <div>
+                <div class="pfp-3 my-auto me-2 float-start" style="background-image: url({{ user.profile.avatar.url }})"></div>
+            </div>
+            <div class="text-break">
                 <span class="d-block">{{ user.username }}</span>
                 <span class="d-block">{{ user.email }}</span>
             </div>

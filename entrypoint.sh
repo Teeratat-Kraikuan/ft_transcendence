@@ -5,7 +5,6 @@ while ! ./manage.py sqlflush > /dev/null 2>&1 ;do
 	sleep 1
 done
 
-
 if [ -d "/home/django/ft_transcendence" ]
 then
 	python ./manage.py makemigrations
@@ -15,6 +14,5 @@ then
 	python ./manage.py runserver 0.0.0.0:8001
 	# reloadium run manage.py runserver 0.0.0.0:8001 --noreload
 fi
-
 
 exec "$@"
