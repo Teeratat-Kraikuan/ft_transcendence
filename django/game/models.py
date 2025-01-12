@@ -48,7 +48,7 @@ class MatchHistory(models.Model):
         return f"Match: {self.player1} vs {self.player2} ({self.start_time})"
 
 def generate_unique_match_id():
-    return str(uuid.uuid4())[:8]
+    return str(uuid.uuid4())[:6]
 
 class MatchRoom(models.Model):
     match_id = models.CharField(
@@ -71,3 +71,82 @@ class MatchRoom(models.Model):
     @property
     def can_join(self):
         return not self.started and not self.is_full
+
+class Tournament(models.Model):
+    name = models.CharField(max_length=200)
+    start_date = models.DateField()
+    last_round = models.PositiveIntegerField(default=0)
+    end_date = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Player(models.Model):
+    name = models.CharField(max_length=100)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='players')
+
+    # Option 1: Store points as a field that can be updated (if you want to update after each match)
+    points = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    def record_win(self):
+        """Increases player's points based on win."""
+        self.points += 3
+        self.save()
+
+    def record_loss(self):
+        """Record loss - for now no points given for loss."""
+        # In case you later want to track losses, you could add logic here.
+        pass
+
+class Match(models.Model):
+    played = models.BooleanField(default=False)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='matches')
+    round_number = models.PositiveIntegerField(default=0)
+    player1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player1')
+    player2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='matches_as_player2')
+    player1_score = models.PositiveIntegerField(default=0)
+    player2_score = models.PositiveIntegerField(default=0)
+    winner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='wins', null=True, blank=True)
+    date_played = models.DateField(auto_now_add=True)
+
+    def clean(self):
+        # Prevent a match where both players are the same
+        if self.player1 == self.player2:
+            raise ValidationError("A player cannot play against themselves.")
+        # Ensure both players belong to the same tournament
+        if self.player1.tournament != self.tournament or self.player2.tournament != self.tournament:
+            raise ValidationError("Both players must be in the same tournament.")
+
+        # Optionally, you can enforce that each pairing happens only once.
+        if self.pk is None:  # if creating a new match
+            existing = Match.objects.filter(
+                tournament=self.tournament
+            ).filter(
+                models.Q(player1=self.player1, player2=self.player2) |
+                models.Q(player1=self.player2, player2=self.player1)
+            )
+            if existing.exists():
+                raise ValidationError("This match between these two players already exists.")
+
+    def save(self, *args, **kwargs):
+        # First, call clean to validate fields.
+        self.clean()
+
+        # Save the match
+        super().save(*args, **kwargs)
+
+        # Update player points if there's a winner.
+        # Note: This example assumes that a match result is recorded only once and not changed.
+        if self.winner:
+            # To avoid adding points multiple times if the match is re-saved,
+            # you might want to implement additional checks or signals.
+            self.winner.record_win()
+            # Optionally record loss for the other player (if needed)
+            loser = self.player1 if self.winner != self.player1 else self.player2
+            loser.record_loss()
+
+    def __str__(self):
+        return f"{self.player1} vs {self.player2} ({self.tournament.name})"

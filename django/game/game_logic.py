@@ -1,9 +1,11 @@
 class PongGame:
-    """
-    Pure Python Pong logic for a single match.
-    """
 
     def __init__(self):
+        self.player1_username = None
+        self.player2_username = None
+        self.player1_avatar = None
+        self.player2_avatar = None
+
         # For simplicity, treat our field as ~20 wide x 12 high in 2D
         self.left_bound = -9.0
         self.right_bound = 9.0
@@ -135,6 +137,10 @@ class PongGame:
     def serialize_state(self):
         """Return state as a dict suitable for JSON."""
         return {
+            "player1_username": self.player1_username,
+            "player2_username": self.player2_username,
+            "player1_avatar": self.player1_avatar,
+            "player2_avatar": self.player2_avatar,
             "ball_x": self.ball_x,
             "ball_y": self.ball_y,
             "ball_vx": self.ball_vx,

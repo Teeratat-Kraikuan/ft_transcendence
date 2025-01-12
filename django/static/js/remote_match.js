@@ -1,13 +1,16 @@
 (function() {
 	"use strict";
 
-	const valContainer = document.getElementById('matchId-variable');
-	const matchId = valContainer ? valContainer.dataset.mode : null;
+	const matchIdContainer = document.getElementById('matchId-variable');
+	const matchId = matchIdContainer ? matchIdContainer.dataset.matchId : null;
 
-	const username = valContainer ? valContainer.dataset.username : null;
+	const usernameContainer = document.getElementById('username-variable');
+	const username = usernameContainer ? usernameContainer.dataset.username : null;
 
-	console.log("matchId:", window.matchId);
-    console.log("username:", window.username);
+	const avatarContainer = document.getElementById('avatar-variable');
+	const avatar = avatarContainer ? avatarContainer.dataset.avatar : null;
+
+	console.log("avatar", avatar);
   
 	const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 	const wsUrl = `${protocol}//${window.location.host}/ws/match/${matchId}/`;
@@ -19,20 +22,34 @@
 	  socket.send(JSON.stringify({
 		action: "JOIN_MATCH",
 		match_id: matchId,
-		username: username
+		username: username,
+		avatar: avatar
 	  }));
 	};
   
 	socket.onmessage = (event) => {
 	  const data = JSON.parse(event.data);
 	  console.log("Message from server:", data);
+
+	  if (data.player1_username !== undefined && data.player2_username !== undefined) {
+		document.getElementById('player1').textContent = data.player1_username || "Waiting...";
+		document.getElementById('player2').textContent = data.player2_username || "Waiting...";
+
+		document.getElementById('player1Top').textContent = data.player1_username || "Waiting...";
+		document.getElementById('player2Top').textContent = data.player2_username || "Waiting...";
+
+		const player1AvatarElem = document.getElementById('player1Avatar');
+        const player2AvatarElem = document.getElementById('player2Avatar');
   
-	  // If it's a game state broadcast, e.g. has "ball_x" property:
-	  if (data.ball_x !== undefined) {
-		// Update your local Three.js or DOM drawing with data
-		// e.g. position your 3D ball at data.ball_x, data.ball_y
-		// data.p1_score, data.p2_score, etc.
-		// ...
+        if (player1AvatarElem) {
+          const avatarUrl1 = data.player1_avatar || '/static/default/default_avatar.png';
+          player1AvatarElem.style.backgroundImage = `url(${avatarUrl1})`;
+        }
+  
+        if (player2AvatarElem) {
+          const avatarUrl2 = data.player2_avatar || '/static/default/default_avatar.png';
+          player2AvatarElem.style.backgroundImage = `url(${avatarUrl2})`;
+        }
 	  }
 	};
   

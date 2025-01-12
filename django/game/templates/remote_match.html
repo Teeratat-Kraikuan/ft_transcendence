@@ -2,21 +2,34 @@
 {% load static %}
 
 {% block header %}
-<script type="module" src="{% static 'js/pong-game/client_render.js' %}" id="game-logic"></script>
+{% comment %} <script type="module" src="{% static 'js/pong-game/client_render.js' %}" id="game-logic"></script> {% endcomment %}
 <script src="{% static 'js/remote_match.js' %}" defer="true"></script>
-<script src="{% static 'js/game.js' %}" defer="true"></script>
 {% endblock %}
 
 {% block navbar %}
 
-<div id="matchId-variable" data-mode="{{ match_id }}"></div>
-<div id="username-variable" data-mode="{{ username }}"></div>
+<div id="matchId-variable" data-match-id="{{ match_id }}"></div>
+<div id="username-variable" data-username="{{ username }}"></div>
+<div id="avatar-variable" data-avatar="{{ avatar }}"></div>
 
 <div class="w-100 position-relative my-auto">
+    <div class="d-flex justify-content-center mb-4">
+		<div class="bg-dark rounded align-items-center my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2" style="width: 60vw;">
+			<div>
+				<small> Game Pin :</small>
+				<h1 class="display-3 fw-bolder">{{ match_id }}</h1>
+			</div>
+			<div class="d-flex align-items-center">
+				<h3 id="player1Top">username</h3>
+				<h2 class="fw-bold mx-3">VS</h2>
+				<h3 id="player2Top">username</h3>
+			</div>
+		</div>
+	</div>
     <div class="d-flex justify-content-center flex-lg-row flex-column w-100 align-items-center">
 
         <div class="my-2 col-lg-2 d-flex flex-lg-column flex-row justify-content-center text-center align-items-center">
-            <div class="pfp me-3 me-lg-0"></div>
+            <div id="player1Avatar" class="pfp me-3 me-lg-0" style="background-image: url({{ user.avatar_url }})"></div>
             <h4 class="me-3 me-lg-0" id="player1">username</h4>
             <h1 id="player1Score">0</h1>
         </div>
@@ -57,7 +70,7 @@
         </div>
 
         <div class="my-2 col-lg-2 d-flex flex-lg-column flex-row justify-content-center text-center align-items-center">
-            <div class="pfp me-3 me-lg-0"></div>
+            <div id="player2Avatar" class="pfp me-3 me-lg-0" style="background-image: url({{ user.avatar_url }})"></div>
             <h4 class="me-3 me-lg-0" id="player2">username</h4>
             <h1 id="player2Score">0</h1>
         </div>
