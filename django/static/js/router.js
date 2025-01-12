@@ -109,15 +109,17 @@ export default (function (){
 	 * Handles location changes, fetches data.
 	 */
 	const handle_location = async () => {
-		const data = await fetch(window.location.pathname);
-		const html = document.createElement("html");
 		// Unload game scripts, etc.
 		if (typeof window.unload == "function")
 		{
 			window.unload();
 			window.unload = null;
 		}
+
+		const data = await fetch(window.location.pathname);
+		const html = document.createElement("html");
 		html.innerHTML = await data.text();
+		
 		document.body = html.getElementsByTagName("body")[0];
 		// "Unload scripts"
 		document.head.querySelectorAll("script[src]").forEach(el => {
