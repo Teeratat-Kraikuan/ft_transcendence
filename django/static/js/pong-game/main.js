@@ -13,7 +13,7 @@ const grassImagePath    = "/static/js/pong-game/imgs/football_grass.jpg";
 const sound4Path        = "/static/js/pong-game/mp3/game-countdown.mp3";
 const sound6Path        = "/static/js/pong-game/mp3/win.mp3";
 
-export let finalScore = 2;
+export let finalScore = 5;
 export let p1Score = 0;
 export let p2Score = 0;
 export let audioPlayer = new AudioPlayer();
