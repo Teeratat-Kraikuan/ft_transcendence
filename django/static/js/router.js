@@ -32,8 +32,8 @@ export default (function (){
 	 */
 	const router = (ev) => {
 		const target = ev.target || ev.srcElement || ev;
-		const url = target.href || target.action;
-		
+		const url = target.hasAttribute("noaction") ? null : target.href || target.action;
+
 		ev.preventDefault();
 		// Ignore empty url
 		if (!url) return;
@@ -54,7 +54,7 @@ export default (function (){
 			xhttp.onreadystatechange = target.onreadystatechange;
 			xhttp.onload = (ev) => {
 				if (target.onload)
-					target.onload.bind(xhttp)();
+					target.onload(xhttp);
 				if (xhttp.status == 200 && target.getAttribute('redirect'))
 					redirect(target.getAttribute('redirect'));
 				else if (xhttp.status != 200 && target.getAttribute('redirect')){
@@ -63,6 +63,9 @@ export default (function (){
 				}
 			};
 			xhttp.send(new FormData(target));
+			if (target.onaftersubmit)
+				target.onaftersubmit(target);
+			target.onaftersubmit = null;
 		}
 	};
 
