@@ -43,4 +43,7 @@ migrate:
 docker-shell:
 	docker compose run --entrypoint /bin/bash --rm django
 
+collect-static:
+	docker compose run -d --rm django manage.py collectstatic --no-input
+
 .PHONY: lock install requirements shell dev dev-nix scss scss-nix migrate
