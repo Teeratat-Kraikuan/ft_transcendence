@@ -455,7 +455,7 @@ def edit_user_profile(req):
                         os.remove(old_avatar_path)
                     profile.avatar = 'default/default_avatar.jpg'
                     profile.save()
-            elif req.POST.get('submit') == 'delete-avatar':
+            elif req.POST.get('submit') == 'delete-banner':
                 if profile.banner and profile.banner != 'default/default_banner.jpg':
                     old_banner_path = profile.banner.path
                     if os.path.exists(old_banner_path):

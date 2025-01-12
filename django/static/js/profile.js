@@ -215,6 +215,8 @@
         const form = document.getElementById('editProfileForm');
         const username = form.getAttribute("uname");
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const deleteProfilePic = document.getElementById('deleteProfilePic');
+        const deleteformBgPic = document.getElementById('deleteformBgPic');
 
         editBtn.onclick = function () {
             document.getElementById("popUpEdit").style.display = 'block';
@@ -223,10 +225,12 @@
         closeEditBtn.onclick = function () {
             document.getElementById("popUpEdit").style.display = 'none';
         }
-        form.onsubmit = async function () {
+
+        async function requestForm (type)
+        {
             const editApiEndpoint = '/api/v1/edit_user_profile/';
             const formData = new FormData(form);
-            formData.append('submit', 'edit');
+            formData.append('submit', type);
             formData.append('username', username);
 
             const res = await fetch(editApiEndpoint, {
@@ -237,6 +241,23 @@
                 },
                 body: formData
             });
+            const msg = await res.json();
+            if (!msg.success)
+                alert(msg);
+        }
+
+        deleteProfilePic.onclick = async function () {
+            await requestForm('delete-avatar');
+            window.redirected = profile_main;
+            redirect(location.pathname);
+        };
+        deleteformBgPic.onclick = async function () {
+            await requestForm('delete-banner');
+            window.redirected = profile_main;
+            redirect(location.pathname);
+        };
+        form.onsubmit = async function () {
+            await requestForm('edit');
             window.redirected = profile_main;
             redirect(location.pathname);
         }
