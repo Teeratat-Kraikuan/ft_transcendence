@@ -16,7 +16,7 @@
         console.log("Game started!");
         // waitForGameMain();
         if (window.game_main == undefined)
-            setTimeout(() => game = window.game_main(), 1000);
+            setTimeout(() => game = window.game_main(), 2000);
         else
             game = window.game_main();
     };

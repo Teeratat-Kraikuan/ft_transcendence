@@ -9,6 +9,8 @@
 {% block navbar %}
 
 <div id="mode-variable" data-mode="{{ mode }}"></div>
+<div id="match_id" data-match_id="{{ match_id}}"></div>
+<div id="tournament_id" data-tournament_id="{{ tournament_id }}"></div>
 
 <div class="w-100 position-relative my-auto">
 	<div class="d-flex justify-content-center mb-4">
@@ -27,7 +29,13 @@
 	<div class="d-flex justify-content-center flex-lg-row flex-column w-100 align-items-center">
 		<div class="my-2 col-lg-2 d-flex flex-lg-column flex-row justify-content-center text-center align-items-center">
 			<div class="pfp me-3 me-lg-0"></div>
-			<h4 class="me-3 me-lg-0" id="player1">username</h4>
+			<h4 class="me-3 mt-2 me-lg-0" id="player1">
+				{% if player1 %}
+					{{ player1 }}
+				{% else %}
+					Player 1
+				{% endif %}
+			</h4>
 			<h1 id="player1Score">0</h1>
 		</div>
 		<div class="justify-content-center d-flex w-100" style="max-width: 750px;">
@@ -47,7 +55,13 @@
 		</div>
 		<div class="my-2 col-lg-2 d-flex flex-lg-column flex-row justify-content-center text-center align-items-center">
 			<div class="pfp me-3 me-lg-0"></div>
-			<h4 class="me-3 me-lg-0" id="player2">username</h4>
+			<h4 class="me-3 mt-2 me-lg-0" id="player2">
+				{% if player1 %}
+					{{ player2 }}
+				{% else %}
+					Player 2
+				{% endif %}
+			</h4>
 			<h1 id="player2Score">0</h1>
 		</div>
 	</div>

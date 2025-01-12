@@ -37,7 +37,6 @@ def signup(req):
 	return render(req, 'signup.html')
 
 def logout(req):
-	print("user authehnticated", req.user.is_authenticated)
 	if not req.user.is_authenticated:
 		return redirect('home')
 	return render(req, 'logout.html')
@@ -110,14 +109,14 @@ def oauth_login(req, user_data):
             key='access_token',
             value=access_token,
             httponly=True,
-            samesite='Strict',
+            samesite='Lax',
             secure=True
         )
         login_response.set_cookie(
             key='refresh_token',
             value=refresh_token,
             httponly=True,
-            samesite='Strict',
+            samesite='Lax',
             secure=True
         )
         return login_response

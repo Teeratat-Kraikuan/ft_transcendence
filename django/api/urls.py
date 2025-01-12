@@ -28,6 +28,10 @@ urlpatterns = [
     # path('v1/game/entry_online_game/', views.entry_online_game, name='entry_online_game'),
 	path('v1/create_matchroom/', views.create_matchroom, name='create_matchroom'),
     path('v1/join_matchroom/', views.join_matchroom, name='join_matchroom'),
+    
+	#tournament
+    path('v1/tournament/create/', views.create_tournament, name='create_tournament'),
+    path('v1/tournament/submit_score/', views.submit_score, name='submit_score'),
 
     # Notification endpoints
     path('v1/notifications/', views.list_notifications, name='list_notifications'),

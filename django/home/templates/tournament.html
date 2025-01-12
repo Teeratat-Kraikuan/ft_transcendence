@@ -1,6 +1,10 @@
 {% extends "navbar.html" %}
 {% load static %}
 
+{% block header %}
+	<script src="{% static 'js/tournament_register.js' %}" defer></script>
+{% endblock %}	
+
 {% block navbar %}
 <div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-01">
 	<div class="w-100 my-auto d-flex flex-column flex-lg-row justify-content-lg-evenly py-2">
@@ -14,8 +18,11 @@
 				<h2>Tournament</h2>
 				<p>Let's show your skill</p>
 			</div>
-			<input class="btn btn-secondary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" type="text" placeholder="Name">
-			<input class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:2" type="button" value="Join">
+			<input class="btn btn-secondary w-100 my-3 animate-slide-1 delay-150" style="--animation-order:1" type="text" placeholder="Player 1" id="player1" oninput="checkInputs()">
+			<input class="btn btn-secondary w-100 mb-3 animate-slide-1 delay-150" style="--animation-order:1" type="text" placeholder="Player 2" id="player2" oninput="checkInputs()">
+			<input class="btn btn-secondary w-100 mb-3 animate-slide-1 delay-150" style="--animation-order:1" type="text" placeholder="Player 3" id="player3" oninput="checkInputs()">
+			<input class="btn btn-secondary w-100 mb-3 animate-slide-1 delay-150" style="--animation-order:1" type="text" placeholder="Player 4" id="player4" oninput="checkInputs()">
+			<input class="btn btn-primary w-100 my-3 animate-slide-1 delay-150" disabled style="--animation-order:2" type="button" value="Join" id="joinButton">
 			<a class="text-light text-decoration-none fw-bold" href="/home/">
 				<i class="fa-solid fa-chevron-left"></i>
 				Back

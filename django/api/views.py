@@ -22,10 +22,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import timedelta
 from user.models import Profile, FriendRequest
-from game.models import MatchHistory, MatchRoom
+from game.models import MatchHistory, MatchRoom, Tournament, Player, Match
 from menu.models import Notification
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import AnonymousUser
+from itertools import combinations
 import logging
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class LoginWithJWT(APIView):
             key='access_token',
             value=access_token,
             httponly=True,
-            samesite='Strict',
+            samesite='None',
             secure=True
         )
         response.set_cookie(
@@ -146,7 +147,7 @@ def logout(req):
 	if req.user.is_authenticated:
 		auth_logout(req)
 		logout = JsonResponse({'message': 'Logout successful'}, status=200)
-		logout.delete_cookie('loggedin', samesite='Strict')
+		logout.delete_cookie('loggedin', samesite='None')
 		return logout
 	return JsonResponse({'message': 'Logout unsuccess'}, status=400)
 
@@ -434,13 +435,13 @@ def edit_user_profile(req):
                 banner_image = req.FILES.get('banner_image')
                 description = req.POST.get('description')
                 if profile_image:
-                    if profile.avatar and profile.avatar != 'default/default_avatar.png':
+                    if profile.avatar and profile.avatar != 'default/default_avatar.jpg':
                         old_avatar_path = profile.avatar.path
                         if os.path.exists(old_avatar_path):
                             os.remove(old_avatar_path)
                     profile.avatar = profile_image
                 if banner_image:
-                    if profile.banner and profile.banner != 'default/default_banner.png':
+                    if profile.banner and profile.banner != 'default/default_banner.jpg':
                         old_banner_path = profile.banner.path
                         if os.path.exists(old_banner_path):
                             os.remove(old_banner_path)
@@ -449,18 +450,18 @@ def edit_user_profile(req):
                     profile.description = description
                 profile.save()
             elif req.POST.get('submit') == 'delete-avatar':
-                if profile.avatar and profile.avatar != 'default/default_avatar.png':
+                if profile.avatar and profile.avatar != 'default/default_avatar.jpg':
                     old_avatar_path = profile.avatar.path
                     if os.path.exists(old_avatar_path):
                         os.remove(old_avatar_path)
-                    profile.avatar = 'default/default_avatar.png'
+                    profile.avatar = 'default/default_avatar.jpg'
                     profile.save()
-            elif req.POST.get('submit') == 'delete-avatar':
-                if profile.banner and profile.banner != 'default/default_banner.png':
+            elif req.POST.get('submit') == 'delete-banner':
+                if profile.banner and profile.banner != 'default/default_banner.jpg':
                     old_banner_path = profile.banner.path
                     if os.path.exists(old_banner_path):
                         os.remove(old_banner_path)
-                    profile.banner = 'default/default_banner.png'
+                    profile.banner = 'default/default_banner.jpg'
                     profile.save()
             return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
         else:
@@ -579,6 +580,79 @@ def join_matchroom(request):
             'error': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_tournament(request):
+    try:
+        body = request.data
+        members = body.get('members')
+        
+        if not members or len(members) < 2:
+            return Response(
+                {'error': 'At least 2 members are required to create a tournament.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        print("Members: ", members)
+
+        tournament = Tournament.objects.create(name='Tournament', start_date=now())
+
+        players = []
+        for member in members:
+            player = Player.objects.create(name=member, tournament=tournament)
+            players.append(player)
+
+        match_schedule = []
+        for round_num, (player1, player2) in enumerate(combinations(players, 2), start=1):
+            match_schedule.append({
+                "tournament": tournament,
+                "round_number": round_num,
+                "player1": player1,
+                "player2": player2,
+            })
+
+        for match_data in match_schedule:
+            Match.objects.create(**match_data)
+        
+        for match in match_schedule:
+            print(match)
+
+        return Response({
+            'message': 'Tournament created successfully with matches.',
+            'tournament_id': tournament.id,
+            'total_matches': len(match_schedule),
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def submit_score(request):
+    try:
+        data = request.data
+        match_id = data.get('match_id')
+        player1_score = data.get('player1')
+        player2_score = data.get('player2')
+
+        match = Match.objects.get(id=match_id)
+        match.played = True 
+        match.player1_score = player1_score
+        match.player2_score = player2_score
+        match.winner = match.player1 if player1_score > player2_score else match.player2
+        match.save()
+
+        return Response({
+            'message': 'Match result submitted successfully',
+            'winner': match.winner.name
+        }, status=status.HTTP_200_OK)
+    except KeyError:
+        return Response({'message': 'match_id, player1_score, and player2_score are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def change_visibility(req):
@@ -588,17 +662,17 @@ def change_visibility(req):
         enabled = body.get('enable', False)
         if enabled:
             user.profile.is_anonymous = True
-            if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+            if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.jpg':
                 old_avatar_path = user.profile.avatar.path
                 if os.path.exists(old_avatar_path):
                     os.remove(old_avatar_path)
-            if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+            if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.jpg':
                 old_banner_path = user.profile.banner.path
                 if os.path.exists(old_banner_path):
                     os.remove(old_banner_path)
             user.profile.description = 'I am the winner'
-            user.profile.avatar = 'default/default_avatar.png'
-            user.profile.banner = 'default/default_banner.png'
+            user.profile.avatar = 'default/default_avatar.jpg'
+            user.profile.banner = 'default/default_banner.jpg'
             user.profile.save()
             get_user_match_history(user.username, delete=True)
             return Response({ 'message': 'Anonymous enabled'}, status=status.HTTP_200_OK)
@@ -617,11 +691,11 @@ def delete_account(req):
     print("----TEST DELETE----")
     user = req.user
     print("Delete account: ", user.username)
-    if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+    if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.jpg':
         old_avatar_path = user.profile.avatar.path
         if os.path.exists(old_avatar_path):
             os.remove(old_avatar_path)
-    if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+    if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.jpg':
         old_banner_path = user.profile.banner.path
         if os.path.exists(old_banner_path):
             os.remove(old_banner_path)
