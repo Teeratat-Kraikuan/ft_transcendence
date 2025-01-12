@@ -40,8 +40,7 @@
                 return;
             }
 
-            // Redirect user to /match/<match_id> (using the approach below)
-            redirect(`/match/${data.match_id}/`);
+            redirect(`/match/remote/${data.match_id}/`);
 
         } catch (error) {
             console.error("Error creating match:", error);
@@ -83,7 +82,7 @@
                 return;
             }
 
-            redirect(`/match/${data.match_id}/`);
+            redirect(`/match/remote/${data.match_id}/`);
 
         } catch (error) {
             console.error("Error joining match:", error);

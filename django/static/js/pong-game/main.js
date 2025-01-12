@@ -13,6 +13,10 @@ const grassImagePath    = "/static/js/pong-game/imgs/football_grass.jpg";
 const sound4Path        = "/static/js/pong-game/mp3/game-countdown.mp3";
 const sound6Path        = "/static/js/pong-game/mp3/win.mp3";
 
+const valContainer = document.getElementById('mode-variable');
+const mode = valContainer ? valContainer.dataset.mode : null;
+console.log("Mode: ", mode);
+
 export let finalScore = 2;
 export let p1Score = 0;
 export let p2Score = 0;
@@ -235,35 +239,22 @@ let gameOver = false;
 // }
 
 function botControl() {
-    console.log("Bot control");
-    console.log(`Ball X: ${ball.ball.position.x}`);
-    console.log(`Paddle X: ${paddleLeft.pgm.position.x}`);
-    console.log(`logic: ${ball.ball.position.x < 0 && ball.ball.position.x > paddleLeft.pgm.position.x}`);
     if (ball.ball.position.x < 0 && ball.ball.position.x > paddleLeft.pgm.position.x) {
         const botSpeed = 0.1; // Speed of the bot paddle
         const distanceToBall = Math.abs(ball.ball.position.x - paddleLeft.pgm.position.x); // Distance from paddleLeft to ball
 
         if (distanceToBall < 5) { 
-            console.log("Bot moving");
         
             // Estimate the ball's trajectory by assuming its current Y position is where it will go
             const predictedBallY = ball.ball.position.y;
         
-            // Debug logs
-            console.log(`Predicted ball Y: ${predictedBallY}`);
-            console.log(`Paddle Y before move: ${paddleLeft.pgm.position.y}`);
-        
             // Adjust bot paddle Y position to align with the ball
-            if (paddleLeft.pgm.position.y + paddleLeft.paddleSizeY / 2 < predictedBallY && paddleLeft.pgm.position.y < 5.5) {
+            if (paddleLeft.pgm.position.y < predictedBallY && paddleLeft.pgm.position.y < 5.5) {
                 paddleLeft.pgm.position.y += botSpeed;
-                console.log("Paddle moving up");
-            } else if (paddleLeft.pgm.position.y + paddleLeft.paddleSizeY / 2 > predictedBallY && paddleLeft.pgm.position.y > -5.5) {
+            } else if (paddleLeft.pgm.position.y > predictedBallY && paddleLeft.pgm.position.y > -5.5) {
                 paddleLeft.pgm.position.y -= botSpeed;
-                console.log("Paddle moving down");
             }
         
-            // Debug log: Paddle position after move
-            console.log(`Paddle Y after move: ${paddleLeft.pgm.position.y}`);
         }
     }
 }

@@ -81,6 +81,7 @@ def user(req, username):
 	except User.DoesNotExist:
 		return render(req, '404.html', {'message': 'User not found'}, status=404)
 	except Exception as e:
+		print('test')
 		return render(req, '404.html', {'message': str(e)}, status=500)
 
 def oauth_login(req, user_data):

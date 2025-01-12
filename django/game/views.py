@@ -1,22 +1,17 @@
 import json
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
-@login_required
+@permission_classes([IsAuthenticated])
 def match(req, mode):
 	return render(req, 'match.html', {'mode' : mode})
 
-@login_required
+@permission_classes([IsAuthenticated])
 def remote_match(req, match_id):
-	data_obj = {
-        'match_id': match_id,
-        'username': req.user.username,
-    }
-
-	data_json = json.dumps(data_obj)
-
-	return render(req, 'remote_match.html', {'data_json': data_json})
+	return render(req, 'remote_match.html',{'match_id': match_id, 'username': req.user.username})
 
 def waiting(req):
 	return render(req, 'waiting_room.html')

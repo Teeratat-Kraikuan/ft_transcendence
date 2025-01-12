@@ -1,8 +1,14 @@
 (function() {
 	"use strict";
-  
-	const matchId = remoteData.match_id;
-	const username = remoteData.username;
+
+	const valContainer = document.getElementById('matchId-variable');
+	const matchId = valContainer ? valContainer.dataset.mode : null;
+	
+	valContainer = document.getElementById('username-variable');
+	const username = valContainer ? valContainer.dataset.username : null;
+
+	console.log("matchId:", window.matchId);
+    console.log("username:", window.username);
   
 	const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 	const wsUrl = `${protocol}//${window.location.host}/ws/match/${matchId}/`;

@@ -1,6 +1,5 @@
 export class Input {
-    constructor(mode) {
-        this.mode = mode;
+    constructor() {
         this.pSpeed = 0.1;
         this.leftPaddleSpeed = this.pSpeed;
         this.rightPaddleSpeed = this.pSpeed;
@@ -14,12 +13,10 @@ export class Input {
     }
 
     handleKeyDown(event) {
-        if (this.mode === 'multi') {
-            if (event.key === 'w') {
-                this.wPress = true;
-            } else if (event.key === 's') {
-                this.sPress = true;
-            }
+        if (event.key === 'w') {
+            this.wPress = true;
+        } else if (event.key === 's') {
+            this.sPress = true;
         }
 
         if (event.key === 'ArrowUp') {
@@ -30,13 +27,11 @@ export class Input {
     }
 
     handleKeyUp(event) {
-        if (this.mode === 'multi') {
-            if (event.key === 'w') {
-                this.wPress = false;
-            }
-            if (event.key === 's') {
-                this.sPress = false;
-            }
+        if (event.key === 'w') {
+            this.wPress = false;
+        }
+        if (event.key === 's') {
+            this.sPress = false;
         }
 
         if (event.key === 'ArrowUp') {

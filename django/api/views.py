@@ -466,6 +466,8 @@ def edit_user_profile(req):
         else:
             return JsonResponse({'success': False, 'errors': 'Invalid submission.'}, status=400)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def agree_privacy(req):
     is_agree_privacy = req.POST.get("is_agree_privacy") == "true"
     if is_agree_privacy:
@@ -604,25 +606,23 @@ def change_visibility(req):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def delete_account(req):
-    if req.method == 'POST':
-        print("----TEST DELETE----")
-        user = req.user
-        print("Delete account: ", user.username)
-        if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
-            old_avatar_path = user.profile.avatar.path
-            if os.path.exists(old_avatar_path):
-                os.remove(old_avatar_path)
-        if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
-            old_banner_path = user.profile.banner.path
-            if os.path.exists(old_banner_path):
-                os.remove(old_banner_path)
-        print("Image already deleted")
-        get_user_match_history(user.username, delete=True)
-        print("Remove match history")
-        user.delete()
-        print("Delete account success")
-        return Response({'message': 'Account deleted'}, status=status.HTTP_200_OK)
-    return Response({'message': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    print("----TEST DELETE----")
+    user = req.user
+    print("Delete account: ", user.username)
+    if user.profile.avatar and user.profile.avatar.url != '/media/default/default_avatar.png':
+        old_avatar_path = user.profile.avatar.path
+        if os.path.exists(old_avatar_path):
+            os.remove(old_avatar_path)
+    if user.profile.banner and user.profile.banner.url != '/media/default/default_banner.png':
+        old_banner_path = user.profile.banner.path
+        if os.path.exists(old_banner_path):
+            os.remove(old_banner_path)
+    print("Image already deleted")
+    get_user_match_history(user.username, delete=True)
+    print("Remove match history")
+    user.delete()
+    print("Delete account success")
+    return Response({'message': 'Account deleted'}, status=status.HTTP_200_OK)
 
 # Utilize functions
 
@@ -654,7 +654,7 @@ def get_user_anonymous_name(username):
     else:
         return username
 
-def get_user_match_history(username):
+def get_user_match_history(username, delete=False):
     user = User.objects.get(username=username)
 
     if delete:

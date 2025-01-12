@@ -2,12 +2,16 @@
 {% load static %}
 
 {% block header %}
-<script>
-    var remoteData = JSON.parse("{{ data_json|escapejs }}");
-</script>
+<script type="module" src="{% static 'js/pong-game/client_render.js' %}" id="game-logic"></script>
+<script src="{% static 'js/remote_match.js' %}" defer="true"></script>
+<script src="{% static 'js/game.js' %}" defer="true"></script>
 {% endblock %}
 
 {% block navbar %}
+
+<div id="matchId-variable" data-mode="{{ match_id }}"></div>
+<div id="username-variable" data-mode="{{ username }}"></div>
+
 <div class="w-100 position-relative my-auto">
     <div class="d-flex justify-content-center flex-lg-row flex-column w-100 align-items-center">
 
@@ -61,5 +65,4 @@
     </div>
 </div>
 
-<script src="{% static 'js/pong-game/remote_match.js' %}"></script>
 {% endblock %}
