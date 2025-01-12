@@ -265,10 +265,10 @@ window.game_main = function ()
             } else if (paddleLeft.pgm.position.y > predictedBallY) {
                 paddleLeft.down();
             }
-        } else if (ball.ball.position.x <= 0.4) {
+        } else if (ball.ball.position.x <= 0) {
             // Add subtle delay or distraction when the ball is on the opponent's side
             // Math.random() * 0.05 - 0.01
-            paddleLeft.up(Math.random() * .5 - 0.1);
+            paddleLeft.up(Math.random() * .8 - 0.1);
         }
     }
 
