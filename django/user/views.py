@@ -110,14 +110,14 @@ def oauth_login(req, user_data):
             key='access_token',
             value=access_token,
             httponly=True,
-            samesite='Strict',
+            samesite='Lax',
             secure=True
         )
         login_response.set_cookie(
             key='refresh_token',
             value=refresh_token,
             httponly=True,
-            samesite='Strict',
+            samesite='Lax',
             secure=True
         )
         return login_response
