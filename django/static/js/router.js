@@ -12,19 +12,28 @@ export default (function (){
 	 */
 
 	const redirect = (url) => {
+		if (!url || typeof url !== 'string') {
+			console.error('Invalid URL:', url);
+			return;
+		}
 		let tmp_url = url;
 		if (url[0] === '/')
-			tmp_url = location.host + url;
-		if (new URL(tmp_url).pathname === location.pathname)
-			return ;
+			tmp_url = `${location.protocol}//${location.host}${url}`;
+		
+		const fullUrl = new URL(tmp_url, `${location.protocol}//${location.host}`);
+	
+		if (fullUrl.pathname === location.pathname)
+			return;
+		
 		console.log(`Routing to ${url} ...`);
-		if (new URL(url, document.location).hostname != location.hostname)
-		{
+	
+		if (fullUrl.hostname !== location.hostname) {
 			if (!confirm(`Potential risk up ahead! Are you sure you want to follow this link?\nURL: ${url}`))
 				return console.log("Routing cancelled.");
 			location.href = url;
-			return ;
+			return;
 		}
+	
 		window.history.pushState({}, "", url);
 		handle_location();
 	};
@@ -51,7 +60,6 @@ export default (function (){
 			console.log(`Submitting to ${url}...`);
 			var xhttp = new XMLHttpRequest();
 			xhttp.open(target.method || "POST", url, true);
-			xhttp.withCredentials = true;
 			if (csrftoken)
 				xhttp.setRequestHeader("X-CSRFToken", csrftoken[1]);
 			xhttp.setRequestHeader("Accept", "application/json");
@@ -109,17 +117,15 @@ export default (function (){
 	 * Handles location changes, fetches data.
 	 */
 	const handle_location = async () => {
+		const data = await fetch(window.location.pathname);
+		const html = document.createElement("html");
 		// Unload game scripts, etc.
 		if (typeof window.unload == "function")
 		{
 			window.unload();
 			window.unload = null;
 		}
-
-		const data = await fetch(window.location.pathname);
-		const html = document.createElement("html");
 		html.innerHTML = await data.text();
-		
 		document.body = html.getElementsByTagName("body")[0];
 		// "Unload scripts"
 		document.head.querySelectorAll("script[src]").forEach(el => {
