@@ -71,6 +71,13 @@ class MatchRoom(models.Model):
     @property
     def can_join(self):
         return not self.started and not self.is_full
+    @property
+    def can_reconnect(self):
+        return not self.started and (self.host is not None or self.guest is not None)
+
+    def update_last_active(self):
+        self.last_active = now()
+        self.save(update_fields=['last_active'])
 
 class Tournament(models.Model):
     name = models.CharField(max_length=200)
