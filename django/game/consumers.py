@@ -51,7 +51,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 game.player1_username = username
                 game.player1_avatar = avatar
                 join_message = f"{username} joined as Player 1"
-            elif game.player2_username is None:
+            elif game.player2_username is None and game.player1_username != username:
                 game.player2_username = username
                 game.player2_avatar = avatar
                 join_message = f"{username} joined as Player 2"

@@ -13,10 +13,6 @@ const grassImagePath    = "/static/js/pong-game/imgs/football_grass.jpg";
 const sound4Path        = "/static/js/pong-game/mp3/game-countdown.mp3";
 const sound6Path        = "/static/js/pong-game/mp3/win.mp3";
 
-const valContainer = document.getElementById('mode-variable');
-const mode = valContainer ? valContainer.dataset.mode : null;
-console.log("Mode: ", mode);
-
 export let finalScore = 5;
 export let p1Score = 0;
 export let p2Score = 0;
@@ -40,6 +36,8 @@ let resizeHandler = null;
 
 window.game_main = function ()
 {
+    const valContainer = document.getElementById('mode-variable');
+    const mode = valContainer ? valContainer.dataset.mode : null;
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -174,6 +172,8 @@ window.game_main = function ()
         playAgainButton.style.fontSize = "1rem";
         playAgainButton.style.cursor = "pointer";
         playAgainButton.classList.add('btn', 'btn-primary');
+
+        console.log("Adding event listener to play again button");
         
         playAgainButton.addEventListener('click', () => {
             console.log("Play again button clicked");
@@ -456,11 +456,10 @@ window.unloadGameMain = function() {
     renderer     = null;
     p1Score      = 0;
     p2Score      = 0;
-    finalScore   = 2; 
     audioPlayer.unloadAll();  // if you want to unload all sounds
     console.log("All game resources disposed.");
 
     // // 6. (Optional) Delete window.game_main if you want to completely remove it
-    delete window.game_main;
-    delete window.unloadGameMain;
+    // delete window.game_main;
+    // delete window.unloadGameMain;
 };

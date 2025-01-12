@@ -48,7 +48,7 @@ class MatchHistory(models.Model):
         return f"Match: {self.player1} vs {self.player2} ({self.start_time})"
 
 def generate_unique_match_id():
-    return str(uuid.uuid4())[:8]
+    return str(uuid.uuid4())[:6]
 
 class MatchRoom(models.Model):
     match_id = models.CharField(

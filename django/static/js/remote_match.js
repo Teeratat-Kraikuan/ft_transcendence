@@ -35,6 +35,9 @@
 		document.getElementById('player1').textContent = data.player1_username || "Waiting...";
 		document.getElementById('player2').textContent = data.player2_username || "Waiting...";
 
+		document.getElementById('player1Top').textContent = data.player1_username || "Waiting...";
+		document.getElementById('player2Top').textContent = data.player2_username || "Waiting...";
+
 		const player1AvatarElem = document.getElementById('player1Avatar');
         const player2AvatarElem = document.getElementById('player2Avatar');
   
