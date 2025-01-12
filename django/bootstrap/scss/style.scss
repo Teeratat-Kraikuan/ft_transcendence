@@ -213,6 +213,7 @@ a{
 	.pfp-#{$i} {
 		width: #{$i}em;
 		height: #{$i}em;
+		background-size: #{$i}em #{$i}em !important; 
 		@extend .pfp;
 	}
 }

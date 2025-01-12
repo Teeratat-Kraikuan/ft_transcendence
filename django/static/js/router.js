@@ -3,7 +3,7 @@
 // OoOooOh HaCkA MaN
 
 export default (function (){
-	
+
 	"use strict";
 
 	/**

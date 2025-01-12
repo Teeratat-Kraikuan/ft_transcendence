@@ -37,7 +37,6 @@ def signup(req):
 	return render(req, 'signup.html')
 
 def logout(req):
-	print("user authehnticated", req.user.is_authenticated)
 	if not req.user.is_authenticated:
 		return redirect('home')
 	return render(req, 'logout.html')

@@ -82,7 +82,7 @@ class LoginWithJWT(APIView):
             key='access_token',
             value=access_token,
             httponly=True,
-            samesite='Strict',
+            samesite='None',
             secure=True
         )
         response.set_cookie(
@@ -146,7 +146,7 @@ def logout(req):
 	if req.user.is_authenticated:
 		auth_logout(req)
 		logout = JsonResponse({'message': 'Logout successful'}, status=200)
-		logout.delete_cookie('loggedin', samesite='Strict')
+		logout.delete_cookie('loggedin', samesite='None')
 		return logout
 	return JsonResponse({'message': 'Logout unsuccess'}, status=400)
 
