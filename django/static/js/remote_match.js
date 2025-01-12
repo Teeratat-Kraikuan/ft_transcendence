@@ -3,8 +3,7 @@
 
 	const valContainer = document.getElementById('matchId-variable');
 	const matchId = valContainer ? valContainer.dataset.mode : null;
-	
-	valContainer = document.getElementById('username-variable');
+
 	const username = valContainer ? valContainer.dataset.username : null;
 
 	console.log("matchId:", window.matchId);

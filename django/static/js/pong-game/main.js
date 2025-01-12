@@ -205,10 +205,12 @@ window.game_main = function ()
 
     //-------------------gameOverMessage-------------------------
 
-
+    
+    // Create Input handler
+    const input = new Input();
     // create paddle
-    const paddleLeft = new Paddle();
-    const paddleRight = new Paddle();
+    const paddleLeft = new Paddle(input.pSpeed);
+    const paddleRight = new Paddle(input.pSpeed);
     // Create the ball
     const ball = new Ball();
     ball.castShadow = true;
@@ -224,8 +226,6 @@ window.game_main = function ()
 
     // Camera position
     camera.position.z = 8;
-    // Create Input handler
-    const input = new Input();
 
     paddleLeft.pgm.position.x = -8;
     paddleRight.pgm.position.x = 8;
@@ -254,20 +254,21 @@ window.game_main = function ()
         const smallErrorMargin = 0.4;
 
         // Check if the ball is on the bot's side and within reaction range
-        if (ball.ball.position.x < 0 && Math.abs(ball.ball.position.x - paddleLeft.pgm.position.x) < reactionThreshold) {
+        if (ball.ball.position.x < -0.2 && Math.abs(ball.ball.position.x - paddleLeft.pgm.position.x) < reactionThreshold) {
             // Predict the ball's Y position with a small margin of error
             const predictedBallY = ball.ball.position.y * predictionPrecision + 
                                 (Math.random() * smallErrorMargin - smallErrorMargin / 2);
 
             // Move the bot paddle towards the predicted Y position
-            if (paddleLeft.pgm.position.y < predictedBallY && paddleLeft.pgm.position.y < 5.5) {
-                paddleLeft.pgm.position.y += botSpeed;
-            } else if (paddleLeft.pgm.position.y > predictedBallY && paddleLeft.pgm.position.y > -5.5) {
-                paddleLeft.pgm.position.y -= botSpeed;
+            if (paddleLeft.pgm.position.y < predictedBallY) {
+                paddleLeft.up();
+            } else if (paddleLeft.pgm.position.y > predictedBallY) {
+                paddleLeft.down();
             }
-        } else if (ball.ball.position.x >= 0) {
+        } else if (ball.ball.position.x <= 0.4) {
             // Add subtle delay or distraction when the ball is on the opponent's side
-            paddleLeft.pgm.position.y += Math.random() * 0.05 - 0.01;
+            // Math.random() * 0.05 - 0.01
+            paddleLeft.up(Math.random() * .5 - 0.1);
         }
     }
 
@@ -276,11 +277,10 @@ window.game_main = function ()
         animationId = requestAnimationFrame(animate);
 
         // arrow key control
-        if (input.upPress && paddleRight.pgm.position.y + paddleRight.paddleSizeY / 2 < 5.5) {
-            paddleRight.pgm.position.y += input.rightPaddleSpeed;
-        } else if (input.dnPress && paddleRight.pgm.position.y - paddleRight.paddleSizeY / 2 > -5.5) {
-            paddleRight.pgm.position.y -= input.rightPaddleSpeed;
-        }
+        if (input.upPress)
+            paddleRight.up();
+        else if (input.dnPress)
+            paddleRight.down();
 
         // w s key control
         if (mode === 'multi') {
@@ -308,6 +308,7 @@ window.game_main = function ()
         {
                 // show gameOVermessage
                 gameOverMessage();
+                cancelAnimationFrame(animationId);
                 return;
         }
         if (p1Score >= finalScore || p2Score >= finalScore)
