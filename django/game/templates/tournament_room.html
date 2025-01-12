@@ -19,7 +19,7 @@
             </div>
         </div>
         {% endif %}
-        <div class="d-flex justify-content-center align-items-center row my-5">
+        <!-- <div class="d-flex justify-content-center align-items-center row my-5">
             <div class="col-lg-6 d-flex justify-content-lg-end justify-content-sm-center justify-content-evenly">
                 <div class="pfp-n-name mx-2">
                     <div class="pfp-4 mb-3"></div>
@@ -40,6 +40,24 @@
                     <h5 id="player4">xxx xxx</h5>
                 </div>
             </div>
+        </div> -->
+        <div class="d-flex justify-content-center align-items-center row my-5">
+            <div class="col-lg-6 d-flex justify-content-lg-end justify-content-sm-center justify-content-evenly">
+                {% for player in players|slice:":2" %}
+                <div class="pfp-n-name mx-2">
+                    <div class="pfp-4 mb-3"></div>
+                    <h5>{{ player.name }}</h5>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="col-lg-6 d-flex justify-content-lg-start justify-content-sm-center justify-content-evenly">
+                {% for player in players|slice:"2:" %}
+                <div class="pfp-n-name mx-2">
+                    <div class="pfp-4 mb-3"></div>
+                    <h5>{{ player.name }}</h5>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         <div class="d-flex justify-content-center">
             <div class="rounded d-flex justify-content-center align-items-center row" style="width: 90vw;">
@@ -53,52 +71,65 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Play</th>
                                     <th scope="col">Win</th>
-                                    <th scope="col">Draw</th>
                                     <th scope="col">Lose</th>
                                     <th scope="col">+/-</th>
                                     <th scope="col">Points</th>
                                 </tr>
                             </thead>
                             <tbody id="playerScores">
-                                <!-- for i in range_num_players -->
+                                {% for player_data in scoreboard %}
                                 <tr>
-                                    <th scope="row"> i </th>
-                                    <td>
-                                        username
-                                    </td>
-                                    <td>0</td> <!-- play -->
-                                    <td>0</td> <!-- win -->
-                                    <td>0</td> <!-- draw -->
-                                    <td>0</td> <!-- lose -->
-                                    <td>0</td> <!-- + - -->
-                                    <td>0</td> <!-- point -->
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>{{ player_data.name }}</td>
+                                    <td>{{ player_data.played }}</td>
+                                    <td>{{ player_data.wins }}</td>
+                                    <td>{{ player_data.losses }}</td>
+                                    <td>{{ player_data.goal_difference }}</td>
+                                    <td>{{ player_data.points }}</td>
                                 </tr>
-                                 <!-- Test -->
-                                <tr><th scope="row"> i </th><td>username</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
-                                <tr><th scope="row"> i </th><td>username</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
-                                <tr><th scope="row"> i </th><td>username</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
-                                <!-- endfor -->
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="col-lg-3 col-12 order-lg-2 order-1 mb-4 mb-lg-0">
                     <div class="bg-dark text-light rounded d-flex justify-content-center p-4 row text-center">
-                        <h2>Round X!</h2>
-                        <span>Your opponent is</span>
-                        <div class="bg-danger my-3 rounded">
-                            <div class="pfp-n-name rounded w-100 my-2">
-                                <div class="pfp-4 mb-2"></div>
+                        <h2>Round {{ round_number }}!</h2>
+                        <span>Next match is</span>
+                        <div class="bg-danger my-3 rounded d-flex justify-content-center align-items-center">
+                            {% if next_match %}
+                            <div class="pfp-n-name rounded my-2 col-3">
+                                <div class="pfp-4 mb-1"></div>
                                 <div>
-                                    <span id="">xxx</span>
-                                    <!-- <span>is in position!</span> -->
-                                    <span>isn’t ready yet</span>
-
+                                    <span id="player1">{{ next_match.player1.name }}</span>
                                 </div>
                             </div>
+                            <h6 class="col-4">VS</h6>
+                            <div class="pfp-n-name rounded my-2 col-3">
+                                <div class="pfp-4 mb-1"></div>
+                                <div>
+                                    <span id="player2">{{ next_match.player2.name }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
+                        <!-- <div class="bg-danger my-3 rounded d-flex justify-content-center align-items-center">
+                            <div class="pfp-n-name rounded my-2 col-3">
+                                <div class="pfp-4 mb-1"></div>
+                                <div>
+                                    <span id="">xxx</span>
+                                </div>
+                            </div>
+                            <h6 class="col-4">VS</h6>
+                            <div class="pfp-n-name rounded my-2 col-3">
+                                <div class="pfp-4 mb-1"></div>
+                                <div>
+                                    <span id="">xxx</span>
+                                </div>
+                            </div>
+                        </div> -->
                         <span class="mb-3">Are you ready?</span>
-                        <a type="submit" class="btn btn-secondary w-100" href="#">Ready</a>
+                        <a type="submit" class="btn btn-primary w-100" href="/match/tournament/{{ next_match.id }}" id="playButton">Play</a>
                     </div>
                 </div>
             </div>

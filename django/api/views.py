@@ -22,10 +22,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import timedelta
 from user.models import Profile, FriendRequest
-from game.models import MatchHistory, MatchRoom
+from game.models import MatchHistory, MatchRoom, Tournament, Player, Match
 from menu.models import Notification
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import AnonymousUser
+from itertools import combinations
 import logging
 
 logger = logging.getLogger(__name__)
@@ -570,6 +571,56 @@ def join_matchroom(request):
         return Response({
             'error': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_tournament(request):
+    try:
+        body = request.data
+        members = body.get('members')
+        
+        if not members or len(members) < 2:
+            return Response(
+                {'error': 'At least 2 members are required to create a tournament.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        print("Members: ", members)
+
+        tournament = Tournament.objects.create(name='Tournament', start_date=now())
+
+        players = []
+        for member in members:
+            player = Player.objects.create(name=member, tournament=tournament)
+            players.append(player)
+
+        match_schedule = []
+        for round_num, (player1, player2) in enumerate(combinations(players, 2), start=1):
+            match_schedule.append({
+                "tournament": tournament,
+                "round_number": round_num,
+                "player1": player1,
+                "player2": player2,
+            })
+
+        for match_data in match_schedule:
+            Match.objects.create(**match_data)
+        
+        for match in match_schedule:
+            print(match)
+
+        return Response({
+            'message': 'Tournament created successfully with matches.',
+            'tournament_id': tournament.id,
+            'total_matches': len(match_schedule),
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
