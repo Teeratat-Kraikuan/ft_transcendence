@@ -19,25 +19,25 @@
 				<div class="position-relative overflow-hidden fit-content rounded-2 m-2 px-3 min-content float-start text-center" style="min-width:14rem;min-height:20rem;">
 					<img src="{{ user.banner_url }}" class="position-absolute h-100 start-50 top-50" style="filter: brightness(0.45) blur(1.5px); transform: translate(-50%, -50%);">
 					<div class="d-flex align-items-center flex-column w-100 h-100 p-3">
-						<div class="pfp m-4" style="background-image: url({{ user.avatar_url }})"></div>
+						<a class="pfp m-4" style="background-image: url({{ user.avatar_url }})" href="/users/{{ user.username }}"></a>
 						<div class="d-inline-flex w-100 align-items-center flex-column z-1">
 							<h4>{{ user.username }}</h4>
 							{% comment %} <span>Dummy Smith</span> {% endcomment %}
 							<p>{{ user.description }}</p>
 						</div>
 						<div class="d-inline-flex w-100 justify-content-evenly">
-							<a class="border-0 bg-transparent text-decoration-none" href="#1">
+							<button class="border-0 bg-transparent text-decoration-none z-1">
 								<i class="notification fa-solid fa-gamepad pe-none font-150 text-light"></i>
 							</a>
 							{% if not user.is_admin and user.username not in friends %}
-								<a class="border-0 bg-transparent text-decoration-none" href="#2" onclick="sendFriendRequest('{{ user.username }}')">
+								<button class="border-0 bg-transparent text-decoration-none z-1" onclick="sendFriendRequest('{{ user.username }}')">
 									<i class="notification fa-solid fa-person-circle-plus font-150 text-light z-0"></i>
 								</a>
 							{% endif %}
 							{% if user.is_admin %}
-								<a class="border-0 bg-transparent text-decoration-none">
+								<button class="border-0 bg-transparent text-decoration-none pe-none z-1">
 									<i class="notification fa-solid fa-shield font-150 text-light z-0"></i>
-								</a>
+								</button>
 							{% endif %}
 						</div>
 					</div>
