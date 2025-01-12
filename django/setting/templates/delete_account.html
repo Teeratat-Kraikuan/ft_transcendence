@@ -1,6 +1,10 @@
 {% extends "navbar.html" %}
 {% load static %}
 
+{% block header %}
+    <script src="{% static 'js/delete_account.js' %}"></script>
+{% endblock %}
+
 {% block navbar %}
 
 <div class="w-100 position-relative d-flex flex-grow-1 my-5 my-lg-0">
@@ -20,12 +24,12 @@
                 <p class="card-my-title py-4">Delete your account</p>
                 <form action="#">
                     <p>Once you delete a account, there is no going back. Please be certain.</p>
-                    <p>To confirm, type "johndoe@mail.com" in the box below</p>
+                    <p>To confirm, type <strong class="text-primary">{{ user.email }}</strong> in the box below</p>
                     <div class="form-group mb-3">
-                        <input class="form-control" type="confirm_phrase" name="confirm_phrase" placeholder="enter confirm phrase" required="true"/>
+                        <input class="form-control" type="confirm_phrase" name="confirm_phrase" id="confirmInput" placeholder="enter confirm phrase" oninput="checkConfirmation('{{ user.email }}')" required="true"/>
                     </div>
                 </form>
-                <button class="btn btn-danger disabled mb-4">Done</button>
+                <button class="btn btn-danger disabled mb-4" id="doneButton">Done</button>
             </div>
 		</div>
 	</div>

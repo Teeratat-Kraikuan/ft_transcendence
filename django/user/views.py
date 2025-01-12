@@ -7,9 +7,10 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.db.models import Model
 from user.models import Profile, FriendRequest
-from api.views import get_user_profile_data, get_user_match_history, get_user_match_summary, is_user_online
+from api.views import get_user_profile_data, get_user_match_history, get_user_match_summary, is_user_online, is_user_anonymous
 from django.middleware.csrf import get_token
 from requests_oauthlib import OAuth2Session
+from rest_framework_simplejwt.tokens import RefreshToken
 import requests
 import mimetypes
 import hashlib
@@ -36,6 +37,7 @@ def signup(req):
 	return render(req, 'signup.html')
 
 def logout(req):
+	print("user authehnticated", req.user.is_authenticated)
 	if not req.user.is_authenticated:
 		return redirect('home')
 	return render(req, 'logout.html')
@@ -44,7 +46,15 @@ def logout(req):
 def user(req, username):
 	try:
 		profile_data = get_user_profile_data(username)
-		friends = profile_data.get('friends', [])  # Assuming 'friends' contains usernames
+		if (username != req.user.username):
+			if profile_data['is_anonymous']:
+				return render(req, '404.html', {'message': 'User not found'}, status=404)
+		all_friends = profile_data.get('friends', [])
+		friends = []
+		for friend_username in all_friends:
+			friend_user = User.objects.get(username=friend_username)
+			if not is_user_anonymous(friend_username):
+				friends.append(friend_username)
 		is_friend = req.user.username in friends
 
 		online_friends = []
@@ -71,23 +81,47 @@ def user(req, username):
 	except User.DoesNotExist:
 		return render(req, '404.html', {'message': 'User not found'}, status=404)
 	except Exception as e:
+		print('test')
 		return render(req, '404.html', {'message': str(e)}, status=500)
 
 def oauth_login(req, user_data):
-	email = user_data.get('email')
-	password = hashlib.sha256(str(os.environ['CLIENT_SECRET']).encode('utf-8')).hexdigest()
-	user = authenticate(req, username=email, password=password)
-	if user is not None:
-		auth_login(req, user)
-		next_page = req.session.get('_next', '/home')
-		if req.session.get('_next', False):
-			del req.session['_next']
-		login = redirect(next_page)
-		login.set_cookie('loggedin', 'true', samesite='Lax', max_age=req.session.get_expiry_age())
-		return login
-		# return JsonResponse({'message': 'Login successful'}, status=200)
-	return redirect("/login")
-	# return JsonResponse({'message': 'Invalid email or password.'}, status=401)
+    email = user_data.get('email')
+    password = hashlib.sha256(str(os.environ['CLIENT_SECRET']).encode('utf-8')).hexdigest()
+    user = authenticate(req, username=email, password=password)
+    
+    if user is not None:
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
+        next_page = req.session.get('_next', '/home')
+        if req.session.get('_next', False):
+            del req.session['_next']
+        
+        login_response = redirect(next_page)
+        login_response.set_cookie(
+            key='loggedin', 
+            value='true', 
+            samesite='Lax', 
+            max_age=req.session.get_expiry_age()
+        )
+        login_response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=True,
+            samesite='Strict',
+            secure=True
+        )
+        login_response.set_cookie(
+            key='refresh_token',
+            value=refresh_token,
+            httponly=True,
+            samesite='Strict',
+            secure=True
+        )
+        return login_response
+    return redirect("/login")
 
 def download_image(url:str, name:str):
 	response = requests.get(url, stream=True)
@@ -104,6 +138,8 @@ def setup_profile(req, data):
 			profile.avatar = download_image(data['pfp'], f"{data['user'].username}_avatar")
 		if data['banner']:
 			profile.banner = download_image(data['banner'], f"{data['user'].username}_banner")
+		if data['is_student']:
+			profile.is_student = True
 		profile.save()
 
 def oauth_register(req, oauth, user_data):
@@ -129,7 +165,8 @@ def oauth_register(req, oauth, user_data):
 	setup_profile(req, {
 		"user": user,
 		"pfp": profile_picture,
-		"banner": coalitions_banner
+		"banner": coalitions_banner,
+		"is_student": True,
 	})
 	return oauth_login(req, user_data)
 	# return JsonResponse({'message': 'Register successful'}, status=200)

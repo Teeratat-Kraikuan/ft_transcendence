@@ -8,20 +8,24 @@
 {% block panel %}
 <div class="card-form">
 	<p class="card-form-title">Login</p>
-	<form action="/api/v1/login/" method="POST" redirect="{{ redirect }}">
+	<form action="/api/v2/login/" method="POST" redirect="{{ redirect }}">
 		{% csrf_token %}
 		<div class="form-group mb-3">
-			<label class="form-label visually-hidden" for="email">Username</label>
-			<input class="form-control" type="email" name="email" placeholder="email" required="true"/>
+			<label class="form-label visually-hidden" for="email">Email</label>
+			<input class="form-control" type="email" name="email" placeholder="Email" required="true"/>
 		</div>
-		<div class="form-group">
-			<label class="form-label visually-hidden" for="passwd">Password</label>
-			<input class="form-control" type="password" name="password" placeholder="password" required="true"/>
+		<div class="form-group mb-3">
+			<label class="form-label visually-hidden" for="password">Password</label>
+			<input class="form-control" type="password" name="password" placeholder="Password" required="true"/>
+		</div>
+		<div class="form-group mb-3">
+			<label class="form-label visually-hidden" for="twofa_code">2FA Code</label>
+			<input class="form-control" type="text" name="twofa_code" placeholder="2FA code (if enabled)" />
 		</div>
 		<button type="submit" class="btn btn-primary w-100 my-3">Sign in</button>
 		<div class="separator text-secondary">Or</div>
 		<div class="form-group">
-			<a class="btn btn-primary w-100 my-3" href="/oauth_42?next={{redirect }}" no-route>Continue with 42</a>
+			<a class="btn btn-primary w-100 my-3" href="/oauth_42?next={{ redirect }}" no-route>Continue with 42</a>
 			<a class="btn btn-primary w-100 mb-3" href="/oauth_google" no-route>Continue with Google</a>
 		</div>
 	</form>

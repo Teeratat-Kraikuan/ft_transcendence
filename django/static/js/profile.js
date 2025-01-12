@@ -40,9 +40,7 @@ function doneEdit() {
 //     });
 // }
 
-function submitEditForm(username) {
-    console.log("Hello from Edit");
-    console.log("Try to edit : " + username);
+function submitEditForm(username, type) {
     const editApiEndpoint = '/api/v1/edit_user_profile/';
     const form = document.getElementById('editProfileForm');
     if (!form || !username) {
@@ -50,12 +48,13 @@ function submitEditForm(username) {
         return;
     }
     const formData = new FormData(form);
-	formData.append('submit', 'edit');
+	formData.append('submit', type);
     formData.append('username', username);
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
     fetch(editApiEndpoint, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'X-CSRFToken': csrfToken
         },
@@ -77,6 +76,17 @@ function submitEditForm(username) {
 
 (function () {
     "use strict";
+    function loadChartJS(callback) {
+        if (typeof Chart !== "undefined") {
+            callback();
+            return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/chart.js";
+        script.onload = callback;
+        script.onerror = () => console.error("Failed to load Chart.js");
+        document.head.appendChild(script);
+    }
     function initialize() {
         if (document.querySelector(".progress")) {
             const progress = document.querySelector(".progress")
@@ -152,9 +162,11 @@ function submitEditForm(username) {
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initialize);
+        document.addEventListener("DOMContentLoaded", () => {
+            loadChartJS(initialize);
+        });
     } else {
-        // initialize();
+        loadChartJS(initialize);
     }
 
     // if (window["initialize"] != undefined) {

@@ -1,5 +1,8 @@
 {% extends "navbar.html" %}
 {% load static %}
+{% block header %}
+    <script src="{% static 'js/anonymize.js' %}"></script>
+{% endblock %}
 
 {% block navbar %}
 
@@ -17,30 +20,19 @@
                         </button>
                     </a>
                 </div>
-                <p class="card-my-title py-4">Manage Profile</p>
-                <ul class="list-group mb-4">
-                    <li class="list-group-item list-menu">
-                        <span>Email</span>
-                        <select class="form-select form-select-sm w-50" aria-label="selectStatus">
-                            <option value="1">Only me</option>
-                            <option value="2">Public</option>
-                        </select>
-                    </li>
-                    <li class="list-group-item list-menu">
-                        <span>Intra username</span>
-                        <select class="form-select form-select-sm w-50" aria-label="selectStatus">
-                            <option value="1">Only me</option>
-                            <option value="2">Public</option>
-                        </select>
-                    </li>
-                </ul>
-                <div class="list-menu mb-4">
-                    <span class="w-75">
-                        Delete, The information will be deleted to make it anonymous.
-                    </span>
-                    <button class="btn btn-danger btn-sm">Delete</button>
+                <p class="card-my-title py-4">Anonymize Personal Information</p>
+                <div class="d-flex justify-content-between">
+                    <div>Enable Anonymous Mode</div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switchHideData" {% if enableAnonymize %}checked{% endif %}>
+                    </div>
                 </div>
-                <button class="btn btn-primary " disabled>Done</button>
+                <p>
+                    Switch to Anonymous Mode to protect your privacy by hiding your personal data.
+                </p>
+                <p>
+                    Enabling this will <strong class="text-primary">permanently delete</strong> all your match history and <strong class="text-primary">cannot be undone</strong>.
+                </p>
             </div>
 		</div>
 	</div>

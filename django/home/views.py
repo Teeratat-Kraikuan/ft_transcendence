@@ -3,12 +3,25 @@ from django.contrib.auth.decorators import login_required
 from django.template import loader
 from django.contrib.auth.models import User
 from user.models import FriendRequest
+from django.contrib.staticfiles import finders
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 import random
 
 # Create your views here.
 # @login_required()
 def home(req):
+	if req.user.is_authenticated:
+		terms_content = ""
+		file_path = finders.find('terms_of_service.txt')
+		if file_path:
+			with open(file_path, 'r') as file:
+				terms_content = file.read()
+		else:
+			terms_content = "The Terms of Service could not be loaded."
+		return render(req, 'home.html', {'terms_content': terms_content})
 	return render(req, 'home.html')
 
 def offline(req):
@@ -28,7 +41,7 @@ def tournament_queue(req):
 
 @login_required
 def community(req):
-	users = User.objects.select_related('profile').exclude(id=req.user.id)
+	users = User.objects.select_related('profile').exclude(id=req.user.id).exclude(profile__is_anonymous=True)
 
 	friends = req.user.profile.friends.all().values_list('user__username', flat=True)
 

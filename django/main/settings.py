@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from os import environ
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,13 +47,15 @@ LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/home/"
 REDIRECT_FIELD_NAME = "next"
 
-AUTHENTICATION_BACKENDS = ('user.backends.EmailBackend', )
+AUTHENTICATION_BACKENDS = (
+	'django.contrib.auth.backends.ModelBackend',
+	'user.backends.EmailBackend',
+)
 
 # Application definition
 
 INSTALLED_APPS = [
 	'daphne',
-	'channels',
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
@@ -60,8 +63,14 @@ INSTALLED_APPS = [
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	# Dependencies
+	'channels',
+	'channels_postgres',
 	'corsheaders',
 	'django_sass',
+	'django_otp',
+	'django_otp.plugins.otp_totp',
+	'rest_framework',
+	'rest_framework_simplejwt',
 	# Apps
 	'menu',
 	'home',
@@ -69,7 +78,7 @@ INSTALLED_APPS = [
 	'chat',
 	'user',
 	'setting',
-	'api'
+	'api',
 ]
 
 MIDDLEWARE = [
@@ -82,6 +91,8 @@ MIDDLEWARE = [
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'corsheaders.middleware.CorsMiddleware',
 	'user.middleware.UpdateLastActivityMiddleware',
+	'user.middleware.JWTAuthenticationMiddleware',
+	'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = 'main.urls'
@@ -108,11 +119,45 @@ TEMPLATES = [
 WSGI_APPLICATION = 'main.wsgi.application'
 ASGI_APPLICATION = "main.asgi.application"
 
-# TODO: Change this to Redis
+# Channels
+
 CHANNEL_LAYERS = {
 	'default': {
-		'BACKEND': 'channels.layers.InMemoryChannelLayer'
-	}
+		'BACKEND': 'channels_postgres.core.PostgresChannelLayer',
+		'CONFIG': {
+			'ENGINE': 'django.db.backends.postgresql',
+			'NAME': environ.get('POSTGRES_DB'),
+			'USER': environ.get('POSTGRES_USER'),
+			'PASSWORD': environ.get('POSTGRES_PASSWORD'),
+			'HOST': 'postgres',
+			'PORT': 5432,
+		}
+	},
+}
+
+# Rest Framework
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+		'user.auth.CookieJWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+		'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'SIGNING_KEY': environ.get('SECRET_KEY'),
+    'ALGORITHM': 'HS256',
 }
 
 # Database
@@ -180,7 +225,3 @@ MEDIA_URL = 'media/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Session timeout in seconds (e.g., 900 seconds = 15 minutes)
-# SESSION_COOKIE_AGE = 900
-# SESSION_EXPIRE_AT_BROWSER_CLOSE = True

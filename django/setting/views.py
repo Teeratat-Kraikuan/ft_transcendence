@@ -9,7 +9,9 @@ def settings(req):
 
 @login_required
 def twofactor_auth(req):
-	return render(req, '2fa_auth.html')
+	enable2fa = req.user.profile.is_2fa_enabled
+	is_student = req.user.profile.is_student
+	return render(req, '2fa_auth.html', {'enable2fa': enable2fa, 'is_student': is_student})
 
 @login_required
 def twofactor_set_email(req):
@@ -29,7 +31,8 @@ def audience_visibility(req):
 
 @login_required
 def manage_profile(req):
-	return render(req, 'manage_profile.html')
+	enableAnonymize = req.user.profile.is_anonymous
+	return render(req, 'manage_profile.html', {'enableAnonymize': enableAnonymize})
 
 @login_required
 def manage_blocking(req):

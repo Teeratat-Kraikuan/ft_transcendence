@@ -7,6 +7,7 @@ async function sendFriendRequest(friendUsername) {
 
         const response = await fetch('/api/v1/friend_request/send/', {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken,
@@ -36,6 +37,7 @@ async function acceptFriendRequest(senderUsername) {
 
         const response = await fetch('/api/v1/friend_request/accept/', {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken,
@@ -66,6 +68,7 @@ async function declineFriendRequest(senderUsername) {
 
         const response = await fetch('/api/v1/friend_request/decline/', {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken,

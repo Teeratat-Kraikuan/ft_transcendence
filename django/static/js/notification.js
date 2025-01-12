@@ -45,14 +45,7 @@
 				tag: 'div',
 				attr: { class: "w-100" },
 				body: [
-					html_element({
-						tag: "span",
-						attr: {class: "d-block"},
-						text: notification.data.message.replaceAll(
-							/%username%/g,
-							notification.sender_data.username
-						)
-					})
+					html_element({ tag: "span", attr: {class: "d-block"}, text: notification.data.message })
 				]
 			}),
 			button
@@ -113,12 +106,13 @@
 			return ;
 		// console.log("notification: Fetch notifications...");
 		try {
-			const data = await (await fetch('/api/v1/notifications/', {
+			const notif = await fetch('/api/v1/notifications/', {
 				method: 'GET',
 				headers: {
 					'X-Requested-With': 'XMLHttpRequest'
 				}
-			})).json();
+			})
+			const data = await notif.json();
 			const sender_data = await Promise.all(data.map(async d =>
 				await (await fetch('/api/v1/profile/' + d.sender_username, {
 					method: 'GET',
@@ -137,6 +131,7 @@
 			return notifications;
 		} catch (e) {
 			console.error('notification: ' + e);
+			return null;
 		}
 	}
 
@@ -147,7 +142,7 @@
 		// console.log("notification: Load component...");
 		try {
 			if (!notifications.data || notifications.data?.length == 0)
-				await fetch_data();
+				if (!await fetch_data()) return ;
 			const notificationContainer = [
 				... document.getElementsByClassName("notification-container")
 			];
@@ -155,7 +150,7 @@
 				el.innerHTML = "";
 				if (notifications?.data.length == 0)
 					return el.appendChild(render_component (null));
-				notifications?.data.map((d, indx) => el.appendChild(render_component({
+				notifications.data.map((d, indx) => el.appendChild(render_component({
 					data: d,
 					sender_data: notifications.sender_data[indx]
 				})));

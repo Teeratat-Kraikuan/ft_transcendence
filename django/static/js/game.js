@@ -1,29 +1,46 @@
-(function() {
-
+(function () {
 	"use strict";
 
-	class Canvas {
-		constructor (selector) {
-			this.el = document.querySelector(selector);
-			this.ctx = this.el.getContext("2d");
-		}
+    let game;
+
+    function waitForGameMain() {
+        if (typeof window.game_main === 'function') {
+            game = window.game_main();
+        } else {
+            setTimeout(waitForGameMain, 300);
+        }
+    }
+    window.main = function () {
+        // const game_script = document.getElementById("game-logic");
+        // console.log(game_script);
+        console.log("Game started!");
+        // waitForGameMain();
+        if (window.game_main == undefined)
+            setTimeout(() => game = window.game_main(), 2000);
+        else
+            game = window.game_main();
+    };
+
+    window.unload = function () {
+        // If `game` is defined, we do cleanup
+        if (game) {
+            // Dispose audio from the object reference
+            game.audioPlayer.unloadAll();
+            game.resetGame();
+        }
+        game = null;
+
+        // Now unload the actual game logic from main.js
+        if (typeof window.unloadGameMain === 'function') {
+            window.unloadGameMain();
+        }
+
+        // Remove global references
+        delete window.main;
+        console.log("Game fully unloaded from game.js");
 	}
 
-	const canvas = new Canvas(".game-canvas");
-
-	const set_canvas = function () {
-		canvas.el.width = 0;
-		canvas.el.height = 0;
-		const bound = canvas.el.getBoundingClientRect();
-		canvas.el.width = bound.width;
-		canvas.el.height = bound.height;
-	};
-
-	const ev_resize = window.addEventListener("resize", set_canvas);
-
-	set_canvas();
-	window.unload = function () {
-		removeEventListener('resize', ev_resize);
-	}
+    if (window["main"] != undefined)
+		window.main();
 
 })();
