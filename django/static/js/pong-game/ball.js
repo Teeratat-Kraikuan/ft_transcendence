@@ -21,6 +21,7 @@ export class Ball {
         this.ball = new THREE.Mesh(this.geometry, this.material);
         this.ball.position.set(0, 0, 0);
         this.velocity = new THREE.Vector3(this.ballspeed, this.ballspeed, 0);
+        this.collided = false;
         audioPlayer.load("collisionSound1", sound1Path);
         audioPlayer.load("collisionSound2", sound2Path);
         audioPlayer.load("collisionSound3", sound3Path);
@@ -70,25 +71,43 @@ export class Ball {
         if ((this.ball.position.x - this.radius) <= paddle.pgm.position.x + (paddle.paddleSizeX / 2) && (this.ball.position.x + this.radius) >= paddle.pgm.position.x - (paddle.paddleSizeX / 2) &&
             this.ball.position.y <= paddle.pgm.position.y + (paddle.paddleSizeY / 2) && this.ball.position.y >= paddle.pgm.position.y - (paddle.paddleSizeY / 2)) 
             {
-                audioPlayer.play("collisionSound2");
-                this.velocity.x = -this.velocity.x; // Bounce the ball to x.axis
+                if (!this.collided)
+                {
+                    audioPlayer.play("collisionSound2");
+                    this.velocity.x = -this.velocity.x; // Bounce the ball to x.axis
+                    this.ball.position.x += this.velocity.x;
+                    this.collided = true;
+                }
             }
-        else if((this.ball.position.y - this.radius) <= paddle.pgm.position.y + (paddle.paddleSizeY / 2) && (this.ball.position.y + this.radius) >= paddle.pgm.position.y - (paddle.paddleSizeY / 2) && 
-            (this.ball.position.x) <= paddle.pgm.position.x + (paddle.paddleSizeX / 2) && (this.ball.position.x) >= paddle.pgm.position.x - (paddle.paddleSizeX / 2))
-            {
-                audioPlayer.play("collisionSound2");
-                this.velocity.y = -this.velocity.y; // Bounce the ball to y.axis
-            }
-        else if(this.radius >= Math.sqrt((dx1 * dx1) + (dy1 * dy1)) || this.radius >= Math.sqrt((dx1 * dx1) + (dy2 * dy2)) || this.radius >= Math.sqrt((dx2 * dx2) + (dy1 * dy1)) || this.radius >= Math.sqrt((dx2 * dx2) + (dy2 * dy2)))
-            {
-                audioPlayer.play("collisionSound2");
-                //this case ball is collision on paddle edge.
-                this.velocity.x = -this.velocity.x; // Bounce the ball oposite to x.axis
-                this.velocity.y = -this.velocity.y; // Bounce the ball oposite to y.axis    
-                // console.log("\nradius = " + this.radius + "= ( " + Math.sqrt((dx1 * dx1) + (dy1 * dy1)) + ")");
-                // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx2 * dx2) + (dy1 * dy1)) + ")");
-                // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx1 * dx1) + (dy2 * dy2)) + ")");
-                // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx2 * dx2) + (dy2 * dy2)) + ")\n");
-            }
+        // else if((this.ball.position.y - this.radius) <= paddle.pgm.position.y + (paddle.paddleSizeY / 2) && (this.ball.position.y + this.radius) >= paddle.pgm.position.y - (paddle.paddleSizeY / 2) && 
+        //     (this.ball.position.x) <= paddle.pgm.position.x + (paddle.paddleSizeX / 2) && (this.ball.position.x) >= paddle.pgm.position.x - (paddle.paddleSizeX / 2))
+        //     {
+        //         if (!this.collided)
+        //         {
+        //             audioPlayer.play("collisionSound2");
+        //             this.velocity.y = -this.velocity.y; // Bounce the ball to y.axis
+        //             this.ball.position.y += this.velocity.y;
+        //             this.collided = true;
+        //         }
+        //     }
+            // else if(this.radius >= Math.sqrt((dx1 * dx1) + (dy1 * dy1)) || this.radius >= Math.sqrt((dx1 * dx1) + (dy2 * dy2)) || this.radius >= Math.sqrt((dx2 * dx2) + (dy1 * dy1)) || this.radius >= Math.sqrt((dx2 * dx2) + (dy2 * dy2)))
+            //     {
+            //         if (!this.collided)
+            //         {
+            //             audioPlayer.play("collisionSound2");
+            //             //this case ball is collision on paddle edge.
+            //             this.velocity.x = -this.velocity.x; // Bounce the ball oposite to x.axis
+            //             this.velocity.y = -this.velocity.y; // Bounce the ball oposite to y.axis    
+            //             // console.log("\nradius = " + this.radius + "= ( " + Math.sqrt((dx1 * dx1) + (dy1 * dy1)) + ")");
+            //             // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx2 * dx2) + (dy1 * dy1)) + ")");
+            //             // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx1 * dx1) + (dy2 * dy2)) + ")");
+            //             // console.log("radius = " + this.radius + "= ( " + Math.sqrt((dx2 * dx2) + (dy2 * dy2)) + ")\n");
+            //             this.ball.position.x += this.velocity.x + this.radius;
+            //             this.ball.position.y += this.velocity.y + this.radius;
+            //             this.collided = true;
+        //         }
+        //     }
+        else if (this.collided === true)
+            this.collided = false;
     }
 }
